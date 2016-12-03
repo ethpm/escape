@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 
-import {SemVersionLib} from "contracts/SemVersionLib.sol";
+import {SemVersionLib} from "./contracts/SemVersionLib.sol";
 
 
 library PackageLib {
