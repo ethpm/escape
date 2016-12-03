@@ -1,8 +1,8 @@
 pragma solidity ^0.4.0;
 
 
-import {PackageLib} from "./contracts/PackageLib.sol";
-import {PackageIndexInterface} from "./contracts/PackageIndexInterface.sol";
+import {PackageLib} from "./PackageLib.sol";
+import {PackageIndexInterface} from "./PackageIndexInterface.sol";
 
 
 contract PackageIndex {
