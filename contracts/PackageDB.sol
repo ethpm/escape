@@ -27,12 +27,6 @@ contract PackageDB {
   mapping (bytes32 => uint) public packageVersionIds;
   mapping (bytes32 => address) public packageOwner;
 
-  bytes32 public last;
-  bytes32 public emptyString = sha3("");
-  bytes32 public zeroed = sha3(0);
-  string public lastLockfile;
-  bytes32 public part;
-
   function setRelease(string name,
                uint32 major,
                uint32 minor,
@@ -42,15 +36,9 @@ contract PackageDB {
     // Hash the name and the version for storing data
     bytes32 nameHash = sha3(name);
     bytes32 versionHash = sha3(name, major, minor, patch);
-    bytes32 emptyString = sha3("");
-
-    part = sha3(major);
-
-    last = versionHash;
-    lastLockfile = releaseLockFileURI;
 
     // Check existence of the version we're trying to set
-    bool versionExists = sha3(releaseLockFiles[versionHash]) != emptyString;
+    bool versionExists = sha3(releaseLockFiles[versionHash]) != sha3("");
 
     // Get the version id of the version we're trying to set.
     // If the version doesn't exist, that means we need to make room
