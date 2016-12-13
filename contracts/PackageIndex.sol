@@ -40,6 +40,7 @@ contract PackageIndex {
     bytes32 minorHash = sha3(name, major);
     bytes32 patchHash = sha3(name, major, minor);
 
+    // If this is the highest release in any of the three buckets, allow it.
     if (major > packageDb.latestMajor(majorHash) ||
         minor > packageDb.latestMinor(minorHash) ||
         patch > packageDb.latestPatch(patchHash)) {
