@@ -67,6 +67,8 @@ contract PackageDB {
     });
     packageVersionIds[versionHash] = versionId;
 
+    // Set the latest releases in each of our three buckets.
+    // Note that hashing ensures we're managing the bucket correctly.
     bytes32 minorHash = sha3(name, major);
     bytes32 patchHash = sha3(name, major, minor);
 
