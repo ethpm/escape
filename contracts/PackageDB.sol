@@ -12,20 +12,22 @@ contract PackageDB is Authorized {
    */
   // (nameHash => value)
   mapping (bytes32 => bool) _packageExists;
-  mapping (bytes32 => string) public packageNames;
-  mapping (bytes32 => address) public packageOwner;
-  mapping (bytes32 => bytes32[]) public packageReleaseHashes;
+  mapping (bytes32 => string) _packageNames;
+  mapping (bytes32 => address) _packageOwners;
+  mapping (bytes32 => bytes32[]) _packageReleaseHashes;
   // (releaseHash => value)
-  mapping (bytes32 => bytes32) _releaseVersionLookup
+  mapping (bytes32 => bytes32) _releaseVersionLookup;
   mapping (bytes32 => bytes32) _releasePackageNameLookup;
   mapping (bytes32 => bool) _releaseExists;
-  mapping (bytes32 => string) public releaseLockFiles;
+  mapping (bytes32 => string) _releaseLockFiles;
   // (releaseHash => value)
   mapping (bytes32 => SemVersionLib.SemVersion) _recordedVersions;
   mapping (bytes32 => bool) _versionExists;
 
-  event PackageReleased(bytes32 indexed versionHash);
-  event PackageOwnerChanged(address indexed oldOwner, address indexed newOwner);
+  event ReleaseCreate(bytes32 indexed releaseHash);
+  event ReleaseUpdate(bytes32 indexed releaseHash);
+  event ReleaseDelete(bytes32 indexed releaseHash);
+  event PackageOwnerUpdate(address indexed oldOwner, address indexed newOwner);
 
   /*
    * Latest version tracking for each branch of the release tree.
@@ -43,6 +45,36 @@ contract PackageDB is Authorized {
   // (nameHash => major => minor => patch => versionHash);
   mapping (bytes32 => mapping (uint32 => mapping(uint32 => mapping (uint32 => bytes32)))) _latestPreRelease;
 
+  /*
+   *  Modifiers
+   */
+  modifier onlyIfVersionExists(bytes32 versionHash) {
+    if (!_versionExists[versionHash]) {
+      throw;
+    } else {
+      _;
+    }
+  }
+
+  modifier onlyIfReleaseExists(bytes32 releaseHash) {
+    if (!_releaseExists[releaseHash]) {
+      throw;
+    } else {
+      _;
+    }
+  }
+
+  modifier onlyIfPackageExists(string name) {
+    if (!_packageExists[hashName(name)]) {
+      throw;
+    } else {
+      _;
+    }
+  }
+
+  //
+  // Public Write API
+  //
   function setRelease(string name,
                       uint32 major,
                       uint32 minor,
@@ -52,85 +84,104 @@ contract PackageDB is Authorized {
                       string releaseLockFileURI) auth public returns (bool) {
 
     // Hash the name and the version for storing data
-    bytes32 nameHash = sha3(name);
-    bytes32 releaseHash = sha3(name, major, minor, patch, preRelease, build);
+    bytes32 nameHash = hashName(name);
+    bytes32 releaseHash = hashRelease(name, major, minor, patch, preRelease, build);
 
     // Mark the package as existing if it isn't already tracked.
     if (!_packageExists[nameHash]) {
-        packageNames[nameHash] = name;
-        _packageExists[nameHash] = true;
+      _packageNames[nameHash] = name;
+      _packageExists[nameHash] = true;
     }
 
     // If this is a new version push it onto the array of version hashes for
     // this package.
     if (!_releaseExists[releaseHash]) {
-      packageReleaseHashes[nameHash].push(releaseHash);
+      _packageReleaseHashes[nameHash].push(releaseHash);
+      _releasePackageNameLookup[releaseHash] = nameHash;
       _releaseExists[releaseHash] = true;
+      ReleaseCreate(releaseHash);
+    } else {
+      ReleaseUpdate(releaseHash);
     }
 
     // Save a mapping from releaseHash to versionHash
     _releaseVersionLookup[releaseHash] = setVersion(major, minor, patch, preRelease, build);
 
     // Save the release lockfile URI
-    releaseLockFiles[releaseHash] = releaseLockFileURI;
+    _releaseLockFiles[releaseHash] = releaseLockFileURI;
 
     // Track latest released versions for each branch of the release tree.
-    updateMajorTree(releaseHash);
-    updateMinorTree(releaseHash);
-    updatePatchTree(releaseHash);
-    updatePreReleaseTree(releaseHash);
-
-    // Log the release.
-    PackageReleased(versionHash);
+    updateLatestTree(releaseHash);
 
     return true;
   }
 
   function removeRelease(string name, uint idx) auth public returns (bool) {
-      bytes32 nameHash = sha3(name);
-      if (idx >= packageVersions[nameHash].length) {
-          return false;
-      }
-      bytes32 versionHash = packageVersions[nameHash][idx];
+    uint numReleases = getNumReleases(name);
 
-      delete _versionReleased[versionHash];
-      delete releaseLockFiles[versionHash];
-      delete versionHashReverseLookup[versionHash];
-      delete packageVersions[versionHash];
+    if (idx >= numReleases) {
+      return false;
+    }
 
-      // Move the last item in the list of version hashes into the slot being
-      // removed and then shorten the array length by 1.
-      packageVersions[nameHash][idx] = packageVersions[nameHash][packageVersions[nameHash].length - 1];
-      packageVersions[nameHash].length -= 1;
+    bytes32 nameHash = hashName(name);
+    bytes32 releaseHash = _packageReleaseHashes[nameHash][idx];
+
+    delete _releaseExists[releaseHash];
+    delete _releaseLockFiles[releaseHash];
+    delete _releasePackageNameLookup[releaseHash];
+    delete _releaseVersionLookup[releaseHash];
+
+    // Move the last item in the list of version hashes into the slot being
+    // removed and then shorten the array length by 1.
+    if (idx != numReleases - 1) {
+      _packageReleaseHashes[nameHash][idx] = _packageReleaseHashes[nameHash][numReleases];
+    }
+    _packageReleaseHashes[nameHash].length -= 1;
+
+    ReleaseDelete(releaseHash);
+
+    return true;
+  }
+
+  function updateLatestTree(bytes32 releaseHash) auth public returns (bool) {
+    updateMajorTree(releaseHash);
+    updateMinorTree(releaseHash);
+    updatePatchTree(releaseHash);
+    updatePreReleaseTree(releaseHash);
+    return true;
   }
 
   function setVersion(uint32 major,
                       uint32 minor,
                       uint32 patch,
                       string preRelease,
-                      string build) public returns (bytes32) {
-    bytes32 versionHash = sha3(major, minor, patch, preRelease, build);
+                      string build) auth public returns (bytes32) {
+    bytes32 versionHash = hashVersion(major, minor, patch, preRelease, build);
 
-    // Populate the version data.
     if (!_versionExists[versionHash]) {
-        __recordedVersions[versionHash].init(major, minor, patch, preRelease, build);
-        _versionExists[versionHash] = true;
+      _recordedVersions[versionHash].init(major, minor, patch, preRelease, build);
+      _versionExists[versionHash] = true;
     }
     return versionHash;
   }
 
   function setPackageOwner(string name,
                            address newPackageOwner) auth public returns (bool) {
-    bytes32 nameHash = sha3(name);
-    PackageOwnerChanged(packageOwner[nameHash], newPackageOwner);
-    packageOwner[nameHash] = newPackageOwner;
+    bytes32 nameHash = hashName(name);
+    PackageOwnerUpdate(_packageOwners[nameHash], newPackageOwner);
+    _packageOwners[nameHash] = newPackageOwner;
+    return true;
   }
 
+  //
+  // Public Read API
+  //
+
   /*
-   *  Constant Getters
+   *  Querying Existence
    */
   function packageExists(string name) constant returns (bool) {
-    bytes32 nameHash = sha3(name);
+    bytes32 nameHash = hashName(name);
     return _packageExists[nameHash];
   }
 
@@ -140,53 +191,166 @@ contract PackageDB is Authorized {
                          uint32 patch,
                          string preRelease,
                          string build) constant returns (bool) {
-    bytes32 releaseHash = sha3(name, major, minor, patch, preRelease, build);
-    return releaseExists(releaseHash);
+    bytes32 releaseHash = hashRelease(name, major, minor, patch, preRelease, build);
+    return _releaseExists[releaseHash];
   }
 
-  function numReleases(string name) constant returns (uint) {
-    return packageReleaseHashes[sha3(name)].length;
+  function versionExists(bytes32 versionHash) constant returns (bool) {
+    return _versionExists[versionHash];
   }
 
-  function isAnyLatest(string name,
+  /*
+   *  Package Getters
+   */
+  function getPackageOwner(string name) constant returns (address) {
+    return _packageOwners[hashName(name)];
+  }
+
+  function getNumReleases(string name) constant returns (uint) {
+    return _packageReleaseHashes[hashName(name)].length;
+  }
+
+  function getPackageReleaseHash(string name, uint idx) constant returns (bytes32) {
+    return _packageReleaseHashes[hashName(name)][idx];
+  }
+
+  function getLatestVersion(string name) constant returns (bytes32) {
+    return _latestMajor[hashName(name)];
+  }
+
+  /*
+   *  Release Getters
+   */
+  function getMajorMinorPatch(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+                                                   constant 
+                                                   returns (uint32, uint32, uint32) {
+    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
+    return (version.major, version.minor, version.patch);
+  }
+
+  function getPreRelease(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+                                              constant 
+                                              returns (string) {
+    return _recordedVersions[_releaseVersionLookup[releaseHash]].preRelease;
+  }
+
+  function getBuild(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+                                         constant 
+                                         returns (string) {
+    return _recordedVersions[_releaseVersionLookup[releaseHash]].build;
+  }
+
+  function getPackageName(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+                                               constant 
+                                               returns (string) {
+    return _packageNames[_releasePackageNameLookup[releaseHash]];
+  }
+
+  function getReleaseLockileURI(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
+                                               constant 
+                                               returns (string) {
+    return _releaseLockFiles[releaseHash];
+  }
+
+  /*
+   *  Hash Functions
+   */
+  function hashName(string name) constant returns (bytes32) {
+    return sha3(name);
+  }
+
+  function hashVersion(uint32 major,
+                       uint32 minor,
+                       uint32 patch,
+                       string preRelease,
+                       string build) constant returns (bytes32) {
+    return sha3(major, minor, patch, preRelease, build);
+  }
+
+  function hashRelease(string name,
                        uint32 major,
                        uint32 minor,
                        uint32 patch,
                        string preRelease,
-                       string build) constant returns (bool) {
-    bytes32 nameHash = sha3(name);
-    bytes32 releaseHash = sha3(name, major, minor, patch, preRelease, build);
+                       string build) constant returns (bytes32) {
+    return sha3(name, major, minor, patch, preRelease, build);
+  }
 
-    var version = _recordedVersions[setVersion(major, minor, patch, preRelease, build)];
-
-    if (version.isGreater(_recordedVersions[_latestMajor[versionHash])) {
-        return true;
-    } else if (version.isGreater(_recordedVersions[_latestMajor[nameHash]])) {
-        return true;
-    } else if (version.isGreater(_recordedVersions[_latestMajor[nameHash][major]])) {
-        return true;
-    } else if (version.isGreater(_recordedVersions[_latestMajor[nameHash][major][minor]])) {
-        return true;
+  /*
+   *  Latest version querying API
+   */
+  function isAnyLatest(bytes32 nameHash,
+                       bytes32 versionHash) onlyIfVersionExists(versionHash)
+                                            constant
+                                            returns (bool) {
+    if (isLatestMajorTree(nameHash, versionHash)) {
+      return true;
+    } else if (isLatestMinorTree(nameHash, versionHash)) {
+      return true;
+    } else if (isLatestPatchTree(nameHash, versionHash)) {
+      return true;
+    } else if (isLatestPreReleaseTree(nameHash, versionHash)) {
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
-  function getVersionNumbers(bytes32 versionHash) constant returns (uint32, uint32, uint32) {
-      var version = packageVersions[versionHash];
-      return (version.major, version.minor, version.patch);
+  function getLatestMajorTree(bytes32 nameHash) constant returns (bytes32) {
+    return _latestMajor[nameHash];
   }
 
-  function getPackageName(bytes32 versionHash) constant returns (string) {
-      return packageNames[versionHashReverseLookup[versionHash]];
+  function getLatestMinorTree(bytes32 nameHash, uint32 major) constant returns (bytes32) {
+    return _latestMinor[nameHash][major];
   }
 
-  function getPreRelease(bytes32 versionHash) constant returns (string) {
-      return packageVersions[versionHash].preRelease;
+  function getLatestPatchTree(bytes32 nameHash,
+                              uint32 major,
+                              uint32 minor) constant returns (bytes32) {
+    return _latestPatch[nameHash][major][minor];
   }
 
-  function getBuild(bytes32 versionHash) constant returns (string) {
-      return packageVersions[versionHash].build;
+  function getLatestPreReleaseTree(bytes32 nameHash,
+                                   uint32 major,
+                                   uint32 minor,
+                                   uint32 patch) constant returns (bytes32) {
+    return _latestPreRelease[nameHash][major][minor][patch];
+  }
+
+  function isLatestMajorTree(bytes32 nameHash,
+                             bytes32 versionHash) onlyIfVersionExists(versionHash) 
+                                                  constant 
+                                                  returns (bool) {
+    var version = _recordedVersions[versionHash];
+    var latestMajor = _recordedVersions[_latestMajor[nameHash]];
+    return version.isGreaterOrEqual(latestMajor);
+  }
+
+  function isLatestMinorTree(bytes32 nameHash,
+                             bytes32 versionHash) onlyIfVersionExists(versionHash) 
+                                                  constant 
+                                                  returns (bool) {
+    var version = _recordedVersions[versionHash];
+    var latestMinor = _recordedVersions[_latestMinor[nameHash][version.major]];
+    return version.isGreaterOrEqual(latestMinor);
+  }
+
+  function isLatestPatchTree(bytes32 nameHash,
+                             bytes32 versionHash) onlyIfVersionExists(versionHash) 
+                                                  constant 
+                                                  returns (bool) {
+    var version = _recordedVersions[versionHash];
+    var latestPatch = _recordedVersions[_latestPatch[nameHash][version.major][version.minor]];
+    return version.isGreaterOrEqual(latestPatch);
+  }
+
+  function isLatestPreReleaseTree(bytes32 nameHash,
+                                  bytes32 versionHash) onlyIfVersionExists(versionHash) 
+                                                       constant 
+                                                       returns (bool) {
+    var version = _recordedVersions[versionHash];
+    var latestPreRelease = _recordedVersions[_latestPreRelease[nameHash][version.major][version.minor][version.patch]];
+    return version.isGreaterOrEqual(latestPreRelease);
   }
 
   //
@@ -199,62 +363,56 @@ contract PackageDB is Authorized {
    *  Tracking of latest releases for each branch of the release tree.
    */
 
-  function updateMajorTree(bytes32 releaseHash) internal returns (bool) {
+  function updateMajorTree(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+                                                internal 
+                                                returns (bool) {
     bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
-    var latestMajor = _recordedVersions[_releaseVersionLookup[_latestMajor[nameHash]]];
+    bytes32 versionHash = _releaseVersionLookup[releaseHash];
 
-    if (version.isGreaterOrEqual(latestMajor)) {
-        _latestMajor[nameHash] = releaseHash;
-        return true;
+    if (isLatestMajorTree(nameHash, versionHash)) {
+      _latestMajor[nameHash] = releaseHash;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
   function updateMinorTree(bytes32 releaseHash) internal returns (bool) {
     bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
-    var latestMinor = _recordedVersions[_releaseVersionLookup[_latestMinor[nameHash][version.major]]];
+    bytes32 versionHash = _releaseVersionLookup[releaseHash];
 
-    if (version.isGreaterOrEqual(latestMinor)) {
-        _latestMinor[nameHash] = releaseHash;
-        return true;
+    if (isLatestMinorTree(nameHash, versionHash)) {
+      var version = _recordedVersions[versionHash];
+      _latestMinor[nameHash][version.major] = releaseHash;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
   function updatePatchTree(bytes32 releaseHash) internal returns (bool) {
     bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
-    var latestPatch = _recordedVersions[_releaseVersionLookup[_latestPatch[nameHash][version.major][version.minor]]];
+    bytes32 versionHash = _releaseVersionLookup[releaseHash];
 
-    if (version.isGreaterOrEqual(latestPatch)) {
-        _latestPatch[nameHash] = releaseHash;
-        return true;
+    if (isLatestPatchTree(nameHash, versionHash)) {
+      var version = _recordedVersions[versionHash];
+      _latestPatch[nameHash][version.major][version.minor] = releaseHash;
+      return true;
     } else {
-        return false;
+      return false;
     }
   }
 
   function updatePreReleaseTree(bytes32 releaseHash) internal returns (bool) {
     bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
-    var latestPreRelease = _recordedVersions[_releaseVersionLookup[_latestPreRelease[nameHash][version.major][version.minor][version.patch]]];
+    bytes32 versionHash = _releaseVersionLookup[releaseHash];
 
-    if (version.isGreaterOrEqual(latestPreRelease)) {
-        _latestPreRelease[nameHash] = releaseHash;
-        return true;
+    if (isLatestPreReleaseTree(nameHash, versionHash)) {
+      var version = _recordedVersions[versionHash];
+      _latestPreRelease[nameHash][version.major][version.minor][version.patch] = releaseHash;
+      return true;
     } else {
-        return false;
+      return false;
     }
-  }
-
-  /*
-   *  Getter helpers.
-   */
-  function releaseExists(bytes32 releaseHash) internal returns (bool) {
-    return _releaseExists[releaseHash];
   }
 }

@@ -1,6 +1,8 @@
 pragma solidity ^0.4.0;
 
+
 import {PackageDB} from "./PackageDB.sol";
+
 
 contract PackageIndex {
   PackageDB public packageDb;
@@ -12,13 +14,16 @@ contract PackageIndex {
 
 
   modifier onlyPackageOwner(string name) {
-    if (!packageDb.packageExists(name) || msg.sender == packageDb.packageOwner(sha3(name))) {
+    if (!packageDb.packageExists(name) || msg.sender == packageDb.getPackageOwner(name)) {
       _;
     } else {
       throw;
     }
   }
 
+  //
+  // Public Write API
+  //
   function release(string name,
                    uint32 major,
                    uint32 minor,
@@ -31,8 +36,15 @@ contract PackageIndex {
       return false;
     }
 
+    bytes32 nameHash = packageDb.hashName(name);
+    bytes32 versionHash = packageDb.hashVersion(major, minor, patch, preRelease, build);
+
+    if (!packageDb.versionExists(versionHash)) {
+      packageDb.setVersion(major, minor, patch, preRelease, build);
+    }
+
     // If this is the highest release in any of the three buckets, allow it.
-    if (packageDb.isAnyLatest(name, major, minor, patch, preRelease, build)) {
+    if (packageDb.isAnyLatest(nameHash, versionHash)) {
       if (!packageExists(name)) {
         packageDb.setPackageOwner(name, msg.sender);
       }
@@ -40,25 +52,23 @@ contract PackageIndex {
       packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
 
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   function transferOwnership(string name,
                              address newOwner) onlyPackageOwner(name) returns (bool) {
-      packageDb.setPackageOwner(name, newOwner);
+      return packageDb.setPackageOwner(name, newOwner);
   }
 
-  function latestVersion(string name) constant returns (uint32 major,
-                                                        uint32 minor,
-                                                        uint32 patch,
-                                                        string preRelease,
-                                                        string build,
-                                                        string releaseLockFileURI) {
-    bytes32 latestVersionHash = packageDb.latestMajor(sha3(name));
-    return getRelease(latestVersionHash);
-  }
+  //
+  // Public Read API
+  //
 
+  /*
+   *  Package Getters
+   */
   function packageExists(string name) constant returns (bool) {
     return packageDb.packageExists(name);
   }
@@ -69,15 +79,32 @@ contract PackageIndex {
                          uint32 patch,
                          string preRelease,
                          string build) returns (bool) {
-    return packageDb.versionExists(name, major, minor, patch, preRelease, build);
+    return packageDb.releaseExists(name, major, minor, patch, preRelease, build);
   }
 
   function getOwner(string name) constant returns (address) {
-    return packageDb.packageOwner(sha3(name));
+    return packageDb.getPackageOwner(name);
   }
 
-  function numReleases(string name) constant returns (uint) {
-    return packageDb.numReleases(name);
+  function getNumReleases(string name) constant returns (uint) {
+    return packageDb.getNumReleases(name);
+  }
+
+  /*
+   *  Release Getters
+   */
+  function getRelease(bytes32 releaseHash) constant returns (uint32 major,
+                                                             uint32 minor,
+                                                             uint32 patch,
+                                                             string preRelease,
+                                                             string build,
+                                                             string releaseLockFileURI) {
+    (major, minor, patch) = packageDb.getMajorMinorPatch(releaseHash);
+    return;
+    preRelease = getPreRelease(releaseHash);
+    build = getBuild(releaseHash);
+    releaseLockFileURI = getReleaseLockileURI(releaseHash);
+    return (major, minor, patch, preRelease, build, releaseLockFileURI);
   }
 
   function getRelease(string name, uint releaseIdx) constant returns (uint32 major,
@@ -86,86 +113,49 @@ contract PackageIndex {
                                                                       string preRelease,
                                                                       string build,
                                                                       string releaseLockFileURI) {
-    bytes32 versionHash = packageDb.packageVersionHashes(sha3(name), releaseIdx);
-    return getRelease(versionHash);
+    bytes32 releaseHash = packageDb.getPackageReleaseHash(name, releaseIdx);
+    return getRelease(releaseHash);
   }
 
-  function getReleases(string name) constant returns (bytes32[]) {
-    bytes32 nameHash = sha3(name);
+  function getLatestVersion(string name) constant returns (uint32 major,
+                                                           uint32 minor,
+                                                           uint32 patch,
+                                                           string preRelease,
+                                                           string build,
+                                                           string releaseLockFileURI) {
+    bytes32 latestReleaseHash = packageDb.getLatestVersion(name);
+    return getRelease(latestReleaseHash);
+  }
 
-    uint numReleases = packageDb.numReleases(name);
-    bytes32[] memory versionHashes = new bytes32[](numReleases);
+  function getAllReleaseHashes(string name) constant returns (bytes32[]) {
+    uint numReleases = getNumReleases(name);
+    bytes32[] memory releaseHashes = new bytes32[](numReleases);
 
     for (uint i = 0; i < numReleases; i++) {
-      versionHashes[i] = packageDb.packageVersionHashes(nameHash, i);
+      releaseHashes[i] = packageDb.getPackageReleaseHash(name, i);
     }
 
-    return versionHashes;
+    return releaseHashes;
   }
 
-  function getReleaseLockFile(string name,
-                              uint32 major,
-                              uint32 minor,
-                              uint32 patch,
-                              string preRelease,
-                              string build) constant returns (string) {
-    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
-    return getReleaseLockFile(versionHash);
+  function getReleaseLockileURI(bytes32 releaseHash) constant returns (string) {
+    bytes4 sig = bytes4(sha3("getReleaseLockileURI(bytes32)"));
+    return fetchString(sig, releaseHash);
   }
 
-  function getPreRelease(string name,
-                         uint32 major,
-                         uint32 minor,
-                         uint32 patch,
-                         string preRelease,
-                         string build) constant returns (string) {
-    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
-    return getPreRelease(versionHash);
-  }
-
-  function getBuild(string name,
-                    uint32 major,
-                    uint32 minor,
-                    uint32 patch,
-                    string preRelease,
-                    string build) constant returns (string) {
-    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
-    return getBuild(versionHash);
-  }
-
-  function getRelease(bytes32 versionHash) constant returns (uint32 major,
-                                                             uint32 minor,
-                                                             uint32 patch,
-                                                             string preRelease,
-                                                             string build,
-                                                             string releaseLockFileURI) {
-    (major, minor, patch) = packageDb.getVersionNumbers(versionHash);
-    preRelease = getPreRelease(versionHash);
-    build = getBuild(versionHash);
-    releaseLockFileURI = getReleaseLockFile(versionHash);
-    return (major, minor, patch, preRelease, build, releaseLockFileURI);
-  }
-
-  function getPackageName(bytes32 versionHash) constant returns (string) {
-    bytes4 sig = bytes4(sha3("getPackageName(bytes32)"));
-    return fetchString(sig, versionHash);
-  }
-
-  function getReleaseLockFile(bytes32 versionHash) internal returns (string) {
-    bytes4 sig = bytes4(sha3("releaseLockFiles(bytes32)"));
-    return fetchString(sig, versionHash);
-  }
-
-  function getPreRelease(bytes32 versionHash) internal returns (string) {
+  function getPreRelease(bytes32 releaseHash) constant returns (string) {
     bytes4 sig = bytes4(sha3("getPreRelease(bytes32)"));
-    return fetchString(sig, versionHash);
+    return fetchString(sig, releaseHash);
   }
 
-  function getBuild(bytes32 versionHash) internal returns (string) {
+  function getBuild(bytes32 releaseHash) constant returns (string) {
     bytes4 sig = bytes4(sha3("getBuild(bytes32)"));
-    return fetchString(sig, versionHash);
+    return fetchString(sig, releaseHash);
   }
 
+  //
+  // Private Internal API
+  //
   function fetchString(bytes4 sig, bytes32 arg) internal constant returns (string s) {
     address store = packageDb;
     bool success;

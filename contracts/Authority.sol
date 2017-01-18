@@ -1,3 +1,6 @@
+pragma solidity ^0.4.0;
+
+
 contract Authority {
     function canCall(address callerAddress,
                      address codeAddress,
@@ -9,22 +12,22 @@ contract Authorized {
     address public owner;
     Authority public authority;
 
-    event OwnerUpdate(address indexed owner);
-    event AuthorityUpdate(address indexed authority);
+    event OwnerUpdate(address indexed oldOwner, address indexed newOwner);
+    event AuthorityUpdate(address indexed oldAuthority, address indexed newAuthority);
 
     function Authorized() {
         owner = msg.sender;
-        OwnerUpdate(owner);
+        OwnerUpdate(0x0, owner);
     }
 
     function setOwner(address newOwner) auth {
+        OwnerUpdate(owner, newOwner);
         owner = newOwner;
-        OwnerUpdate(owner);
     }
 
     function setAuthority(Authority newAuthority) auth {
+        AuthorityUpdate(authority, newAuthority);
         authority = newAuthority;
-        AuthorityUpdate(authority);
     }
 
     modifier auth {
@@ -48,24 +51,56 @@ contract WhitelistAuthority is Authority, Authorized {
     mapping (address => 
              mapping (address =>
                       mapping (bytes4 => bool))) _canCall;
+    mapping (address => mapping (bytes4 => bool)) _anyoneCanCall;
 
     event SetCanCall(address indexed callerAddress,
                      address indexed codeAddress,
                      bytes4 indexed sig,
                      bool can);
 
+    event SetAnyoneCanCall(address indexed codeAddress,
+                           bytes4 indexed sig,
+                           bool can);
+
     function canCall(address callerAddress,
                      address codeAddress,
-                     bytes4 sig ) constant returns (bool) {
-        return _canCall[callerAddress][codeAddress][sig];
+                     bytes4 sig) constant returns (bool) {
+        if (_anyoneCanCall[codeAddress][sig]) {
+          return true;
+        } else {
+          return _canCall[callerAddress][codeAddress][sig];
+        }
     }
 
     function setCanCall(address callerAddress,
                         address codeAddress,
                         bytes4 sig,
-                        bool can ) auth public returns (bool) {
+                        bool can) auth public returns (bool) {
         _canCall[callerAddress][codeAddress][sig] = can;
-        SetCanCall( callerAddress, codeAddress, sig, can );
+        SetCanCall(callerAddress, codeAddress, sig, can);
         return true;
+    }
+
+    function setCanCall(address callerAddress,
+                        address codeAddress,
+                        string functionSignature,
+                        bool can) auth public returns (bool) {
+        bytes4 sig = bytes4(sha3(functionSignature));
+        return setCanCall(callerAddress, codeAddress, sig, can);
+    }
+
+    function setAnyoneCanCall(address codeAddress,
+                              bytes4 sig,
+                              bool can) auth public returns (bool) {
+        _anyoneCanCall[codeAddress][sig] = can;
+        SetAnyoneCanCall(codeAddress, sig, can);
+        return true;
+    }
+
+    function setAnyoneCanCall(address codeAddress,
+                              string functionSignature,
+                              bool can) auth public returns (bool) {
+        bytes4 sig = bytes4(sha3(functionSignature));
+        return setAnyoneCanCall(codeAddress, sig, can);
     }
 }
