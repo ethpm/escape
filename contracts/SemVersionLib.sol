@@ -8,6 +8,7 @@ library SemVersionLib {
         uint32 minor;
         uint32 patch;
         string preRelease;
+        string build;
         string[] preReleaseIdentifiers;
     }
 
@@ -18,14 +19,18 @@ library SemVersionLib {
     }
 
     function init(SemVersion storage self,
-                  uint32[3] versionNumbers,
-                  string preRelease) public returns (bool) {
-        self.major = versionNumbers[0];
-        self.minor = versionNumbers[1];
-        self.patch = versionNumbers[2];
+                  uint32 major,
+                  uint32 minor,
+                  uint32 patch,
+                  string preRelease,
+                  string build) public returns (bool) {
+        self.major = major;
+        self.minor = minor;
+        self.patch = patch;
         self.preRelease = preRelease;
         self.preReleaseIdentifiers = splitIdentifiers(preRelease);
-        self.hash = sha3(versionNumbers[0], versionNumbers[1], versionNumbers[2], preRelease);
+        self.build = build;
+        self.hash = sha3(major, minor, patch, preRelease);
         return true;
     }
 
@@ -96,90 +101,6 @@ library SemVersionLib {
         return isEqual(self, other) || isLesser(self, other);
     }
 
-    //
-    // Non-Storage Operations
-    //
-    function isEqual(uint[3] selfVersion,
-                     string selfPreRelease,
-                     uint[3] otherVersion,
-                     string otherPreRelease) public returns (bool) {
-        bytes32 selfHash = sha3(selfVersion[0], selfVersion[1], selfVersion[2], selfPreRelease);
-        bytes32 otherHash = sha3(otherVersion[0], otherVersion[1], otherVersion[2], otherPreRelease);
-        return selfHash == otherHash;
-    }
-
-    function isGreater(uint[3] selfVersion,
-                       string selfPreRelease,
-                       uint[3] otherVersion,
-                       string otherPreRelease) public returns (bool) {
-        if (isEqual(selfVersion, selfPreRelease, otherVersion, otherPreRelease)) {
-            return false;
-        } else if (selfVersion[0] > otherVersion[0]) {
-            return true;
-        } else if (selfVersion[0] < otherVersion[0]) {
-            return false;
-        } else if (selfVersion[1] > otherVersion[1]) {
-            return true;
-        } else if (selfVersion[1] < otherVersion[1]) {
-            return false;
-        } else if (selfVersion[2] > otherVersion[2]) {
-            return true;
-        } else if (selfVersion[2] < otherVersion[2]) {
-            return false;
-        } else if (!isPreRelease(selfPreRelease) && isPreRelease(otherPreRelease)) {
-            return true;
-        } else if (isPreRelease(selfPreRelease) && !isPreRelease(otherPreRelease)) {
-            return false;
-        } else if (isPreReleaseGreater(selfPreRelease, otherPreRelease)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function isLesser(uint[3] selfVersion,
-                      string selfPreRelease,
-                      uint[3] otherVersion,
-                      string otherPreRelease) public returns (bool) {
-        if (isEqual(selfVersion, selfPreRelease, otherVersion, otherPreRelease)) {
-            return false;
-        } else if (selfVersion[0] < otherVersion[0]) {
-            return true;
-        } else if (selfVersion[0] > otherVersion[0]) {
-            return false;
-        } else if (selfVersion[1] < otherVersion[1]) {
-            return true;
-        } else if (selfVersion[1] > otherVersion[1]) {
-            return false;
-        } else if (selfVersion[2] < otherVersion[2]) {
-            return true;
-        } else if (selfVersion[2] > otherVersion[2]) {
-            return false;
-        } else if (isPreRelease(selfPreRelease) && !isPreRelease(otherPreRelease)) {
-            return true;
-        } else if (!isPreRelease(selfPreRelease) && isPreRelease(selfPreRelease)) {
-            return false;
-        } else if (isPreReleaseLesser(selfPreRelease, otherPreRelease)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function isGreaterOrEqual(uint[3] selfVersion,
-                              string selfPreRelease,
-                              uint[3] otherVersion,
-                              string otherPreRelease) public returns (bool) {
-        return isEqual(selfVersion, selfPreRelease, otherVersion, otherPreRelease) || isGreater(selfVersion, selfPreRelease, otherVersion, otherPreRelease);
-    }
-
-    function isLesserOrEqual(uint[3] selfVersion,
-                             string selfPreRelease,
-                             uint[3] otherVersion,
-                             string otherPreRelease) public returns (bool) {
-        return isEqual(selfVersion, selfPreRelease, otherVersion, otherPreRelease) || isLesser(selfVersion, selfPreRelease, otherVersion, otherPreRelease);
-    }
-
     /*
      *  PreRelease comparisons
      */
@@ -187,24 +108,12 @@ library SemVersionLib {
         return comparePreReleases(left, right) == Comparison.After;
     }
 
-    function isPreReleaseGreater(string left, string right) internal returns (bool) {
-        return comparePreReleases(left, right) == Comparison.After;
-    }
-
     function isPreReleaseLesser(SemVersion storage left, SemVersion storage right) internal returns (bool) {
-        return comparePreReleases(left, right) == Comparison.Before;
-    }
-
-    function isPreReleaseLesser(string left, string right) internal returns (bool) {
         return comparePreReleases(left, right) == Comparison.Before;
     }
 
     function isPreRelease(SemVersion storage self) internal returns (bool) {
         return self.preReleaseIdentifiers.length > 0;
-    }
-
-    function isPreRelease(string value) internal returns (bool) {
-        return bytes(value).length > 0;
     }
 
     function comparePreReleases(SemVersion storage left, SemVersion storage right) internal returns (Comparison comparisonResult) {
@@ -226,34 +135,6 @@ library SemVersionLib {
         if (left.preReleaseIdentifiers.length < right.preReleaseIdentifiers.length) {
             return Comparison.Before;
         } else if (left.preReleaseIdentifiers.length > right.preReleaseIdentifiers.length) {
-            return Comparison.After;
-        } else {
-            return Comparison.Same;
-        }
-    }
-
-    function comparePreReleases(string left, string right) internal returns (Comparison comparisonResult) {
-        string[] memory leftPreReleaseIdentifiers = splitIdentifiers(left);
-        string[] memory rightPreReleaseIdentifiers = splitIdentifiers(right);
-
-        uint minLength = min(leftPreReleaseIdentifiers.length,
-                             rightPreReleaseIdentifiers.length);
-        for (uint i = 0; i < minLength; i++) {
-            if (isNumericString(leftPreReleaseIdentifiers[i]) && isNumericString(rightPreReleaseIdentifiers[i])) {
-                comparisonResult = compareNumericStrings(leftPreReleaseIdentifiers[i], rightPreReleaseIdentifiers[i]);
-            } else {
-                comparisonResult = compareStrings(leftPreReleaseIdentifiers[i], rightPreReleaseIdentifiers[i]);
-            }
-
-            if (comparisonResult != Comparison.Same) {
-                return comparisonResult;
-            }
-            continue;
-        }
-
-        if (leftPreReleaseIdentifiers.length < rightPreReleaseIdentifiers.length) {
-            return Comparison.Before;
-        } else if (leftPreReleaseIdentifiers.length > rightPreReleaseIdentifiers.length) {
             return Comparison.After;
         } else {
             return Comparison.Same;

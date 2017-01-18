@@ -5,12 +5,9 @@ import {PackageDB} from "./PackageDB.sol";
 contract PackageIndex {
   PackageDB public packageDb;
 
-  function PackageIndex(PackageDB _packageDb) {
-    if (address(_packageDb) == 0) {
-      _packageDb = new PackageDB();
-    }
-
-    packageDb = _packageDb;
+  function PackageIndex(address _packageDb) {
+    if (_packageDb == 0x0) throw;
+    packageDb = PackageDB(_packageDb);
   }
 
 
@@ -26,51 +23,53 @@ contract PackageIndex {
                    uint32 major,
                    uint32 minor,
                    uint32 patch,
+                   string preRelease,
+                   string build,
                    string releaseLockFileURI) public onlyPackageOwner(name) returns (bool) {
-
-    bool versionExists = packageDb.versionExists(name, major, minor, patch);
-    bool packageExists = packageDb.packageExists(name);
-
-    if (versionExists) {
+    if (versionExists(name, major, minor, patch, preRelease, build)) {
       // this version has already been released
       return false;
     }
 
-    bytes32 majorHash = sha3(name);
-    bytes32 minorHash = sha3(name, major);
-    bytes32 patchHash = sha3(name, major, minor);
-
     // If this is the highest release in any of the three buckets, allow it.
-    if (major > packageDb.latestMajor(majorHash) ||
-        minor > packageDb.latestMinor(minorHash) ||
-        patch > packageDb.latestPatch(patchHash)) {
-      packageDb.setRelease(name, major, minor, patch, releaseLockFileURI);
-
-      if (!packageExists) {
-        packageDb.setOwner(msg.sender);
+    if (packageDb.isAnyLatest(name, major, minor, patch, preRelease, build)) {
+      if (!packageExists(name)) {
+        packageDb.setPackageOwner(name, msg.sender);
       }
+
+      packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
 
       return true;
     }
     return false;
   }
 
+  function transferOwnership(string name,
+                             address newOwner) onlyPackageOwner(name) returns (bool) {
+      packageDb.setPackageOwner(name, newOwner);
+  }
+
   function latestVersion(string name) constant returns (uint32 major,
-                                                         uint32 minor,
-                                                         uint32 patch,
-                                                         string releaseLockFileURI) {
-    major = packageDb.latestMajor(sha3(name));
-    minor = packageDb.latestMinor(sha3(name, major));
-    patch = packageDb.latestPatch(sha3(name, major, minor));
-    return (major, minor, patch, getReleaseLockFile(name, major, minor, patch));
+                                                        uint32 minor,
+                                                        uint32 patch,
+                                                        string preRelease,
+                                                        string build,
+                                                        string releaseLockFileURI) {
+    bytes32 latestVersionHash = packageDb.latestMajor(sha3(name));
+    return getRelease(latestVersionHash);
   }
 
   function packageExists(string name) constant returns (bool) {
     return packageDb.packageExists(name);
   }
 
-  function versionExists(string name, uint32 major, uint32 minor, uint32 patch) returns (bool) {
-    return packageDb.versionExists(name, major, minor, patch);
+  function versionExists(string name,
+                         uint32 major,
+                         uint32 minor,
+                         uint32 patch,
+                         string preRelease,
+                         string build) returns (bool) {
+    return packageDb.versionExists(name, major, minor, patch, preRelease, build);
   }
 
   function getOwner(string name) constant returns (address) {
@@ -82,30 +81,99 @@ contract PackageIndex {
   }
 
   function getRelease(string name, uint releaseIdx) constant returns (uint32 major,
-                                                                       uint32 minor,
-                                                                       uint32 patch,
-                                                                       string releaseLockFileURI) {
-    (major, minor, patch) = packageDb.packageVersions(sha3(name), releaseIdx);
-    return (major, minor, patch, getReleaseLockFile(name, major, minor, patch));
+                                                                      uint32 minor,
+                                                                      uint32 patch,
+                                                                      string preRelease,
+                                                                      string build,
+                                                                      string releaseLockFileURI) {
+    bytes32 versionHash = packageDb.packageVersionHashes(sha3(name), releaseIdx);
+    return getRelease(versionHash);
+  }
+
+  function getReleases(string name) constant returns (bytes32[]) {
+    bytes32 nameHash = sha3(name);
+
+    uint numReleases = packageDb.numReleases(name);
+    bytes32[] memory versionHashes = new bytes32[](numReleases);
+
+    for (uint i = 0; i < numReleases; i++) {
+      versionHashes[i] = packageDb.packageVersionHashes(nameHash, i);
+    }
+
+    return versionHashes;
   }
 
   function getReleaseLockFile(string name,
                               uint32 major,
                               uint32 minor,
-                              uint32 patch) constant returns (string s) {
-    // These variables are named suchly that I can copy and paste the code below.
-    // (i.e., somebody else wrote this)
-    bytes32 i = sha3(name, major, minor, patch);
-    address store = packageDb;
-    string memory fn = "releaseLockFiles(bytes32)";
+                              uint32 patch,
+                              string preRelease,
+                              string build) constant returns (string) {
+    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
+    return getReleaseLockFile(versionHash);
+  }
 
-    // Let's return some baddass strings y'all!
-    bytes4 sig = bytes4(sha3(fn));
+  function getPreRelease(string name,
+                         uint32 major,
+                         uint32 minor,
+                         uint32 patch,
+                         string preRelease,
+                         string build) constant returns (string) {
+    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
+    return getPreRelease(versionHash);
+  }
+
+  function getBuild(string name,
+                    uint32 major,
+                    uint32 minor,
+                    uint32 patch,
+                    string preRelease,
+                    string build) constant returns (string) {
+    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
+    return getBuild(versionHash);
+  }
+
+  function getRelease(bytes32 versionHash) constant returns (uint32 major,
+                                                             uint32 minor,
+                                                             uint32 patch,
+                                                             string preRelease,
+                                                             string build,
+                                                             string releaseLockFileURI) {
+    (major, minor, patch) = packageDb.getVersionNumbers(versionHash);
+    preRelease = getPreRelease(versionHash);
+    build = getBuild(versionHash);
+    releaseLockFileURI = getReleaseLockFile(versionHash);
+    return (major, minor, patch, preRelease, build, releaseLockFileURI);
+  }
+
+  function getPackageName(bytes32 versionHash) constant returns (string) {
+    bytes4 sig = bytes4(sha3("getPackageName(bytes32)"));
+    return fetchString(sig, versionHash);
+  }
+
+  function getReleaseLockFile(bytes32 versionHash) internal returns (string) {
+    bytes4 sig = bytes4(sha3("releaseLockFiles(bytes32)"));
+    return fetchString(sig, versionHash);
+  }
+
+  function getPreRelease(bytes32 versionHash) internal returns (string) {
+    bytes4 sig = bytes4(sha3("getPreRelease(bytes32)"));
+    return fetchString(sig, versionHash);
+  }
+
+  function getBuild(bytes32 versionHash) internal returns (string) {
+    bytes4 sig = bytes4(sha3("getBuild(bytes32)"));
+    return fetchString(sig, versionHash);
+  }
+
+  function fetchString(bytes4 sig, bytes32 arg) internal constant returns (string s) {
+    address store = packageDb;
     bool success;
+
     assembly {
         let m := mload(0x40) //Free memory pointer
         mstore(m,sig)
-        mstore(add(m,4), i) // Write arguments to memory- align directly after function sig.
+        mstore(add(m,4), arg) // Write arguments to memory- align directly after function sig.
         success := call( //Fetch string size
             sub(gas,8000), // g
             store,         // a
@@ -126,40 +194,7 @@ contract PackageIndex {
         mstore(0x40, add(m,add(l,0x40))) //Move free memory pointer so string doesn't get overwritten
     }
     if(!success) throw;
-  }
 
-  function getReleases(string name) constant returns (uint32[3][]) {
-    bytes32 nameHash = sha3(name);
-    uint32 major;
-    uint32 minor;
-    uint32 patch;
-
-    uint numReleases = packageDb.numReleases(name);
-    uint32[3][] memory ret = new uint32[3][](numReleases);
-
-    for (uint i = 0; i < numReleases; i++) {
-      (major, minor, patch) = packageDb.packageVersions(nameHash, i);
-      uint32[3] memory version;
-      version[0] = major;
-      version[1] = minor;
-      version[2] = patch;
-      ret[i] = version;
-    }
-
-    return ret;
-  }
-
-  function getReleases(string name, uint index) constant returns (uint32[3]) {
-    bytes32 nameHash = sha3(name);
-    uint32 major;
-    uint32 minor;
-    uint32 patch;
-    (major, minor, patch) = packageDb.packageVersions(nameHash, index);
-
-    uint32[3] memory version;
-    version[0] = major;
-    version[1] = minor;
-    version[2] = patch;
-    return version;
+    return s;
   }
 }
