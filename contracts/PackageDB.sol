@@ -1,5 +1,6 @@
 pragma solidity ^0.4.0;
 
+
 contract PackageDB {
   address public owner;
 
@@ -19,70 +20,57 @@ contract PackageDB {
     uint32 major;
     uint32 minor;
     uint32 patch;
+    string preRelease;
+    string build;
   }
 
-  // Package data
-  mapping (bytes32 => string) public releaseLockFiles;
+  /*
+   * Package data 
+   */
+  // (nameHash => value)
+  mapping (bytes32 => bool) _packageExists;
   mapping (bytes32 => string) public packageNames;
-  mapping (bytes32 => Version[]) public packageVersions;
-  mapping (bytes32 => uint) public packageVersionIds;
   mapping (bytes32 => address) public packageOwner;
-
-  // Data for determining the latest releases in each bucket.
-  mapping (bytes32 => uint32) public latestMajor; // sha3(name)
-  mapping (bytes32 => uint32) public latestMinor; // sha3(name, major)
-  mapping (bytes32 => uint32) public latestPatch; // sha3(name, major, minor);
+  mapping (bytes32 => bytes32[]) public packageVersionHashes;
+  // (versionHash => value)
+  mapping (bytes32 => Version) public packageVersions;
+  mapping (bytes32 => bool) _versionExists;
+  mapping (bytes32 => string) public releaseLockFiles;
 
   function setRelease(string name,
-               uint32 major,
-               uint32 minor,
-               uint32 patch,
-               string releaseLockFileURI) onlyOwner returns (bool) {
+                      uint32 major,
+                      uint32 minor,
+                      uint32 patch,
+                      string preRelease,
+                      string build,
+                      string releaseLockFileURI) onlyOwner returns (bool) {
 
     // Hash the name and the version for storing data
     bytes32 nameHash = sha3(name);
-    bytes32 versionHash = sha3(name, major, minor, patch);
+    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
 
-    // Get the version id of the version we're trying to set.
-    // If the version doesn't exist, that means we need to make room
-    // for the version in the packageVersions array.
-    // If it does exist, use its existing id.
-    // Note that if the package doesn't exist, the version won't exist either.
-    uint versionId = 0;
-
-    if (!versionExists(name, major, minor, patch)) {
-      versionId = packageVersions[nameHash].length;
-      packageVersions[nameHash].length += 1;
-    } else {
-      versionId = packageVersionIds[versionHash];
+    // Mark the package as existing if it isn't already tracked.
+    if (!_packageExists[nameHash]) {
+        packageNames[nameHash] = name;
+        _packageExists[nameHash] = true;
     }
 
-    // Now store all the data
-    releaseLockFiles[versionHash] = releaseLockFileURI;
-    packageNames[nameHash] = name;
-    packageVersions[nameHash][versionId] = Version({
+    // If this is a new version push it onto the array of version hashes for
+    // this package.
+    if (!_versionExists[versionHash]) {
+      packageVersionHashes[nameHash].push(versionHash);
+      _versionExists[versionHash] = true;
+    }
+
+    // Store the release data.
+    packageVersions[versionHash] = Version({
       major: major,
       minor: minor,
-      patch: patch
+      patch: patch,
+      preRelease: preRelease,
+      build: build
     });
-    packageVersionIds[versionHash] = versionId;
-
-    // Set the latest releases in each of our three buckets.
-    // Note that hashing ensures we're managing the bucket correctly.
-    bytes32 minorHash = sha3(name, major);
-    bytes32 patchHash = sha3(name, major, minor);
-
-    if (major > latestMajor[nameHash]) {
-      latestMajor[nameHash] = major;
-    }
-
-    if (minor > latestMinor[minorHash]) {
-      latestMinor[minorHash] = minor;
-    }
-
-    if (patch > latestPatch[patchHash]) {
-      latestPatch[patchHash] = patch;
-    }
+    releaseLockFiles[versionHash] = releaseLockFileURI;
 
     return true;
   }
@@ -92,21 +80,33 @@ contract PackageDB {
     packageOwner[nameHash] = newPackageOwner;
   }
 
-  function setOwner(address newOwner) onlyOwner {
-    owner = newOwner;
-  }
-
   function packageExists(string name) constant returns (bool) {
     bytes32 nameHash = sha3(name);
-    return packageVersions[nameHash].length != 0;
+    return _packageExists[nameHash];
   }
 
-  function versionExists(string name, uint32 major, uint32 minor, uint32 patch) constant returns (bool) {
-    bytes32 versionHash = sha3(name, major, minor, patch);
-    return sha3(releaseLockFiles[versionHash]) != sha3("");
+  function versionExists(string name,
+                         uint32 major,
+                         uint32 minor,
+                         uint32 patch,
+                         string preRelease,
+                         string build) constant returns (bool) {
+    bytes32 versionHash = sha3(name, major, minor, patch, preRelease, build);
+    return versionExists(versionHash);
+  }
+
+  function versionExists(bytes32 versionHash) internal returns (bool) {
+    return _versionExists[versionHash];
   }
 
   function numReleases(string name) constant returns (uint) {
-    return packageVersions[sha3(name)].length;
+    return packageVersionHashes[sha3(name)].length;
+  }
+
+  /*
+   *  Administrative API
+   */
+  function setOwner(address newOwner) onlyOwner {
+    owner = newOwner;
   }
 }
