@@ -15,17 +15,11 @@ let TopNavigation = connect(mapStateToProps)(React.createClass({
     return (
       <nav id='top-nav' className='navbar navbar-dark bg-inverse'>
         <Link className='navbar-brand' to='/'>Escape</Link>
-        <div className="pull-xs-right">
-          <ul className="nav navbar-nav">
-            <li className="nav-item">
-              <Link className='nav-link' to='/configure/web3'>
-                <Web3StatusIcon />
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className='nav-link' to='/configure'><FAIcon icon="gear" /> Config</Link>
-            </li>
-          </ul>
+        <div className="navbar-nav">
+          <Link className='nav-item nav-link' to='/configure/web3'>
+            <Web3StatusIcon />
+          </Link>
+          <Link className='nav-item nav-link' to='/configure'><FAIcon icon="gear" /> Config</Link>
         </div>
       </nav>
     )

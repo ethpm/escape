@@ -3,6 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: [
+    'bootstrap-loader',
     './www-src/js/index.jsx',
   ],
   output: {
@@ -12,7 +13,7 @@ module.exports = {
     library: 'initializeApplication',
   },
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json', '.css', '.html', 'index.js', 'index.jsx', 'index.html'],
+    extensions: ['.js', '.jsx', '.json', '.css', '.html', 'index.js', 'index.jsx', 'index.html'],
   },
   module: {
     loaders: [
@@ -22,11 +23,11 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader", {publicPath: '../'}),
+        loader: ExtractTextPlugin.extract({fallbackLoader: "style-loader", loader: "css-loader!sass-loader", publicPath: '../'}),
       },
       {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader", {publicPath: '../'}),
+        loader: ExtractTextPlugin.extract({fallbackLoader: "style-loader", loader: "css-loader!less-loader", publicPath: '../'}),
       },
       {
         test: /\.json$/,
