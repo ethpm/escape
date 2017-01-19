@@ -54,7 +54,9 @@ contract PackageIndex is Authorized {
 
   function transferOwnership(string name,
                              address newOwner) public auth returns (bool) {
-    if (getPackageOwner(name) != msg.sender) throw;
+    if (getPackageOwner(name) != msg.sender) {
+      return false;
+    }
     return packageDb.setPackageOwner(name, newOwner);
   }
 
@@ -156,27 +158,27 @@ contract PackageIndex is Authorized {
     bool success;
 
     assembly {
-        let m := mload(0x40) //Free memory pointer
-        mstore(m,sig)
-        mstore(add(m,4), arg) // Write arguments to memory- align directly after function sig.
-        success := call( //Fetch string size
-            sub(gas,8000), // g
-            store,         // a
-            0,             // v
-            m,             // in
-            0x24,          // insize: 4 byte sig + 32 byte uint
-            add(m,0x24),   // Out pointer: don't overwrite the call data, we need it again
-            0x40           // Only fetch the first 64 bytes of the string data.
-        )
-        let l := mload(add(m,0x44)) // returned data stats at 0x24, length is stored in the second 32-byte slot
-        success :=  and(success,call(sub(gas,4000),store, 0,
-            m, // Reuse the same argument data
-            0x24,
-            m,  // We can overwrite the calldata now to save space
-            add(l, 0x40) // The length of the returned data will be 64 bytes of metadata + string length
-        ))
-        s := add(m, mload(m)) // First slot points to the start of the string (will almost always be m+0x20)
-        mstore(0x40, add(m,add(l,0x40))) //Move free memory pointer so string doesn't get overwritten
+      let m := mload(0x40) //Free memory pointer
+      mstore(m,sig)
+      mstore(add(m,4), arg) // Write arguments to memory- align directly after function sig.
+      success := call( //Fetch string size
+        sub(gas,8000), // g
+        store,         // a
+        0,             // v
+        m,             // in
+        0x24,          // insize: 4 byte sig + 32 byte uint
+        add(m,0x24),   // Out pointer: don't overwrite the call data, we need it again
+        0x40           // Only fetch the first 64 bytes of the string data.
+      )
+      let l := mload(add(m,0x44)) // returned data stats at 0x24, length is stored in the second 32-byte slot
+      success :=  and(success,call(sub(gas,4000),store, 0,
+        m, // Reuse the same argument data
+        0x24,
+        m,  // We can overwrite the calldata now to save space
+        add(l, 0x40) // The length of the returned data will be 64 bytes of metadata + string length
+      ))
+      s := add(m, mload(m)) // First slot points to the start of the string (will almost always be m+0x20)
+      mstore(0x40, add(m,add(l,0x40))) //Move free memory pointer so string doesn't get overwritten
     }
     if(!success) throw;
 
