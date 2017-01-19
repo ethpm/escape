@@ -12,9 +12,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(React.createClass({
-  handleLookupByAddressSubmit(formData) {
-    this.props.dispatch(push(`addresses/${formData.tokenOwnerAddress}`))
-  },
   render() {
     return (
       <div className='row'>
