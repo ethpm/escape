@@ -214,10 +214,6 @@ contract PackageDB is Authorized {
     return _packageReleaseHashes[hashName(name)][idx];
   }
 
-  function getLatestVersion(string name) constant returns (bytes32) {
-    return _latestMajor[hashName(name)];
-  }
-
   /*
    *  Release Getters
    */

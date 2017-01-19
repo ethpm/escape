@@ -123,7 +123,7 @@ contract PackageIndex is Authorized {
                                                            string preRelease,
                                                            string build,
                                                            string releaseLockFileURI) {
-    bytes32 latestReleaseHash = packageDb.getLatestVersion(name);
+    bytes32 latestReleaseHash = packageDb.getLatestMajorTree(packageDb.hashName(name));
     return getRelease(latestReleaseHash);
   }
 
@@ -138,24 +138,24 @@ contract PackageIndex is Authorized {
     return releaseHashes;
   }
 
-  function getReleaseLockileURI(bytes32 releaseHash) constant returns (string) {
+  //
+  // Private Internal API
+  //
+  function getReleaseLockileURI(bytes32 releaseHash) internal returns (string) {
     bytes4 sig = bytes4(sha3("getReleaseLockileURI(bytes32)"));
     return fetchString(sig, releaseHash);
   }
 
-  function getPreRelease(bytes32 releaseHash) constant returns (string) {
+  function getPreRelease(bytes32 releaseHash) internal returns (string) {
     bytes4 sig = bytes4(sha3("getPreRelease(bytes32)"));
     return fetchString(sig, releaseHash);
   }
 
-  function getBuild(bytes32 releaseHash) constant returns (string) {
+  function getBuild(bytes32 releaseHash) internal returns (string) {
     bytes4 sig = bytes4(sha3("getBuild(bytes32)"));
     return fetchString(sig, releaseHash);
   }
 
-  //
-  // Private Internal API
-  //
   function fetchString(bytes4 sig, bytes32 arg) internal constant returns (string s) {
     address store = packageDb;
     bool success;
