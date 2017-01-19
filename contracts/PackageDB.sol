@@ -322,7 +322,7 @@ contract PackageDB is Authorized {
                                                   constant 
                                                   returns (bool) {
     var version = _recordedVersions[versionHash];
-    var latestMajor = _recordedVersions[_latestMajor[nameHash]];
+    var latestMajor = _recordedVersions[_releaseVersionLookup[_latestMajor[nameHash]]];
     return version.isGreaterOrEqual(latestMajor);
   }
 
@@ -331,7 +331,7 @@ contract PackageDB is Authorized {
                                                   constant 
                                                   returns (bool) {
     var version = _recordedVersions[versionHash];
-    var latestMinor = _recordedVersions[_latestMinor[nameHash][version.major]];
+    var latestMinor = _recordedVersions[_releaseVersionLookup[_latestMinor[nameHash][version.major]]];
     return version.isGreaterOrEqual(latestMinor);
   }
 
@@ -340,7 +340,7 @@ contract PackageDB is Authorized {
                                                   constant 
                                                   returns (bool) {
     var version = _recordedVersions[versionHash];
-    var latestPatch = _recordedVersions[_latestPatch[nameHash][version.major][version.minor]];
+    var latestPatch = _recordedVersions[_releaseVersionLookup[_latestPatch[nameHash][version.major][version.minor]]];
     return version.isGreaterOrEqual(latestPatch);
   }
 
@@ -349,7 +349,7 @@ contract PackageDB is Authorized {
                                                        constant 
                                                        returns (bool) {
     var version = _recordedVersions[versionHash];
-    var latestPreRelease = _recordedVersions[_latestPreRelease[nameHash][version.major][version.minor][version.patch]];
+    var latestPreRelease = _recordedVersions[_releaseVersionLookup[_latestPreRelease[nameHash][version.major][version.minor][version.patch]]];
     return version.isGreaterOrEqual(latestPreRelease);
   }
 

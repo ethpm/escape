@@ -139,9 +139,22 @@ def test_cannot_register_version_0(chain,
 
 
 def test_latest_version_tracking(chain, package_db, package_index):
+    name_hash = package_db.call().hashName('test')
+    v100 = package_db.call().hashRelease('test', 1, 0, 0, '', '')
+    v110 = package_db.call().hashRelease('test', 1, 1, 0, '', '')
+    v101 = package_db.call().hashRelease('test', 1, 0, 1, '', '')
+    v200 = package_db.call().hashRelease('test', 2, 0, 0, '', '')
+
     chain.wait.for_receipt(package_index.transact().release(
         'test', 1, 0, 0, '', '', ''
     ))
+
+    assert package_index.call().getNumReleases('test') == 1
+
+    assert package_db.call().getLatestMajorTree(name_hash) == v100
+    assert package_db.call().getLatestMinorTree(name_hash, 1) == v100
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v100
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
 
     assert package_index.call().getLatestVersion('test') == [1, 0, 0, '', '', '']
 
@@ -149,17 +162,49 @@ def test_latest_version_tracking(chain, package_db, package_index):
         'test', 1, 1, 0, '', '', ''
     ))
 
+    assert package_index.call().getNumReleases('test') == 2
+
+    assert package_db.call().getLatestMajorTree(name_hash) == v110
+    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v100
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
+
     assert package_index.call().getLatestVersion('test') == [1, 1, 0, '', '', '']
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', 1, 0, 1, '', '', ''
     ))
 
+    assert package_index.call().getNumReleases('test') == 3
+
+    assert package_db.call().getLatestMajorTree(name_hash) == v110
+    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v101
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 1) == v101
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
+
     assert package_index.call().getLatestVersion('test') == [1, 1, 0, '', '', '']
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', 2, 0, 0, '', '', ''
     ))
+
+    assert package_index.call().getNumReleases('test') == 4
+
+    assert package_db.call().getLatestMajorTree(name_hash) == v200
+    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
+    assert package_db.call().getLatestMinorTree(name_hash, 2) == v200
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v101
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
+    assert package_db.call().getLatestPatchTree(name_hash, 2, 0) == v200
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 1) == v101
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200
 
     assert package_index.call().getLatestVersion('test') == [2, 0, 0, '', '', '']
 
@@ -171,7 +216,36 @@ def test_querying_package_information(chain, web3, package_index):
 
     assert package_index.call().getOwner('test') == web3.eth.coinbase
 
-    assert package_index.call().numReleases('test') == 3
+    assert package_index.call().getNumReleases('test') == 3
     assert package_index.call().getRelease('test', 0) == [1, 2, 3, 'a', 'b', 'ipfs://uri-a']
     assert package_index.call().getRelease('test', 1) == [2, 3, 4, 'c', 'd', 'ipfs://uri-b']
     assert package_index.call().getRelease('test', 2) == [3, 4, 5, 'e', 'f', 'ipfs://uri-c']
+
+
+def test_gas_usage_for_large_deploy_data(chain, package_index):
+    package_name = 'a' * 214
+    receipt_a = chain.wait.for_receipt(package_index.transact().release(
+        name=package_name,
+        major=1,
+        minor=2,
+        patch=3,
+        preRelease='alpha.1.beta.2.delta.3.gamma.4',
+        build='4f18c7a18a7de27cf3fbeff31feccdce570d410b',
+        releaseLockFileURI='ipfs://QmZrAGa3YwWPkop11vDZjfSmQGWGzjXkh6J3ns7AbENu73',
+    ))
+
+    assert package_index.call().getNumReleases(package_name) == 1
+    assert receipt_a['gasUsed'] < 2000000
+
+    receipt_b = chain.wait.for_receipt(package_index.transact().release(
+        name=package_name,
+        major=1,
+        minor=2,
+        patch=3,
+        preRelease='alpha.1.beta.2.delta.3.gamma.4.xray.5',
+        build='b9953be8e1bdbfd70ed998a5111f0c3ed0cebf46',
+        releaseLockFileURI='ipfs://QmZrAGa3YwWPkop11vDZjfSmQGWGzjXkh6J3ns7AbENu73',
+    ))
+
+    assert package_index.call().getNumReleases(package_name) == 2
+    assert receipt_b['gasUsed'] < 2000000

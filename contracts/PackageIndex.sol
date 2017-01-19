@@ -100,7 +100,6 @@ contract PackageIndex {
                                                              string build,
                                                              string releaseLockFileURI) {
     (major, minor, patch) = packageDb.getMajorMinorPatch(releaseHash);
-    return;
     preRelease = getPreRelease(releaseHash);
     build = getBuild(releaseHash);
     releaseLockFileURI = getReleaseLockileURI(releaseHash);
