@@ -22,6 +22,8 @@ def package_db(chain, authority):
 @pytest.fixture()
 def package_index(chain, package_db, authority):
     _package_index = chain.get_contract('PackageIndex', deploy_args=[package_db.address])
+    chain.wait.for_receipt(_package_index.transact().setAuthority(authority.address))
+    assert _package_index.call().authority() == authority.address
 
     chain.wait.for_receipt(authority.transact().setCanCall(
         callerAddress=_package_index.address,
@@ -41,6 +43,16 @@ def package_index(chain, package_db, authority):
         functionSignature="setVersion(uint32,uint32,uint32,string,string)",
         can=True,
     ))
+    chain.wait.for_receipt(authority.transact().setAnyoneCanCall(
+        codeAddress=_package_index.address,
+        functionSignature="release(string,uint32,uint32,uint32,string,string,string)",
+        can=True,
+    ))
+    chain.wait.for_receipt(authority.transact().setAnyoneCanCall(
+        codeAddress=_package_index.address,
+        functionSignature="transferOwnership(string,address)",
+        can=True,
+    ))
     assert authority.call().canCall(
         _package_index.address,
         package_db.address,
@@ -55,6 +67,11 @@ def package_index(chain, package_db, authority):
         _package_index.address,
         package_db.address,
         decode_hex(function_signature_to_4byte_selector("setVersion(uint32,uint32,uint32,string,string)")),
+    )
+    assert authority.call().canCall(
+        _package_index.address,
+        package_db.address,
+        decode_hex(function_signature_to_4byte_selector("setRelease(string,uint32,uint32,uint32,string,string,string)")),
     )
 
     return _package_index

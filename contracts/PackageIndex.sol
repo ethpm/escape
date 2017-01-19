@@ -2,9 +2,10 @@ pragma solidity ^0.4.0;
 
 
 import {PackageDB} from "./PackageDB.sol";
+import {Authorized} from "./Authority.sol";
 
 
-contract PackageIndex {
+contract PackageIndex is Authorized {
   PackageDB public packageDb;
 
   function PackageIndex(address _packageDb) {
@@ -30,7 +31,7 @@ contract PackageIndex {
                    uint32 patch,
                    string preRelease,
                    string build,
-                   string releaseLockFileURI) public onlyPackageOwner(name) returns (bool) {
+                   string releaseLockFileURI) public auth onlyPackageOwner(name) returns (bool) {
     if (versionExists(name, major, minor, patch, preRelease, build)) {
       // this version has already been released
       return false;
@@ -58,7 +59,7 @@ contract PackageIndex {
   }
 
   function transferOwnership(string name,
-                             address newOwner) onlyPackageOwner(name) returns (bool) {
+                             address newOwner) public auth onlyPackageOwner(name) returns (bool) {
       return packageDb.setPackageOwner(name, newOwner);
   }
 
