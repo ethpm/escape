@@ -98,7 +98,7 @@ def test_package(chain, package_index, package_owner):
         releaseLockFileURI='ipfs://not-a-real-uri',
     ))
 
-    assert package_index.call().getOwner(package_name) == package_owner
+    assert package_index.call().getPackageOwner(package_name) == package_owner
 
     return package_name
 
@@ -107,7 +107,7 @@ NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 
 def test_registering_package(chain, web3, package_index):
-    assert package_index.call().getOwner('test') == NULL_ADDRESS
+    assert package_index.call().getPackageOwner('test') == NULL_ADDRESS
 
     chain.wait.for_receipt(package_index.transact().release(
         name='test-package',
@@ -119,27 +119,28 @@ def test_registering_package(chain, web3, package_index):
         releaseLockFileURI='ipfs://not-a-real-uri',
     ))
 
-    assert package_index.call().getOwner('test-package') == web3.eth.coinbase
+    assert package_index.call().getPackageOwner('test-package') == web3.eth.coinbase
 
 
 def test_cannot_register_existing_package(chain,
                                           package_index,
                                           test_package,
                                           package_owner):
-    assert package_index.call().getOwner(test_package) == package_owner
+    assert package_index.call().getPackageOwner(test_package) == package_owner
+    assert package_index.call().getNumReleases(test_package) == 1
 
-    with pytest.raises(TransactionFailed):
-        package_index.transact().release(
-            name=test_package,
-            major=2,
-            minor=0,
-            patch=0,
-            preRelease='',
-            build='',
-            releaseLockFileURI='ipfs://not-a-real-uri',
-        )
+    chain.wait.for_receipt(package_index.transact().release(
+        name=test_package,
+        major=2,
+        minor=0,
+        patch=0,
+        preRelease='',
+        build='',
+        releaseLockFileURI='ipfs://not-a-real-uri',
+    ))
 
-    assert package_index.call().getOwner(test_package) == package_owner
+    assert package_index.call().getPackageOwner(test_package) == package_owner
+    assert package_index.call().getNumReleases(test_package) == 1
 
 
 def test_cannot_register_version_0(chain,
@@ -231,7 +232,7 @@ def test_querying_package_information(chain, web3, package_index):
     chain.wait.for_receipt(package_index.transact().release('test', 2, 3, 4, 'c', 'd', 'ipfs://uri-b'))
     chain.wait.for_receipt(package_index.transact().release('test', 3, 4, 5, 'e', 'f', 'ipfs://uri-c'))
 
-    assert package_index.call().getOwner('test') == web3.eth.coinbase
+    assert package_index.call().getPackageOwner('test') == web3.eth.coinbase
 
     assert package_index.call().getNumReleases('test') == 3
     assert package_index.call().getRelease('test', 0) == [1, 2, 3, 'a', 'b', 'ipfs://uri-a']

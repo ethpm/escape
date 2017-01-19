@@ -14,14 +14,6 @@ contract PackageIndex is Authorized {
   }
 
 
-  modifier onlyPackageOwner(string name) {
-    if (!packageDb.packageExists(name) || msg.sender == packageDb.getPackageOwner(name)) {
-      _;
-    } else {
-      throw;
-    }
-  }
-
   //
   // Public Write API
   //
@@ -31,8 +23,10 @@ contract PackageIndex is Authorized {
                    uint32 patch,
                    string preRelease,
                    string build,
-                   string releaseLockFileURI) public auth onlyPackageOwner(name) returns (bool) {
-    if (versionExists(name, major, minor, patch, preRelease, build)) {
+                   string releaseLockFileURI) public auth returns (bool) {
+    if (packageExists(name) && getPackageOwner(name) != msg.sender) {
+      return false;
+    } else if (versionExists(name, major, minor, patch, preRelease, build)) {
       // this version has already been released
       return false;
     }
@@ -59,8 +53,9 @@ contract PackageIndex is Authorized {
   }
 
   function transferOwnership(string name,
-                             address newOwner) public auth onlyPackageOwner(name) returns (bool) {
-      return packageDb.setPackageOwner(name, newOwner);
+                             address newOwner) public auth returns (bool) {
+    if (getPackageOwner(name) != msg.sender) throw;
+    return packageDb.setPackageOwner(name, newOwner);
   }
 
   //
@@ -83,7 +78,7 @@ contract PackageIndex is Authorized {
     return packageDb.releaseExists(name, major, minor, patch, preRelease, build);
   }
 
-  function getOwner(string name) constant returns (address) {
+  function getPackageOwner(string name) constant returns (address) {
     return packageDb.getPackageOwner(name);
   }
 
