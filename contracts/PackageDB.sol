@@ -5,7 +5,7 @@ import {Authorized} from "./Authority.sol";
 
 
 /// @title Database contract for a package index.
-/// @author Tim Coulter <TODO@TODO.TODO, Piper Merriam <pipermerriam@gmail.com>
+/// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
 contract PackageDB is Authorized {
   using SemVersionLib for SemVersionLib.SemVersion;
 
@@ -17,11 +17,13 @@ contract PackageDB is Authorized {
   mapping (bytes32 => string) _packageNames;
   mapping (bytes32 => address) _packageOwners;
   mapping (bytes32 => bytes32[]) _packageReleaseHashes;
+
   // (releaseHash => value)
   mapping (bytes32 => bytes32) _releaseVersionLookup;
   mapping (bytes32 => bytes32) _releasePackageNameLookup;
   mapping (bytes32 => bool) _releaseExists;
   mapping (bytes32 => string) _releaseLockFiles;
+
   // (versionHash => value)
   mapping (bytes32 => SemVersionLib.SemVersion) _recordedVersions;
   mapping (bytes32 => bool) _versionExists;
@@ -36,7 +38,6 @@ contract PackageDB is Authorized {
   /*
    * Latest released version tracking for each branch of the release tree.
    */
-
   // (nameHash => releaseHash);
   mapping (bytes32 => bytes32) _latestMajor;
 
@@ -141,7 +142,7 @@ contract PackageDB is Authorized {
 
     bytes32 nameHash = hashName(name);
     bytes32 releaseHash = _packageReleaseHashes[nameHash][idx];
-    var version = _releaseVersionLookup[releaseHash];
+    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
 
     // In any branch of the release tree in which this version is the latest we
     // remove it.  This will leave the release tree for this package in an
@@ -216,6 +217,7 @@ contract PackageDB is Authorized {
   }
 
   /// @dev Sets the owner of the named package to the provided address.  Returns success.
+  /// @param name Package name
   /// @param newPackageOwner The address of the new owner.
   function setPackageOwner(string name,
                            address newPackageOwner) auth public returns (bool) {
@@ -226,7 +228,7 @@ contract PackageDB is Authorized {
   }
 
   /// @dev Removes the named package from the package db.  Packages with existing releases may not be removed.  Returns success.
-  /// @param newPackageOwner The address of the new owner.
+  /// @param name Package name
   function removePackage(string name) auth public returns (bool) {
     bytes32 nameHash = hashName(name);
 
@@ -277,11 +279,7 @@ contract PackageDB is Authorized {
   }
 
   /// @dev Query the existence of the provided version in the recorded versions.  Returns boolean indicating whether such a version exists.
-  /// @param major The major portion of the semver version string.
-  /// @param minor The minor portion of the semver version string.
-  /// @param patch The patch portion of the semver version string.
-  /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
-  /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
+  /// @param versionHash the version hash to check.
   function versionExists(bytes32 versionHash) constant returns (bool) {
     return _versionExists[versionHash];
   }
@@ -362,7 +360,6 @@ contract PackageDB is Authorized {
   }
 
   /// @dev Returns version hash for the given semver version.
-  /// @param name Package name
   /// @param major The major portion of the semver version string.
   /// @param minor The minor portion of the semver version string.
   /// @param patch The patch portion of the semver version string.
