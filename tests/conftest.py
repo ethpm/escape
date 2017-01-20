@@ -5,8 +5,13 @@ from web3.utils.encoding import decode_hex
 
 
 @pytest.fixture()
-def authority(chain):
-    _authority = chain.get_contract('WhitelistAuthority')
+def authority(chain, accounts):
+    authority_owner = accounts[5]
+    _authority = chain.get_contract(
+        'WhitelistAuthority',
+        deploy_transaction={'from': authority_owner},
+    )
+    assert _authority.call().owner() == authority_owner
     return _authority
 
 
@@ -14,7 +19,9 @@ def authority(chain):
 def authorize_call(chain, authority):
     def _authorize_call(caller_address, code_address, function_signature, can_call):
         sig = decode_hex(function_signature_to_4byte_selector(function_signature))
-        chain.wait.for_receipt(authority.transact().setCanCall(
+        chain.wait.for_receipt(authority.transact({
+            'from': authority.call().owner(),
+        }).setCanCall(
             callerAddress=caller_address,
             codeAddress=code_address,
             sig=sig,
@@ -24,7 +31,7 @@ def authorize_call(chain, authority):
             callerAddress=caller_address,
             codeAddress=code_address,
             sig=sig,
-        )
+        ) is can_call
     return _authorize_call
 
 
@@ -32,7 +39,9 @@ def authorize_call(chain, authority):
 def whitelist_call(chain, authority):
     def _whitelist_call(code_address, function_signature, can_call):
         sig = decode_hex(function_signature_to_4byte_selector(function_signature))
-        chain.wait.for_receipt(authority.transact().setAnyoneCanCall(
+        chain.wait.for_receipt(authority.transact({
+            'from': authority.call().owner(),
+        }).setAnyoneCanCall(
             codeAddress=code_address,
             sig=sig,
             can=can_call,
@@ -41,22 +50,33 @@ def whitelist_call(chain, authority):
             '0x0000000000000000000000000000000000000000',
             codeAddress=code_address,
             sig=sig,
-        )
+        ) is can_call
     return _whitelist_call
 
 
 @pytest.fixture()
 def package_db(chain, authority):
-    _package_db = chain.get_contract('PackageDB')
-    chain.wait.for_receipt(_package_db.transact().setAuthority(authority.address))
+    _package_db = chain.get_contract(
+        'PackageDB',
+        deploy_transaction={'from': authority.call().owner()},
+    )
+    chain.wait.for_receipt(_package_db.transact({
+        'from': authority.call().owner(),
+    }).setAuthority(authority.address))
     assert _package_db.call().authority() == authority.address
     return _package_db
 
 
 @pytest.fixture()
 def package_index(chain, package_db, authority, authorize_call, whitelist_call):
-    _package_index = chain.get_contract('PackageIndex', deploy_args=[package_db.address])
-    chain.wait.for_receipt(_package_index.transact().setAuthority(authority.address))
+    _package_index = chain.get_contract(
+        'PackageIndex',
+        deploy_args=[package_db.address],
+        deploy_transaction={'from': authority.call().owner()},
+    )
+    chain.wait.for_receipt(_package_index.transact({
+        'from': authority.call().owner(),
+    }).setAuthority(authority.address))
     assert _package_index.call().authority() == authority.address
 
     authorize_call(
