@@ -67,38 +67,8 @@ library SemVersionLib {
         }
     }
 
-    function isLesser(SemVersion storage self, SemVersion storage other) public returns (bool) {
-        if (self.hash == other.hash) {
-            return false;
-        } else if (self.major < other.major) {
-            return true;
-        } else if (self.major > other.major) {
-            return false;
-        } else if (self.minor < other.minor) {
-            return true;
-        } else if (self.minor > other.minor) {
-            return false;
-        } else if (self.patch < other.patch) {
-            return true;
-        } else if (self.patch > other.patch) {
-            return false;
-        } else if (isPreRelease(self) && !isPreRelease(other)) {
-            return true;
-        } else if (!isPreRelease(self) && isPreRelease(other)) {
-            return false;
-        } else if (isPreReleaseLesser(self, other)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     function isGreaterOrEqual(SemVersion storage self, SemVersion storage other) public returns (bool) {
         return isEqual(self, other) || isGreater(self, other);
-    }
-
-    function isLesserOrEqual(SemVersion storage self, SemVersion storage other) public returns (bool) {
-        return isEqual(self, other) || isLesser(self, other);
     }
 
     /*
@@ -106,10 +76,6 @@ library SemVersionLib {
      */
     function isPreReleaseGreater(SemVersion storage left, SemVersion storage right) internal returns (bool) {
         return comparePreReleases(left, right) == Comparison.After;
-    }
-
-    function isPreReleaseLesser(SemVersion storage left, SemVersion storage right) internal returns (bool) {
-        return comparePreReleases(left, right) == Comparison.Before;
     }
 
     function isPreRelease(SemVersion storage self) internal returns (bool) {

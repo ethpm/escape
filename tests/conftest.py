@@ -11,8 +11,8 @@ def authority(chain):
 
 
 @pytest.fixture()
-def authorize_call(authority):
-    def _authorize_call(caller_address, code_address, can_call, function_signature):
+def authorize_call(chain, authority):
+    def _authorize_call(caller_address, code_address, function_signature, can_call):
         sig = decode_hex(function_signature_to_4byte_selector(function_signature))
         chain.wait.for_receipt(authority.transact().setCanCall(
             callerAddress=caller_address,
@@ -29,8 +29,8 @@ def authorize_call(authority):
 
 
 @pytest.fixture()
-def whitelist_call(authority):
-    def _whitelist_call(code_address, can_call, function_signature):
+def whitelist_call(chain, authority):
+    def _whitelist_call(code_address, function_signature, can_call):
         sig = decode_hex(function_signature_to_4byte_selector(function_signature))
         chain.wait.for_receipt(authority.transact().setAnyoneCanCall(
             codeAddress=code_address,
@@ -39,7 +39,6 @@ def whitelist_call(authority):
         ))
         assert authority.call().canCall(
             '0x0000000000000000000000000000000000000000',
-            callerAddress=caller_address,
             codeAddress=code_address,
             sig=sig,
         )
@@ -78,14 +77,14 @@ def package_index(chain, package_db, authority, authorize_call, whitelist_call):
         "setVersion(uint32,uint32,uint32,string,string)",
         True,
     )
-    authorize_call(
+    whitelist_call(
         _package_index.address,
         "release(string,uint32,uint32,uint32,string,string,string)",
         True,
     )
     whitelist_call(
         _package_index.address,
-        "transferOwnership(string,address)",
+        "transferPackageOwner(string,address)",
         True,
     )
 

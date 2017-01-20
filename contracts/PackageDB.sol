@@ -30,9 +30,9 @@ contract PackageDB is Authorized {
 
   event ReleaseCreate(bytes32 indexed releaseHash);
   event ReleaseUpdate(bytes32 indexed releaseHash);
-  event ReleaseDelete(bytes32 indexed releaseHash);
+  event ReleaseDelete(bytes32 indexed releaseHash, string reason);
   event PackageCreate(bytes32 indexed nameHash);
-  event PackageDelete(bytes32 indexed nameHash);
+  event PackageDelete(bytes32 indexed nameHash, string reason);
   event PackageOwnerUpdate(address indexed oldOwner, address indexed newOwner);
 
   /*
@@ -133,7 +133,7 @@ contract PackageDB is Authorized {
   /// @dev Removes a release from the named package.  Returns success.
   /// @param name Package name
   /// @param idx The index of the release hash in the array of package release hashes which should be removed.
-  function removeRelease(string name, uint idx) auth public returns (bool) {
+  function removeRelease(string name, uint idx, string reason) auth public returns (bool) {
     uint numReleases = getNumReleases(name);
 
     if (idx >= numReleases) {
@@ -175,7 +175,7 @@ contract PackageDB is Authorized {
     }
     _packageReleaseHashes[nameHash].length -= 1;
 
-    ReleaseDelete(releaseHash);
+    ReleaseDelete(releaseHash, reason);
 
     return true;
   }
@@ -229,7 +229,7 @@ contract PackageDB is Authorized {
 
   /// @dev Removes the named package from the package db.  Packages with existing releases may not be removed.  Returns success.
   /// @param name Package name
-  function removePackage(string name) auth public returns (bool) {
+  function removePackage(string name, string reason) auth public returns (bool) {
     bytes32 nameHash = hashName(name);
 
     if (_packageReleaseHashes[nameHash].length > 0) {
@@ -242,7 +242,7 @@ contract PackageDB is Authorized {
     delete _packageExists[nameHash];
     delete _packageOwners[nameHash];
 
-    PackageDelete(nameHash);
+    PackageDelete(nameHash, reason);
 
     return true;
   }
@@ -306,15 +306,23 @@ contract PackageDB is Authorized {
     return _packageReleaseHashes[hashName(name)][idx];
   }
 
+  /// @dev Returns the releaseHash at the given index for the named package.
+  /// @param releaseHash The release hash.
+  function getReleaseVersionHash(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
+                                                      constant 
+                                                      returns (bytes32) {
+    return _releaseVersionLookup[releaseHash];
+  }
+
   /*
    *  Release Getters
    */
   /// @dev Returns a 3-tuple of the major, minor, and patch components from the version of the given release hash.
-  /// @param releaseHash Release hash
-  function getMajorMinorPatch(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
+  /// @param versionHash the version hash
+  function getMajorMinorPatch(bytes32 versionHash) onlyIfVersionExists(versionHash) 
                                                    constant 
                                                    returns (uint32, uint32, uint32) {
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
+    var version = _recordedVersions[versionHash];
     return (version.major, version.minor, version.patch);
   }
 
@@ -392,26 +400,6 @@ contract PackageDB is Authorized {
   /*
    *  Latest version querying API
    */
-
-  /// @dev Returns boolean indicating whethe the given version hash is the latest version in any branch of the release tree.
-  /// @param nameHash The nameHash of the package to check against.
-  /// @param versionHash The versionHash of the version to check.
-  function isAnyLatest(bytes32 nameHash,
-                       bytes32 versionHash) onlyIfVersionExists(versionHash)
-                                            constant
-                                            returns (bool) {
-    if (isLatestMajorTree(nameHash, versionHash)) {
-      return true;
-    } else if (isLatestMinorTree(nameHash, versionHash)) {
-      return true;
-    } else if (isLatestPatchTree(nameHash, versionHash)) {
-      return true;
-    } else if (isLatestPreReleaseTree(nameHash, versionHash)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   /// @dev Returns the release hash of the latest release in the major branch of the package release tree.
   /// @param nameHash The nameHash of the package
