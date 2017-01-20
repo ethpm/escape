@@ -2,6 +2,7 @@ NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 
 def test_registering_package(chain, web3, package_index):
+    assert package_index.call().packageExists('test') is False
     assert package_index.call().getPackageOwner('test') == NULL_ADDRESS
 
     chain.wait.for_receipt(package_index.transact().release(
@@ -14,6 +15,7 @@ def test_registering_package(chain, web3, package_index):
         releaseLockFileURI='ipfs://not-a-real-uri',
     ))
 
+    assert package_index.call().packageExists('test') is True
     assert package_index.call().getPackageOwner('test-package') == web3.eth.coinbase
 
 
@@ -21,6 +23,7 @@ def test_cannot_register_existing_package(chain,
                                           package_index,
                                           test_package,
                                           package_owner):
+    assert package_index.call().packageExists(test_package) is True
     assert package_index.call().getPackageOwner(test_package) == package_owner
     assert package_index.call().getNumReleases(test_package) == 1
 
@@ -34,6 +37,7 @@ def test_cannot_register_existing_package(chain,
         releaseLockFileURI='ipfs://not-a-real-uri',
     ))
 
+    assert package_index.call().packageExists(test_package) is True
     assert package_index.call().getPackageOwner(test_package) == package_owner
     assert package_index.call().getNumReleases(test_package) == 1
 
@@ -51,75 +55,6 @@ def test_cannot_register_version_0(chain,
     assert package_index.call().getNumReleases(test_package) == 1
 
 
-def test_latest_version_tracking(chain, package_db, package_index):
-    name_hash = package_db.call().hashName('test')
-    v100 = package_db.call().hashRelease('test', 1, 0, 0, '', '')
-    v110 = package_db.call().hashRelease('test', 1, 1, 0, '', '')
-    v101 = package_db.call().hashRelease('test', 1, 0, 1, '', '')
-    v200 = package_db.call().hashRelease('test', 2, 0, 0, '', '')
-
-    chain.wait.for_receipt(package_index.transact().release(
-        'test', 1, 0, 0, '', '', ''
-    ))
-
-    assert package_index.call().getNumReleases('test') == 1
-
-    assert package_db.call().getLatestMajorTree(name_hash) == v100
-    assert package_db.call().getLatestMinorTree(name_hash, 1) == v100
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v100
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
-
-    assert package_index.call().getLatestVersion('test') == [1, 0, 0, '', '', '']
-
-    chain.wait.for_receipt(package_index.transact().release(
-        'test', 1, 1, 0, '', '', ''
-    ))
-
-    assert package_index.call().getNumReleases('test') == 2
-
-    assert package_db.call().getLatestMajorTree(name_hash) == v110
-    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v100
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
-
-    assert package_index.call().getLatestVersion('test') == [1, 1, 0, '', '', '']
-
-    chain.wait.for_receipt(package_index.transact().release(
-        'test', 1, 0, 1, '', '', ''
-    ))
-
-    assert package_index.call().getNumReleases('test') == 3
-
-    assert package_db.call().getLatestMajorTree(name_hash) == v110
-    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v101
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 1) == v101
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
-
-    assert package_index.call().getLatestVersion('test') == [1, 1, 0, '', '', '']
-
-    chain.wait.for_receipt(package_index.transact().release(
-        'test', 2, 0, 0, '', '', ''
-    ))
-
-    assert package_index.call().getNumReleases('test') == 4
-
-    assert package_db.call().getLatestMajorTree(name_hash) == v200
-    assert package_db.call().getLatestMinorTree(name_hash, 1) == v110
-    assert package_db.call().getLatestMinorTree(name_hash, 2) == v200
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 0) == v101
-    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110
-    assert package_db.call().getLatestPatchTree(name_hash, 2, 0) == v200
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 1) == v101
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110
-    assert package_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200
-
-    assert package_index.call().getLatestVersion('test') == [2, 0, 0, '', '', '']
 
 
 def test_querying_package_information(chain, web3, package_index):

@@ -1,4 +1,4 @@
-def test_package_version_tree_tracking(chain, package_db):
+def test_release_version_tree_tracking(chain, package_db):
     name_hash = package_db.call().hashName('test')
 
     v100 = ['test', 1, 0, 0, '', '']
