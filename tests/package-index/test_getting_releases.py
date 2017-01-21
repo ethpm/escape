@@ -5,6 +5,8 @@ def test_retrieving_release_by_index(chain, web3, package_index):
     chain.wait.for_receipt(package_index.transact().release(*release_info_a))
     chain.wait.for_receipt(package_index.transact().release(*release_info_b))
 
+    assert package_index.call().getNumReleases('test') == 2
+
     assert package_index.call().getRelease('test', 0) == release_info_a[1:]
     assert package_index.call().getRelease('test', 1) == release_info_b[1:]
 
@@ -18,6 +20,8 @@ def test_retrieving_release_by_release_hash(chain, web3, package_index, package_
 
     chain.wait.for_receipt(package_index.transact().release(*release_info_a))
     chain.wait.for_receipt(package_index.transact().release(*release_info_b))
+
+    assert package_index.call().getNumReleases('test') == 2
 
     assert package_index.call().getRelease(release_hash_a) == release_info_a[1:]
     assert package_index.call().getRelease(release_hash_b) == release_info_b[1:]
@@ -35,6 +39,8 @@ def test_retrieving_list_of_release_hashes(chain, web3, package_index, package_d
     chain.wait.for_receipt(package_index.transact().release(*release_info_a))
     chain.wait.for_receipt(package_index.transact().release(*release_info_b))
     chain.wait.for_receipt(package_index.transact().release(*release_info_c))
+
+    assert package_index.call().getNumReleases('test') == 3
 
     all_release_hashes = package_index.call().getAllReleaseHashes('test')
     assert all_release_hashes == [release_hash_a, release_hash_b, release_hash_c]

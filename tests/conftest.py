@@ -88,7 +88,7 @@ def package_index(chain, package_db, authority, authorize_call, whitelist_call):
     authorize_call(
         _package_index.address,
         package_db.address,
-        "setPackageOwner(string,address)",
+        "setPackageOwner(bytes32,address)",
         True,
     )
     authorize_call(

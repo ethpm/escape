@@ -1,6 +1,7 @@
 pragma solidity ^0.4.0;
 
 import {SemVersionLib} from "./SemVersionLib.sol";
+import {EnumerableMappingLib} from "./EnumerableMappingLib.sol";
 import {Authorized} from "./Authority.sol";
 
 
@@ -8,21 +9,23 @@ import {Authorized} from "./Authority.sol";
 /// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
 contract PackageDB is Authorized {
   using SemVersionLib for SemVersionLib.SemVersion;
+  using EnumerableMappingLib for EnumerableMappingLib.EnumerableMapping;
 
   /*
    * Package data 
    */
   // (nameHash => value)
-  mapping (bytes32 => bool) _packageExists;
-  mapping (bytes32 => string) _packageNames;
+  EnumerableMappingLib.EnumerableMapping _packageNames;
   mapping (bytes32 => address) _packageOwners;
   mapping (bytes32 => bytes32[]) _packageReleaseHashes;
+  mapping (bytes32 => bytes32) _packageMeta;
 
   // (releaseHash => value)
   mapping (bytes32 => bytes32) _releaseVersionLookup;
   mapping (bytes32 => bytes32) _releasePackageNameLookup;
   mapping (bytes32 => bool) _releaseExists;
   mapping (bytes32 => string) _releaseLockFiles;
+  mapping (bytes32 => bytes32) _releaseMeta;
 
   // (versionHash => value)
   mapping (bytes32 => SemVersionLib.SemVersion) _recordedVersions;
@@ -54,33 +57,25 @@ contract PackageDB is Authorized {
    *  Modifiers
    */
   modifier onlyIfVersionExists(bytes32 versionHash) {
-    if (!_versionExists[versionHash]) {
-      throw;
-    } else {
+    if (_versionExists[versionHash]) {
       _;
+    } else {
+      throw;
     }
   }
 
   modifier onlyIfReleaseExists(bytes32 releaseHash) {
-    if (!_releaseExists[releaseHash]) {
-      throw;
-    } else {
+    if (_releaseExists[releaseHash]) {
       _;
-    }
-  }
-
-  modifier onlyIfPackageExists(string name) {
-    if (!_packageExists[hashName(name)]) {
-      throw;
     } else {
-      _;
+      throw;
     }
   }
 
   //
   // Public Write API
   //
-  /// @dev Creates or updates a release for the named package.  Returns success.
+  /// @dev Creates or updates a release for a package.  Returns success.
   /// @param name Package name
   /// @param major The major portion of the semver version string.
   /// @param minor The minor portion of the semver version string.
@@ -95,15 +90,13 @@ contract PackageDB is Authorized {
                       string preRelease,
                       string build,
                       string releaseLockFileURI) auth public returns (bool) {
-
     // Hash the name and the version for storing data
     bytes32 nameHash = hashName(name);
     bytes32 releaseHash = hashRelease(name, major, minor, patch, preRelease, build);
 
     // Mark the package as existing if it isn't already tracked.
-    if (!_packageExists[nameHash]) {
-      _packageNames[nameHash] = name;
-      _packageExists[nameHash] = true;
+    if (!_packageNames.contains(nameHash)) {
+      _packageNames.push(nameHash, name);
       PackageCreate(nameHash);
     }
 
@@ -130,17 +123,16 @@ contract PackageDB is Authorized {
     return true;
   }
 
-  /// @dev Removes a release from the named package.  Returns success.
-  /// @param name Package name
+  /// @dev Removes a release from a package.  Returns success.
+  /// @param nameHash The name hash of the package name.
   /// @param idx The index of the release hash in the array of package release hashes which should be removed.
-  function removeRelease(string name, uint idx, string reason) auth public returns (bool) {
-    uint numReleases = getNumReleases(name);
+  function removeRelease(bytes32 nameHash, uint idx, string reason) auth public returns (bool) {
+    uint numReleases = _packageReleaseHashes[nameHash].length;
 
     if (idx >= numReleases) {
       return false;
     }
 
-    bytes32 nameHash = hashName(name);
     bytes32 releaseHash = _packageReleaseHashes[nameHash][idx];
     var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
 
@@ -216,30 +208,26 @@ contract PackageDB is Authorized {
     return versionHash;
   }
 
-  /// @dev Sets the owner of the named package to the provided address.  Returns success.
-  /// @param name Package name
+  /// @dev Sets the owner of a package to the provided address.  Returns success.
+  /// @param nameHash The name hash of a package.
   /// @param newPackageOwner The address of the new owner.
-  function setPackageOwner(string name,
+  function setPackageOwner(bytes32 nameHash,
                            address newPackageOwner) auth public returns (bool) {
-    bytes32 nameHash = hashName(name);
     PackageOwnerUpdate(_packageOwners[nameHash], newPackageOwner);
     _packageOwners[nameHash] = newPackageOwner;
     return true;
   }
 
-  /// @dev Removes the named package from the package db.  Packages with existing releases may not be removed.  Returns success.
-  /// @param name Package name
-  function removePackage(string name, string reason) auth public returns (bool) {
-    bytes32 nameHash = hashName(name);
-
+  /// @dev Removes a package from the package db.  Packages with existing releases may not be removed.  Returns success.
+  /// @param nameHash The name hash of a package.
+  function removePackage(bytes32 nameHash, string reason) auth public returns (bool) {
     if (_packageReleaseHashes[nameHash].length > 0) {
       // Must first remove all releases prior to removing the package.
       return false;
     }
 
-    delete _packageNames[nameHash];
+    _packageNames.remove(nameHash);
     delete _packageReleaseHashes[nameHash];
-    delete _packageExists[nameHash];
     delete _packageOwners[nameHash];
 
     PackageDelete(nameHash, reason);
@@ -255,26 +243,14 @@ contract PackageDB is Authorized {
    *  Querying Existence
    */
   /// @dev Query the existence of a package with the given name.  Returns boolean indicating whether the package exists.
-  /// @param name Package name
-  function packageExists(string name) constant returns (bool) {
-    bytes32 nameHash = hashName(name);
-    return _packageExists[nameHash];
+  /// @param nameHash The name hash of a package.
+  function packageExists(bytes32 nameHash) constant returns (bool) {
+    return _packageNames.contains(nameHash);
   }
 
-  /// @dev Query the existence of a release at the provided version for the named package.  Returns boolean indicating whether such a release exists.
-  /// @param name Package name
-  /// @param major The major portion of the semver version string.
-  /// @param minor The minor portion of the semver version string.
-  /// @param patch The patch portion of the semver version string.
-  /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
-  /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
-  function releaseExists(string name,
-                         uint32 major,
-                         uint32 minor,
-                         uint32 patch,
-                         string preRelease,
-                         string build) constant returns (bool) {
-    bytes32 releaseHash = hashRelease(name, major, minor, patch, preRelease, build);
+  /// @dev Query the existence of a release at the provided version for a package.  Returns boolean indicating whether such a release exists.
+  /// @param releaseHash The release hash to query.
+  function releaseExists(bytes32 releaseHash) constant returns (bool) {
     return _releaseExists[releaseHash];
   }
 
@@ -287,31 +263,43 @@ contract PackageDB is Authorized {
   /*
    *  Package Getters
    */
-  /// @dev Returns the address of the owner for the named package.
-  /// @param name Package name
-  function getPackageOwner(string name) constant returns (address) {
-    return _packageOwners[hashName(name)];
+  /// @dev Returns information about the package.
+  /// @param nameHash The name hash to look up.
+  function getPackage(bytes32 nameHash) constant returns (address packageOwner,
+                                                          uint numReleases) {
+    packageOwner = _packageOwners[nameHash];
+    numReleases = _packageReleaseHashes[nameHash].length;
+    return (packageOwner, numReleases);
   }
 
-  /// @dev Returns the number of releases for the named package.
-  /// @param name Package name
-  function getNumReleases(string name) constant returns (uint) {
-    return _packageReleaseHashes[hashName(name)].length;
+  /// @dev Returns the namehash for the package at the provide index.
+  /// @param idx The index in the registered packages to return.
+  function getPackageNameHash(uint idx) constant returns (bytes32) {
+    return _packageNames._keys[idx];
   }
 
-  /// @dev Returns the releaseHash at the given index for the named package.
-  /// @param name Package name
+  /// @dev Returns the package name for the given namehash
+  /// @param nameHash The name hash to look up.
+  function getPackageName(bytes32 nameHash) constant returns (string) {
+    return _packageNames._values[nameHash];
+  }
+
+  /// @dev Returns the releaseHash at the given index for a package.
+  /// @param nameHash The name hash for the package.
   /// @param idx Index of the desired release in the array of release hashes.
-  function getPackageReleaseHash(string name, uint idx) constant returns (bytes32) {
-    return _packageReleaseHashes[hashName(name)][idx];
+  function getPackageReleaseHash(bytes32 nameHash, uint idx) constant returns (bytes32) {
+    return _packageReleaseHashes[nameHash][idx];
   }
 
-  /// @dev Returns the releaseHash at the given index for the named package.
+  /// @dev Returns the releaseHash at the given index for a package.
   /// @param releaseHash The release hash.
-  function getReleaseVersionHash(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
-                                                      constant 
-                                                      returns (bytes32) {
-    return _releaseVersionLookup[releaseHash];
+  function getRelease(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
+                                           constant 
+                                           returns (bytes32 nameHash,
+                                                    bytes32 versionHash) {
+    nameHash = _releasePackageNameLookup[releaseHash];
+    versionHash = _releaseVersionLookup[releaseHash];
+    return (nameHash, versionHash);
   }
 
   /*
@@ -340,14 +328,6 @@ contract PackageDB is Authorized {
                                          constant 
                                          returns (string) {
     return _recordedVersions[_releaseVersionLookup[releaseHash]].build;
-  }
-
-  /// @dev Returns the name of the package that the given release hash is for.
-  /// @param releaseHash Release hash
-  function getPackageName(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
-                                               constant 
-                                               returns (string) {
-    return _packageNames[_releasePackageNameLookup[releaseHash]];
   }
 
   /// @dev Returns the URI of the release lockfile for the given release hash.

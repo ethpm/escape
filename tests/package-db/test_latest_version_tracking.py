@@ -27,7 +27,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v100, releaseLockFileURI='ipfs://some-ipfs-uri-a'))
 
-    assert package_db.call().getNumReleases('test') == 1
+    assert package_db.call().getPackage(name_hash)[1] == 1
 
     assert package_db.call().getLatestMajorTree(name_hash) == v100h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v100h
@@ -36,7 +36,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v110, releaseLockFileURI='ipfs://some-ipfs-uri-b'))
 
-    assert package_db.call().getNumReleases('test') == 2
+    assert package_db.call().getPackage(name_hash)[1] == 2
 
     assert package_db.call().getLatestMajorTree(name_hash) == v110h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v110h
@@ -47,7 +47,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v101, releaseLockFileURI='ipfs://some-ipfs-uri-c'))
 
-    assert package_db.call().getNumReleases('test') == 3
+    assert package_db.call().getPackage(name_hash)[1] == 3
 
     assert package_db.call().getLatestMajorTree(name_hash) == v110h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v110h
@@ -59,7 +59,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v200, releaseLockFileURI='ipfs://some-ipfs-uri-d'))
 
-    assert package_db.call().getNumReleases('test') == 4
+    assert package_db.call().getPackage(name_hash)[1] == 4
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v110h
@@ -74,7 +74,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v123, releaseLockFileURI='ipfs://some-ipfs-uri-e'))
 
-    assert package_db.call().getNumReleases('test') == 5
+    assert package_db.call().getPackage(name_hash)[1] == 5
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v123h
@@ -91,7 +91,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124a1bz, releaseLockFileURI='ipfs://some-ipfs-uri-f'))
 
-    assert package_db.call().getNumReleases('test') == 6
+    assert package_db.call().getPackage(name_hash)[1] == 6
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124a1bzh
@@ -109,7 +109,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124a1ba, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
 
-    assert package_db.call().getNumReleases('test') == 7
+    assert package_db.call().getPackage(name_hash)[1] == 7
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124a1bah
@@ -127,7 +127,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124a2ba, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
 
-    assert package_db.call().getNumReleases('test') == 8
+    assert package_db.call().getPackage(name_hash)[1] == 8
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124a2bah
@@ -145,7 +145,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124a10ba, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
 
-    assert package_db.call().getNumReleases('test') == 9
+    assert package_db.call().getPackage(name_hash)[1] == 9
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124a10bah
@@ -163,7 +163,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124b1ba, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
 
-    assert package_db.call().getNumReleases('test') == 10
+    assert package_db.call().getPackage(name_hash)[1] == 10
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124b1bah
@@ -181,7 +181,7 @@ def test_package_version_tree_tracking(chain, package_db):
 
     chain.wait.for_receipt(package_db.transact().setRelease(*v124, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
 
-    assert package_db.call().getNumReleases('test') == 11
+    assert package_db.call().getPackage(name_hash)[1] == 11
 
     assert package_db.call().getLatestMajorTree(name_hash) == v200h
     assert package_db.call().getLatestMinorTree(name_hash, 1) == v124h

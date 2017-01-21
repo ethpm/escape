@@ -41,7 +41,7 @@ contract PackageIndex is Authorized {
     } else if (versionExists(name, major, minor, patch, preRelease, build)) {
       // this version has already been released.
       return false;
-    } else if (!packageDb.packageExists(name) && !validatePackageName(name)) {
+    } else if (!packageExists(name) && !validatePackageName(name)) {
       // invalid package name.
       return false;
     } else if (!validateReleaseLockfileURI(releaseLockFileURI)) {
@@ -62,12 +62,10 @@ contract PackageIndex is Authorized {
     // If this is the highest release in any of the three buckets, allow it.
     if (isAnyLatest(nameHash, versionHash)) {
       if (!packageExists(name)) {
-        packageDb.setPackageOwner(name, msg.sender);
+        packageDb.setPackageOwner(nameHash, msg.sender);
       }
 
-      packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
-
-      return true;
+      return packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
     } else {
       return false;
     }
@@ -82,7 +80,7 @@ contract PackageIndex is Authorized {
     if (getPackageOwner(name) != msg.sender) {
       return false;
     }
-    return packageDb.setPackageOwner(name, newPackageOwner);
+    return packageDb.setPackageOwner(packageDb.hashName(name), newPackageOwner);
   }
 
   //
@@ -95,7 +93,7 @@ contract PackageIndex is Authorized {
   /// @dev Query the existence of a package with the given name.  Returns boolean indicating whether the package exists.
   /// @param name Package name
   function packageExists(string name) constant returns (bool) {
-    return packageDb.packageExists(name);
+    return packageDb.packageExists(packageDb.hashName(name));
   }
 
   /// @dev Query the existence of a release at the provided version for the named package.  Returns boolean indicating whether such a release exists.
@@ -111,19 +109,22 @@ contract PackageIndex is Authorized {
                          uint32 patch,
                          string preRelease,
                          string build) returns (bool) {
-    return packageDb.releaseExists(name, major, minor, patch, preRelease, build);
+    var releaseHash = packageDb.hashRelease(name, major, minor, patch, preRelease, build);
+    return packageDb.releaseExists(releaseHash);
   }
 
   /// @dev Returns the address of the owner for the named package.
   /// @param name Package name
   function getPackageOwner(string name) constant returns (address) {
-    return packageDb.getPackageOwner(name);
+    var (packageOwner,) = packageDb.getPackage(packageDb.hashName(name));
+    return packageOwner;
   }
 
   /// @dev Returns the number of releases for the named package.
   /// @param name Package name
   function getNumReleases(string name) constant returns (uint) {
-    return packageDb.getNumReleases(name);
+    var (,numReleases) = packageDb.getPackage(packageDb.hashName(name));
+    return numReleases;
   }
 
   /*
@@ -137,7 +138,8 @@ contract PackageIndex is Authorized {
                                                              string preRelease,
                                                              string build,
                                                              string releaseLockFileURI) {
-    (major, minor, patch) = packageDb.getMajorMinorPatch(packageDb.getReleaseVersionHash(releaseHash));
+    var (,versionHash) = packageDb.getRelease(releaseHash);
+    (major, minor, patch) = packageDb.getMajorMinorPatch(versionHash);
     preRelease = getPreRelease(releaseHash);
     build = getBuild(releaseHash);
     releaseLockFileURI = getReleaseLockileURI(releaseHash);
@@ -153,31 +155,20 @@ contract PackageIndex is Authorized {
                                                                       string preRelease,
                                                                       string build,
                                                                       string releaseLockFileURI) {
-    bytes32 releaseHash = packageDb.getPackageReleaseHash(name, releaseIdx);
+    bytes32 nameHash = packageDb.hashName(name);
+    bytes32 releaseHash = packageDb.getPackageReleaseHash(nameHash, releaseIdx);
     return getRelease(releaseHash);
-  }
-
-
-  /// @dev Returns the release data for the latest release for the given package name.
-  /// @param name Package name
-  function getLatestVersion(string name) constant returns (uint32 major,
-                                                           uint32 minor,
-                                                           uint32 patch,
-                                                           string preRelease,
-                                                           string build,
-                                                           string releaseLockFileURI) {
-    bytes32 latestReleaseHash = packageDb.getLatestMajorTree(packageDb.hashName(name));
-    return getRelease(latestReleaseHash);
   }
 
   /// @dev Returns an array of all release hashes for the named package.
   /// @param name Package name
   function getAllReleaseHashes(string name) constant returns (bytes32[]) {
+    bytes32 nameHash = packageDb.hashName(name);
     uint numReleases = getNumReleases(name);
     bytes32[] memory releaseHashes = new bytes32[](numReleases);
 
     for (uint i = 0; i < numReleases; i++) {
-      releaseHashes[i] = packageDb.getPackageReleaseHash(name, i);
+      releaseHashes[i] = packageDb.getPackageReleaseHash(nameHash, i);
     }
 
     return releaseHashes;
