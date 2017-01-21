@@ -33,3 +33,9 @@ def package_db_perms(chain, web3, package_db, authorize_call):
         "removePackage(bytes32,string)",
         True,
     )
+    authorize_call(
+        web3.eth.coinbase,
+        package_db.address,
+        "updateLatestTree(bytes32)",
+        True,
+    )

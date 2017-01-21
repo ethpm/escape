@@ -13,26 +13,22 @@ contract PackageDB is Authorized {
   using EnumerableMappingLib for EnumerableMappingLib.EnumerableMapping;
   using IndexedArrayLib for IndexedArrayLib.IndexedArray;
 
-  /*
-   * Package data 
-   */
-  // (nameHash => value)
+  // Package Data: (nameHash => value)
   EnumerableMappingLib.EnumerableMapping _packageNames;
   mapping (bytes32 => address) _packageOwners;
   mapping (bytes32 => IndexedArrayLib.IndexedArray) _packageReleaseHashes;
-  mapping (bytes32 => bytes32) _packageMeta;
 
-  // (releaseHash => value)
+  // Release Data: (releaseHash => value)
   mapping (bytes32 => bytes32) _releaseVersionLookup;
   mapping (bytes32 => bytes32) _releasePackageNameLookup;
   mapping (bytes32 => bool) _releaseExists;
   mapping (bytes32 => string) _releaseLockFiles;
-  mapping (bytes32 => bytes32) _releaseMeta;
 
-  // (versionHash => value)
+  // Version Data: (versionHash => value)
   mapping (bytes32 => SemVersionLib.SemVersion) _recordedVersions;
   mapping (bytes32 => bool) _versionExists;
 
+  // Events
   event ReleaseCreate(bytes32 indexed releaseHash);
   event ReleaseUpdate(bytes32 indexed releaseHash);
   event ReleaseDelete(bytes32 indexed releaseHash, string reason);
@@ -132,8 +128,8 @@ contract PackageDB is Authorized {
                                                              onlyIfReleaseExists(releaseHash) 
                                                              public
                                                              returns (bool) {
-    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
+    var (nameHash, versionHash) = getRelease(releaseHash);
+    var (major, minor, patch) = getMajorMinorPatch(versionHash);
 
     // In any branch of the release tree in which this version is the latest we
     // remove it.  This will leave the release tree for this package in an
@@ -141,17 +137,17 @@ contract PackageDB is Authorized {
     // recover from this state.  The naive approach would be to call it on all
     // release hashes in the array of remaining package release hashes which
     // will properly repopulate the release tree for this package.
-    if (_latestMajor[nameHash] == releaseHash) {
+    if (isLatestMajorTree(nameHash, versionHash)) {
       delete _latestMajor[nameHash];
     }
-    if (_latestMinor[nameHash][version.major] == releaseHash) {
-      delete _latestMinor[nameHash][version.major];
+    if (isLatestMinorTree(nameHash, versionHash)) {
+      delete _latestMinor[nameHash][major];
     }
-    if (_latestPatch[nameHash][version.major][version.minor] == releaseHash) {
-      delete _latestPatch[nameHash][version.major][version.minor];
+    if (isLatestPatchTree(nameHash, versionHash)) {
+      delete _latestPatch[nameHash][major][minor];
     }
-    if (_latestPreRelease[nameHash][version.major][version.minor][version.patch] == releaseHash) {
-      delete _latestPreRelease[nameHash][version.major][version.minor][version.patch];
+    if (isLatestPreReleaseTree(nameHash, versionHash)) {
+      delete _latestPreRelease[nameHash][major][minor][patch];
     }
 
     delete _releaseExists[releaseHash];
@@ -474,8 +470,7 @@ contract PackageDB is Authorized {
   function updateMajorTree(bytes32 releaseHash) onlyIfReleaseExists(releaseHash) 
                                                 internal 
                                                 returns (bool) {
-    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    bytes32 versionHash = _releaseVersionLookup[releaseHash];
+    var (nameHash, versionHash) = getRelease(releaseHash);
 
     if (isLatestMajorTree(nameHash, versionHash)) {
       _latestMajor[nameHash] = releaseHash;
@@ -488,12 +483,11 @@ contract PackageDB is Authorized {
   /// @dev Sets the given release as the new leaf of the minor branch of the release tree if it is greater or equal to the current leaf.
   /// @param releaseHash The release hash of the release to check.
   function updateMinorTree(bytes32 releaseHash) internal returns (bool) {
-    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    bytes32 versionHash = _releaseVersionLookup[releaseHash];
+    var (nameHash, versionHash) = getRelease(releaseHash);
 
     if (isLatestMinorTree(nameHash, versionHash)) {
-      var version = _recordedVersions[versionHash];
-      _latestMinor[nameHash][version.major] = releaseHash;
+      var (major,) = getMajorMinorPatch(versionHash);
+      _latestMinor[nameHash][major] = releaseHash;
       return true;
     } else {
       return false;
@@ -503,12 +497,11 @@ contract PackageDB is Authorized {
   /// @dev Sets the given release as the new leaf of the patch branch of the release tree if it is greater or equal to the current leaf.
   /// @param releaseHash The release hash of the release to check.
   function updatePatchTree(bytes32 releaseHash) internal returns (bool) {
-    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    bytes32 versionHash = _releaseVersionLookup[releaseHash];
+    var (nameHash, versionHash) = getRelease(releaseHash);
 
     if (isLatestPatchTree(nameHash, versionHash)) {
-      var version = _recordedVersions[versionHash];
-      _latestPatch[nameHash][version.major][version.minor] = releaseHash;
+      var (major, minor,) = getMajorMinorPatch(versionHash);
+      _latestPatch[nameHash][major][minor] = releaseHash;
       return true;
     } else {
       return false;
@@ -518,12 +511,11 @@ contract PackageDB is Authorized {
   /// @dev Sets the given release as the new leaf of the pre-release branch of the release tree if it is greater or equal to the current leaf.
   /// @param releaseHash The release hash of the release to check.
   function updatePreReleaseTree(bytes32 releaseHash) internal returns (bool) {
-    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
-    bytes32 versionHash = _releaseVersionLookup[releaseHash];
+    var (nameHash, versionHash) = getRelease(releaseHash);
 
     if (isLatestPreReleaseTree(nameHash, versionHash)) {
-      var version = _recordedVersions[versionHash];
-      _latestPreRelease[nameHash][version.major][version.minor][version.patch] = releaseHash;
+      var (major, minor, patch) = getMajorMinorPatch(versionHash);
+      _latestPreRelease[nameHash][major][minor][patch] = releaseHash;
       return true;
     } else {
       return false;

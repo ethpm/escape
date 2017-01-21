@@ -196,3 +196,66 @@ def test_package_version_tree_tracking(chain, package_db):
     assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 3) == v123h
     assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124h
     assert package_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
+
+
+def test_version_tree_is_updated_when_releases_are_removed(chain, package_db):
+    name_hash = package_db.call().hashName('test')
+
+    v100 = ['test', 1, 0, 0, '', '']
+    v110b1 = ['test', 1, 1, 0, 'beta.1', '']
+    v110 = ['test', 1, 1, 0, '', '']
+    v101 = ['test', 1, 0, 1, '', '']
+    v200 = ['test', 2, 0, 0, '', '']
+    v123 = ['test', 1, 2, 3, '', '']
+    v124a1bz = ['test', 1, 2, 4, 'alpha.1', 'build.z']
+    v124a1ba = ['test', 1, 2, 4, 'alpha.1', 'build.a']
+    v124a2ba = ['test', 1, 2, 4, 'alpha.2', 'build.a']
+    v124a10ba = ['test', 1, 2, 4, 'alpha.10', 'build.a']
+    v124b1ba = ['test', 1, 2, 4, 'beta.1', 'build.a']
+    v124 = ['test', 1, 2, 4, '', '']
+
+    chain.wait.for_receipt(package_db.transact().setRelease(*v100, releaseLockFileURI='ipfs://some-ipfs-uri-a'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v110b1, releaseLockFileURI='ipfs://some-ipfs-uri-b1'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v110, releaseLockFileURI='ipfs://some-ipfs-uri-b'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v101, releaseLockFileURI='ipfs://some-ipfs-uri-c'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v200, releaseLockFileURI='ipfs://some-ipfs-uri-d'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v123, releaseLockFileURI='ipfs://some-ipfs-uri-e'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124a1bz, releaseLockFileURI='ipfs://some-ipfs-uri-f'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124a1ba, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124a2ba, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124a10ba, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124b1ba, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(package_db.transact().setRelease(*v124, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+
+    assert package_db.call().getPackage(name_hash)[1] == 12
+
+    # v200h
+    # 1: v124h
+    # 2: v200h
+    # 1, 0: v101h
+    # 1, 1: v110h
+    # 1, 2: v124h
+    # 2, 0: v200h
+    # 1, 0, 0: v100h
+    # 1, 0, 1: v101h
+    # 1, 1, 0: v110h
+    # 1, 2, 3: v123h
+    # 1, 2, 4: v124h
+    # 2, 0, 0: v200h
+    v110h = package_db.call().hashRelease(*v110)
+    v110b1h = package_db.call().hashRelease(*v110b1)
+
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110h
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110h
+    chain.wait.for_receipt(package_db.transact().removeRelease(v110h, 'testing'))
+    assert package_db.call().releaseExists(v110h) is False
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == '\x00' * 32
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == '\x00' * 32
+
+    # now reprocess
+    for i in range(package_db.call().getPackage(name_hash)[1]):
+        rh = package_db.call().getPackageReleaseHash(name_hash, i)
+        chain.wait.for_receipt(package_db.transact().updateLatestTree(rh))
+
+    assert package_db.call().getLatestPatchTree(name_hash, 1, 1) == v110b1h
+    assert package_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110b1h
