@@ -21,3 +21,15 @@ def package_db_perms(chain, web3, package_db, authorize_call):
         "setVersion(uint32,uint32,uint32,string,string)",
         True,
     )
+    authorize_call(
+        web3.eth.coinbase,
+        package_db.address,
+        "removeRelease(bytes32,string)",
+        True,
+    )
+    authorize_call(
+        web3.eth.coinbase,
+        package_db.address,
+        "removePackage(bytes32,string)",
+        True,
+    )

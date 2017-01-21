@@ -2,6 +2,7 @@ pragma solidity ^0.4.0;
 
 import {SemVersionLib} from "./SemVersionLib.sol";
 import {EnumerableMappingLib} from "./EnumerableMappingLib.sol";
+import {IndexedArrayLib} from "./IndexedArrayLib.sol";
 import {Authorized} from "./Authority.sol";
 
 
@@ -10,6 +11,7 @@ import {Authorized} from "./Authority.sol";
 contract PackageDB is Authorized {
   using SemVersionLib for SemVersionLib.SemVersion;
   using EnumerableMappingLib for EnumerableMappingLib.EnumerableMapping;
+  using IndexedArrayLib for IndexedArrayLib.IndexedArray;
 
   /*
    * Package data 
@@ -17,7 +19,7 @@ contract PackageDB is Authorized {
   // (nameHash => value)
   EnumerableMappingLib.EnumerableMapping _packageNames;
   mapping (bytes32 => address) _packageOwners;
-  mapping (bytes32 => bytes32[]) _packageReleaseHashes;
+  mapping (bytes32 => IndexedArrayLib.IndexedArray) _packageReleaseHashes;
   mapping (bytes32 => bytes32) _packageMeta;
 
   // (releaseHash => value)
@@ -36,7 +38,7 @@ contract PackageDB is Authorized {
   event ReleaseDelete(bytes32 indexed releaseHash, string reason);
   event PackageCreate(bytes32 indexed nameHash);
   event PackageDelete(bytes32 indexed nameHash, string reason);
-  event PackageOwnerUpdate(address indexed oldOwner, address indexed newOwner);
+  event PackageOwnerUpdate(bytes32 indexed nameHash, address indexed oldOwner, address indexed newOwner);
 
   /*
    * Latest released version tracking for each branch of the release tree.
@@ -124,16 +126,13 @@ contract PackageDB is Authorized {
   }
 
   /// @dev Removes a release from a package.  Returns success.
-  /// @param nameHash The name hash of the package name.
-  /// @param idx The index of the release hash in the array of package release hashes which should be removed.
-  function removeRelease(bytes32 nameHash, uint idx, string reason) auth public returns (bool) {
-    uint numReleases = _packageReleaseHashes[nameHash].length;
-
-    if (idx >= numReleases) {
-      return false;
-    }
-
-    bytes32 releaseHash = _packageReleaseHashes[nameHash][idx];
+  /// @param releaseHash The release hash to be removed
+  /// @param reason Explanation for why the removal happened.
+  function removeRelease(bytes32 releaseHash, string reason) auth
+                                                             onlyIfReleaseExists(releaseHash) 
+                                                             public
+                                                             returns (bool) {
+    bytes32 nameHash = _releasePackageNameLookup[releaseHash];
     var version = _recordedVersions[_releaseVersionLookup[releaseHash]];
 
     // In any branch of the release tree in which this version is the latest we
@@ -160,12 +159,8 @@ contract PackageDB is Authorized {
     delete _releasePackageNameLookup[releaseHash];
     delete _releaseVersionLookup[releaseHash];
 
-    // Move the last item in the list of version hashes into the slot being
-    // removed and then shorten the array length by 1.
-    if (idx != numReleases - 1) {
-      _packageReleaseHashes[nameHash][idx] = _packageReleaseHashes[nameHash][numReleases];
-    }
-    _packageReleaseHashes[nameHash].length -= 1;
+    // Remove the release hash from the package list of release hashes.
+    _packageReleaseHashes[nameHash].remove(releaseHash);
 
     ReleaseDelete(releaseHash, reason);
 
@@ -213,7 +208,7 @@ contract PackageDB is Authorized {
   /// @param newPackageOwner The address of the new owner.
   function setPackageOwner(bytes32 nameHash,
                            address newPackageOwner) auth public returns (bool) {
-    PackageOwnerUpdate(_packageOwners[nameHash], newPackageOwner);
+    PackageOwnerUpdate(nameHash, _packageOwners[nameHash], newPackageOwner);
     _packageOwners[nameHash] = newPackageOwner;
     return true;
   }
@@ -221,7 +216,7 @@ contract PackageDB is Authorized {
   /// @dev Removes a package from the package db.  Packages with existing releases may not be removed.  Returns success.
   /// @param nameHash The name hash of a package.
   function removePackage(bytes32 nameHash, string reason) auth public returns (bool) {
-    if (_packageReleaseHashes[nameHash].length > 0) {
+    if (_packageReleaseHashes[nameHash]._values.length > 0) {
       // Must first remove all releases prior to removing the package.
       return false;
     }
@@ -268,7 +263,7 @@ contract PackageDB is Authorized {
   function getPackage(bytes32 nameHash) constant returns (address packageOwner,
                                                           uint numReleases) {
     packageOwner = _packageOwners[nameHash];
-    numReleases = _packageReleaseHashes[nameHash].length;
+    numReleases = _packageReleaseHashes[nameHash]._values.length;
     return (packageOwner, numReleases);
   }
 
@@ -288,7 +283,7 @@ contract PackageDB is Authorized {
   /// @param nameHash The name hash for the package.
   /// @param idx Index of the desired release in the array of release hashes.
   function getPackageReleaseHash(bytes32 nameHash, uint idx) constant returns (bytes32) {
-    return _packageReleaseHashes[nameHash][idx];
+    return _packageReleaseHashes[nameHash].get(idx);
   }
 
   /// @dev Returns the releaseHash at the given index for a package.
