@@ -94,7 +94,7 @@ contract PackageDB is Authorized {
 
     // Mark the package as existing if it isn't already tracked.
     if (!_packageNames.contains(nameHash)) {
-      _packageNames.push(nameHash, name);
+      _packageNames.set(nameHash, name);
       PackageCreate(nameHash);
     }
 

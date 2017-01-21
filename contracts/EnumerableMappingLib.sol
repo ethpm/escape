@@ -1,5 +1,7 @@
 pragma solidity ^0.4.0;
 
+/// @title Library implementing a data type that allows enumeration over the keys which are set in a mapping as well as knowledge that a key is set.
+/// @author Piper Merriam <pipermerriam@gmail.com>
 library EnumerableMappingLib {
   struct EnumerableMapping {
     bytes32[] _keys;
@@ -8,10 +10,16 @@ library EnumerableMappingLib {
     mapping (bytes32 => bool) _hasKey;
   }
 
+  /// @dev Returns boolean if the key is in the mapping
+  /// @param self The mapping
+  /// @param key The key to check
   function contains(EnumerableMapping storage self, bytes32 key) constant returns (bool) {
     return self._hasKey[key];
   }
 
+  /// @dev Remove the key from the mapping if present.  Return boolean indicating if the value was removed.
+  /// @param self The mapping
+  /// @param key The key to remove
   function remove(EnumerableMapping storage self, bytes32 key) public returns (bool) {
     if (!contains(self, key)) {
       return false;
@@ -32,7 +40,10 @@ library EnumerableMappingLib {
     return true;
   }
 
-  function push(EnumerableMapping storage self,
+  /// @dev Add the value to the mapping.
+  /// @param self The mapping
+  /// @param key The key to add
+  function set(EnumerableMapping storage self,
                 bytes32 key,
                 string value) public returns (bool) {
     if (contains(self, key)) {

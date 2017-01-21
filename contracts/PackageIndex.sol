@@ -15,7 +15,6 @@ contract PackageIndex is Authorized {
     packageDb = PackageDB(_packageDb);
   }
 
-
   //
   // Public Write API
   //
