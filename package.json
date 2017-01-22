@@ -55,6 +55,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "web": "./node_modules/.bin/http-server build/",
     "postinstall": "webpack"
   },
   "repository": {

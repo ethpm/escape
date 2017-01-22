@@ -49,7 +49,6 @@ const history = syncHistoryWithStore(browserHistory, store)
 
 export default React.createClass({
   componentWillMount() {
-    console.log('HERE')
     store.dispatch(actions.initializeWeb3())
     store.dispatch(actions.updateWeb3BrowserAvailability())
   },
