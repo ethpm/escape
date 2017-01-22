@@ -73,13 +73,17 @@ def package_db(chain, authority):
 def package_index(chain, package_db, authority, authorize_call, whitelist_call):
     _package_index = chain.get_contract(
         'PackageIndex',
-        deploy_args=[package_db.address],
         deploy_transaction={'from': authority.call().owner()},
     )
     chain.wait.for_receipt(_package_index.transact({
         'from': authority.call().owner(),
     }).setAuthority(authority.address))
     assert _package_index.call().authority() == authority.address
+
+    chain.wait.for_receipt(_package_index.transact({
+        'from': authority.call().owner(),
+    }).setPackageDb(package_db.address))
+    assert _package_index.call().packageDb() == package_db.address
 
     authorize_call(
         _package_index.address,

@@ -10,9 +10,22 @@ import {Authorized} from "./Authority.sol";
 contract PackageIndex is Authorized {
   PackageDB public packageDb;
 
-  function PackageIndex(address _packageDb) {
-    if (_packageDb == 0x0) throw;
-    packageDb = PackageDB(_packageDb);
+  //
+  // Events
+  //
+  event PackageDbUpdate(address indexed oldPackageDb, address indexed newPackageDb);
+  event PackageRelease(bytes32 indexed nameHash, bytes32 indexed releaseHash);
+  event PackageTransfer(address indexed oldOwner, address indexed newOwner);
+
+  //
+  // Administrative API
+  //
+  /// @dev Sets the address of the PackageDb contract.
+  /// @param newPackageDb The address to set for the PackageDb.
+  function setPackageDb(address newPackageDb) public auth returns (bool) {
+      PackageDbUpdate(address(packageDb), newPackageDb);
+      packageDb = PackageDB(newPackageDb);
+      return true;
   }
 
   //
@@ -64,7 +77,10 @@ contract PackageIndex is Authorized {
         packageDb.setPackageOwner(nameHash, msg.sender);
       }
 
-      return packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
+      packageDb.setRelease(name, major, minor, patch, preRelease, build, releaseLockFileURI);
+      PackageRelease(nameHash, 
+                     packageDb.hashRelease(name, major, minor, patch, preRelease, build));
+      return true;
     } else {
       return false;
     }
@@ -79,6 +95,7 @@ contract PackageIndex is Authorized {
     if (getPackageOwner(name) != msg.sender) {
       return false;
     }
+    PackageTransfer(getPackageOwner(name), newPackageOwner);
     return packageDb.setPackageOwner(packageDb.hashName(name), newPackageOwner);
   }
 

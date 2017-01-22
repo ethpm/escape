@@ -2,7 +2,7 @@ pragma solidity ^0.4.0;
 
 import {SemVersionLib} from "./SemVersionLib.sol";
 import {EnumerableMappingLib} from "./EnumerableMappingLib.sol";
-import {IndexedArrayLib} from "./IndexedArrayLib.sol";
+import {IndexedOrderedSetLib} from "./IndexedOrderedSetLib.sol";
 import {Authorized} from "./Authority.sol";
 
 
@@ -11,12 +11,12 @@ import {Authorized} from "./Authority.sol";
 contract PackageDB is Authorized {
   using SemVersionLib for SemVersionLib.SemVersion;
   using EnumerableMappingLib for EnumerableMappingLib.EnumerableMapping;
-  using IndexedArrayLib for IndexedArrayLib.IndexedArray;
+  using IndexedOrderedSetLib for IndexedOrderedSetLib.IndexedOrderedSet;
 
   // Package Data: (nameHash => value)
   EnumerableMappingLib.EnumerableMapping _packageNames;
   mapping (bytes32 => address) _packageOwners;
-  mapping (bytes32 => IndexedArrayLib.IndexedArray) _packageReleaseHashes;
+  mapping (bytes32 => IndexedOrderedSetLib.IndexedOrderedSet) _packageReleaseHashes;
 
   // Release Data: (releaseHash => value)
   mapping (bytes32 => bytes32) _releaseVersionLookup;
@@ -101,7 +101,7 @@ contract PackageDB is Authorized {
     // If this is a new version push it onto the array of version hashes for
     // this package.
     if (!_releaseExists[releaseHash]) {
-      _packageReleaseHashes[nameHash].push(releaseHash);
+      _packageReleaseHashes[nameHash].add(releaseHash);
       _releasePackageNameLookup[releaseHash] = nameHash;
       _releaseExists[releaseHash] = true;
       ReleaseCreate(releaseHash);
@@ -166,9 +166,6 @@ contract PackageDB is Authorized {
   /// @dev Updates each branch of the tree, replacing the current leaf node with this release hash if this release hash should be the new leaf.  Returns success.
   /// @param releaseHash The releaseHash to check.
   function updateLatestTree(bytes32 releaseHash) auth public returns (bool) {
-    // TODO: can we remove the `auth` protection from this method.  I don't
-    // believe there is any attack vector in allowing it to be called
-    // anonymously.
     updateMajorTree(releaseHash);
     updateMinorTree(releaseHash);
     updatePatchTree(releaseHash);
@@ -187,9 +184,6 @@ contract PackageDB is Authorized {
                       uint32 patch,
                       string preRelease,
                       string build) auth public returns (bytes32) {
-    // TODO: can we remove the `auth` protection from this function.  It should
-    // be safe to allow this to be called publicly by
-    // anyone.
     bytes32 versionHash = hashVersion(major, minor, patch, preRelease, build);
 
     if (!_versionExists[versionHash]) {
