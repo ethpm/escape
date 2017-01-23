@@ -1,19 +1,35 @@
 NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 
-def test_getting_number_of_releases(chain, package_index):
-    chain.wait.for_receipt(package_index.transact().release(
+def test_getting_number_package_data(chain, web3, accounts, package_index):
+    receipt_a = chain.wait.for_receipt(package_index.transact({
+        'from': acounts[1],
+    }).release(
         'test-a', 1, 2, 3, '', '', 'ipfs://some-ipfs-uri',
     ))
-    chain.wait.for_receipt(package_index.transact().release(
+    receipt_b = chain.wait.for_receipt(package_index.transact({
+        'from': accounts[2],
+    }).release(
         'test-b', 1, 2, 3, '', '', 'ipfs://some-other-ipfs-uri',
     ))
-    chain.wait.for_receipt(package_index.transact().release(
+    receipt_c = chain.wait.for_receipt(package_index.transact({
+        'from': accounts[1],
+    }).release(
         'test-a', 2, 3, 4, '', '', 'ipfs://another-ipfs-uri',
     ))
 
-    assert package_index.call().getNumReleases('test-a') == 2
-    assert package_index.call().getNumReleases('test-b') == 1
+    test_a_created_at = web3.eth.getBlock(receipt_a['blockHash'])['timestamp']
+    test_a_updated_at = web3.eth.getBlock(receipt_c['blockHash'])['timestamp']
+
+    expected_package_a_data = [accounts[1], test_a_created_at, 2, test_a_updated_at]
+    assert package_index.call().getPackageData('test-a') == expected_package_a_data
+
+    test_b_created_at = test_b_updated_at = web3.eth.getBlock(
+        receipt_b['blockHash'],
+    )['timestamp']
+
+    expected_package_b_data = [accounts[2], test_b_created_at, 2, test_b_updated_at]
+    assert package_index.call().getNumReleases('test-b') == expected_package_b_data
 
 
 def test_checking_package_existence(chain, package_index):
@@ -26,29 +42,16 @@ def test_checking_package_existence(chain, package_index):
     assert package_index.call().packageExists('test-a') is True
 
 
-def test_getting_package_owner(chain, web3, package_index):
-    assert package_index.call().getPackageOwner('test-a') == NULL_ADDRESS
-
-    owner = web3.eth.accounts[1]
-    chain.wait.for_receipt(package_index.transact({
-        'from': owner,
-    }).release(
-        'test-a', 1, 2, 3, '', '', 'ipfs://some-ipfs-uri',
-    ))
-
-    assert package_index.call().getPackageOwner('test-a') == owner
-
-
-def test_checking_version_existence(chain, package_index):
-    assert package_index.call().versionExists('test-a', 1, 2, 3, '', '') is False
+def test_checking_release_existence(chain, package_index):
+    assert package_index.call().releaseExists('test-a', 1, 2, 3, '', '') is False
 
     chain.wait.for_receipt(package_index.transact().release(
         'test-a', 1, 2, 3, '', '', 'ipfs://some-ipfs-uri',
     ))
 
-    assert package_index.call().versionExists('test-a', 1, 2, 3, '', '') is True
+    assert package_index.call().releaseExists('test-a', 1, 2, 3, '', '') is True
 
 
-def test_version_0_does_not_exist(chain, package_index):
-    assert package_index.call().versionExists('test-a', 0, 0, 0, '', '') is False
-    assert package_index.call().versionExists('', 0, 0, 0, '', '') is False
+def test_release_0_does_not_exist(chain, package_index):
+    assert package_index.call().releaseExists('test-a', 0, 0, 0, '', '') is False
+    assert package_index.call().releaseExists('', 0, 0, 0, '', '') is False

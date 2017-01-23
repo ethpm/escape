@@ -17,24 +17,30 @@ library IndexedOrderedSetLib {
     }
   }
 
-  /// @dev Returns boolean if the key is in the array
-  /// @param self The array
+  /// @dev Returns the size of the set
+  /// @param self The set
+  function size(IndexedOrderedSet storage self) constant returns (uint) {
+    return self._values.length;
+  }
+
+  /// @dev Returns boolean if the key is in the set
+  /// @param self The set
   /// @param value The value to check
   function contains(IndexedOrderedSet storage self, bytes32 value) constant returns (bool) {
     return self._exists[value];
   }
 
-  /// @dev Returns the index of the value in the array.
-  /// @param self The array
+  /// @dev Returns the index of the value in the set.
+  /// @param self The set
   /// @param value The value to look up the index for.
   function indexOf(IndexedOrderedSet storage self, bytes32 value) requireValue(self, value) 
-                                                             constant 
-                                                             returns (uint) {
+                                                                  constant 
+                                                                  returns (uint) {
     return self._valueIndices[value];
   }
 
-  /// @dev Removes the element at index idx from the array and returns it.
-  /// @param self The array
+  /// @dev Removes the element at index idx from the set and returns it.
+  /// @param self The set
   /// @param idx The index to remove and return.
   function pop(IndexedOrderedSet storage self, uint idx) public returns (bytes32) {
     bytes32 value = get(self, idx);
@@ -52,26 +58,26 @@ library IndexedOrderedSetLib {
     return value;
   }
 
-  /// @dev Removes the element at index idx from the array
-  /// @param self The array
-  /// @param value The value to remove from the array.
+  /// @dev Removes the element at index idx from the set
+  /// @param self The set
+  /// @param value The value to remove from the set.
   function remove(IndexedOrderedSet storage self, bytes32 value) requireValue(self, value)
-                                                            public 
-                                                            returns (bool) {
+                                                                 public 
+                                                                 returns (bool) {
     uint idx = indexOf(self, value);
     pop(self, idx);
     return true;
   }
 
   /// @dev Retrieves the element at the provided index.
-  /// @param self The array
+  /// @param self The set
   /// @param idx The index to retrieve.
   function get(IndexedOrderedSet storage self, uint idx) public returns (bytes32) {
     return self._values[idx];
   }
 
-  /// @dev Pushes the new value onto the array
-  /// @param self The array
+  /// @dev Pushes the new value onto the set
+  /// @param self The set
   /// @param value The value to push.
   function add(IndexedOrderedSet storage self, bytes32 value) public returns (bool) {
     if (contains(self, value)) return true;

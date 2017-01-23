@@ -70,7 +70,20 @@ def package_db(chain, authority):
 
 
 @pytest.fixture()
-def package_index(chain, package_db, authority, authorize_call, whitelist_call):
+def release_db(chain, authority):
+    _release_db = chain.get_contract(
+        'ReleaseDB',
+        deploy_transaction={'from': authority.call().owner()},
+    )
+    chain.wait.for_receipt(_release_db.transact({
+        'from': authority.call().owner(),
+    }).setAuthority(authority.address))
+    assert _release_db.call().authority() == authority.address
+    return _release_db
+
+
+@pytest.fixture()
+def package_index(chain, release_db, package_db, authority, authorize_call, whitelist_call):
     _package_index = chain.get_contract(
         'PackageIndex',
         deploy_transaction={'from': authority.call().owner()},
@@ -85,10 +98,29 @@ def package_index(chain, package_db, authority, authorize_call, whitelist_call):
     }).setPackageDb(package_db.address))
     assert _package_index.call().packageDb() == package_db.address
 
+    # Release DB
+    authorize_call(
+        _package_index.address,
+        release_db.address,
+        "setRelease(bytes32,bytes32,string)",
+        True,
+    )
+    whitelist_call(
+        release_db.address,
+        "setVersion(uint32,uint32,uint32,string,string)",
+        True,
+    )
+    whitelist_call(
+        release_db.address,
+        "updateLatestTree(bytes32)",
+        True,
+    )
+
+    # Package DB
     authorize_call(
         _package_index.address,
         package_db.address,
-        "setRelease(string,uint32,uint32,uint32,string,string,string)",
+        "setPackage(string)",
         True,
     )
     authorize_call(
@@ -97,12 +129,8 @@ def package_index(chain, package_db, authority, authorize_call, whitelist_call):
         "setPackageOwner(bytes32,address)",
         True,
     )
-    authorize_call(
-        _package_index.address,
-        package_db.address,
-        "setVersion(uint32,uint32,uint32,string,string)",
-        True,
-    )
+
+    # Package Index
     whitelist_call(
         _package_index.address,
         "release(string,uint32,uint32,uint32,string,string,string)",
