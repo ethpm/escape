@@ -2,24 +2,36 @@ import _ from 'lodash'
 import TYPES from '../actions/types'
 
 var initialState = {
-  packageDbAddress: null,
-};
+  indexData: {}
+}
 
 export default function(state, action) {
   if (state === undefined) {
-    return initialState;
+    return initialState
   }
 
-  var newState = state;
+  var newState = state
 
   switch (action.type) {
+    case TYPES.INITIALIZE_PACKAGE_INDEX_DB:
+      newState = _.merge(
+        {},
+        newState,
+        {[action.packageIndexAddress]: {}},
+      )
     case TYPES.SET_PACKAGE_DB_ADDRESS:
       newState = _.merge(
         {},
         newState,
-        {packageDbAddress: action.address},
-      );
+        {
+          [action.packageIndexAddress]: _.merge(
+            {},
+            newState[action.packageIndexAddress],
+            {packageDbAddress: action.packageDbAddress},
+          )
+        }
+      )
   }
 
-  return newState;
+  return newState
 }

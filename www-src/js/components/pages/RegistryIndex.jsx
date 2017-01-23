@@ -18,21 +18,12 @@ export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
               <div className='col-sm-12'>
                 <BSCard>
                   <BSCard.Header>
-                    Ethereum Smart Contract and Package Index
+                    Package Registry
                   </BSCard.Header>
                   <BSCard.Block>
-                    <BSCard.Text>Stub</BSCard.Text>
-                    <BSCard.Text>Stub</BSCard.Text>
-                  </BSCard.Block>
-                </BSCard>
-              </div>
-              <div className='col-sm-12'>
-                <BSCard>
-                  <BSCard.Header>
-                    Another Header
-                  </BSCard.Header>
-                  <BSCard.Block>
-                    <BSCard.Text>Stub</BSCard.Text>
+                    <BSCard.Text>
+                      The package index contains TODO releases from  TODO packages.
+                    </BSCard.Text>
                   </BSCard.Block>
                 </BSCard>
               </div>
@@ -41,19 +32,9 @@ export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
         </div>
         <div className='col-sm-5'>
           <BSCard>
-            <BSCard.Header>Another Header</BSCard.Header>
+            <BSCard.Header>Latest Releases</BSCard.Header>
             <BSCard.Block>
               <BSCard.Text>Stub</BSCard.Text>
-              <ol>
-                <li>Item 1</li>
-                <li>Item 2</li>
-              </ol>
-              <BSCard.Text>Another Stub</BSCard.Text>
-              <ul>
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-              </ul>
             </BSCard.Block>
           </BSCard>
         </div>

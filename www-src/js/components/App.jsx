@@ -14,11 +14,12 @@ import actions from '../actions/index'
 import actionLogger from '../middlewares/logging'
 
 import MainLayout from './layout/MainLayout'
-import ConfigureLayout from './layout/ConfigureLayout'
+import DefaultLayout from './layout/DefaultLayout'
 
+import SiteIndex from './pages/SiteIndex'
 import ConfigureIndex from './pages/ConfigureIndex'
 import ConfigureWeb3 from './pages/ConfigureWeb3'
-import SiteIndex from './pages/SiteIndex'
+import RegistryIndex from './pages/RegistryIndex'
 
 const reducer = compose(
   mergePersistedState()
@@ -29,6 +30,7 @@ const storage = compose(
   filter([
     'web3.config',
     'web3.selectedWeb3',
+    'packageIndex',
   ]),
 )(adapter(window.localStorage));
 
@@ -60,7 +62,10 @@ export default React.createClass({
             <IndexRoute component={SiteIndex} />
             <Route path="configure" component={ConfigureLayout}>
               <IndexRoute component={ConfigureIndex} />
-              <Route path="web3" component={ConfigureWeb3} />
+              <Route path="web3" component={DefaultLayout} />
+            </Route>
+            <Route path="registry" component={DefaultLayout}>
+              <IndexRoute component={RegistryIndex} />
             </Route>
           </Route>
         </Router>
