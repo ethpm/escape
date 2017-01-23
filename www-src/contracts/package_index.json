@@ -1,0 +1,403 @@
+{
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "setOwner",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "major",
+          "type": "uint32"
+        },
+        {
+          "name": "minor",
+          "type": "uint32"
+        },
+        {
+          "name": "patch",
+          "type": "uint32"
+        },
+        {
+          "name": "preRelease",
+          "type": "string"
+        },
+        {
+          "name": "build",
+          "type": "string"
+        }
+      ],
+      "name": "versionExists",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "newPackageOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferPackageOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "major",
+          "type": "uint32"
+        },
+        {
+          "name": "minor",
+          "type": "uint32"
+        },
+        {
+          "name": "patch",
+          "type": "uint32"
+        },
+        {
+          "name": "preRelease",
+          "type": "string"
+        },
+        {
+          "name": "build",
+          "type": "string"
+        },
+        {
+          "name": "releaseLockFileURI",
+          "type": "string"
+        }
+      ],
+      "name": "release",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newAuthority",
+          "type": "address"
+        }
+      ],
+      "name": "setAuthority",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "releaseHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRelease",
+      "outputs": [
+        {
+          "name": "major",
+          "type": "uint32"
+        },
+        {
+          "name": "minor",
+          "type": "uint32"
+        },
+        {
+          "name": "patch",
+          "type": "uint32"
+        },
+        {
+          "name": "preRelease",
+          "type": "string"
+        },
+        {
+          "name": "build",
+          "type": "string"
+        },
+        {
+          "name": "releaseLockFileURI",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "packageExists",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "getPackageOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "validatePackageName",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "getAllReleaseHashes",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "releaseIdx",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRelease",
+      "outputs": [
+        {
+          "name": "major",
+          "type": "uint32"
+        },
+        {
+          "name": "minor",
+          "type": "uint32"
+        },
+        {
+          "name": "patch",
+          "type": "uint32"
+        },
+        {
+          "name": "preRelease",
+          "type": "string"
+        },
+        {
+          "name": "build",
+          "type": "string"
+        },
+        {
+          "name": "releaseLockFileURI",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "packageDb",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "authority",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "getNumReleases",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "releaseLockFileURI",
+          "type": "string"
+        }
+      ],
+      "name": "validateReleaseLockfileURI",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_packageDb",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "oldOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "oldAuthority",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newAuthority",
+          "type": "address"
+        }
+      ],
+      "name": "AuthorityUpdate",
+      "type": "event"
+    }
+  ]
+}

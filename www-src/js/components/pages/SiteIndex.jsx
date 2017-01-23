@@ -6,12 +6,17 @@ import { push } from 'react-router-redux';
 import actions from '../../actions'
 import EthereumAddress from '../common/EthereumAddress'
 import BSCard from '../bootstrap/BSCard'
+import HideIfNoWeb3 from '../common/HideIfNoWeb3'
 
 function mapStateToProps(state) {
-  return {}
+  return state
+  //return {}
 }
 
-export default connect(mapStateToProps)(React.createClass({
+export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
+  componentWillMount() {
+    this.props.dispatch(actions.loadPackageDbAddress());
+  },
   render() {
     return (
       <div className='row'>
@@ -22,6 +27,7 @@ export default connect(mapStateToProps)(React.createClass({
                 <BSCard>
                   <BSCard.Header>
                     Ethereum Smart Contract and Package Index
+                    {this.props.packageIndex.packageDbAddress}
                   </BSCard.Header>
                   <BSCard.Block>
                     <BSCard.Text>Stub</BSCard.Text>
@@ -63,4 +69,4 @@ export default connect(mapStateToProps)(React.createClass({
       </div>
     )
   },
-}))
+})))

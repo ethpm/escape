@@ -14,7 +14,7 @@
     "babel-plugin-transform-react-jsx-source": "^6.9.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-react": "^6.16.0",
-    "bootstrap": "4.0.0-alpha.6",
+    "bootstrap": "4.0.0-alpha.4",
     "bootstrap-loader": "2.0.0-beta.12",
     "buffer": "^5.0.1",
     "css-loader": "^0.26.1",

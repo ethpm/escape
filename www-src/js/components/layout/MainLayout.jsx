@@ -29,9 +29,11 @@ let TopNavigation = connect(mapStateToProps)(React.createClass({
 export default connect(mapStateToProps)(React.createClass({
   render() {
     return (
-      <div className="container">
+      <div>
         <TopNavigation />
-        {this.props.children}
+        <div className="container">
+          {this.props.children}
+        </div>
       </div>
     )
   }

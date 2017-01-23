@@ -1,0 +1,277 @@
+{
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "callerAddress",
+          "type": "address"
+        },
+        {
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "name": "functionSignature",
+          "type": "string"
+        },
+        {
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "setCanCall",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "name": "sig",
+          "type": "bytes4"
+        },
+        {
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "setAnyoneCanCall",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "setOwner",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "name": "functionSignature",
+          "type": "string"
+        },
+        {
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "setAnyoneCanCall",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newAuthority",
+          "type": "address"
+        }
+      ],
+      "name": "setAuthority",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "callerAddress",
+          "type": "address"
+        },
+        {
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "name": "sig",
+          "type": "bytes4"
+        },
+        {
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "setCanCall",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "callerAddress",
+          "type": "address"
+        },
+        {
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "name": "sig",
+          "type": "bytes4"
+        }
+      ],
+      "name": "canCall",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "authority",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "callerAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "sig",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "SetCanCall",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "codeAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "sig",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "name": "can",
+          "type": "bool"
+        }
+      ],
+      "name": "SetAnyoneCanCall",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "oldOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "oldAuthority",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newAuthority",
+          "type": "address"
+        }
+      ],
+      "name": "AuthorityUpdate",
+      "type": "event"
+    }
+  ]
+}

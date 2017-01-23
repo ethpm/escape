@@ -19,11 +19,11 @@ export function getWeb3() {
 }
 
 export const INFURA_MAINNET = 'INFURA (Mainnet)';
-export const INFURA_MORDEN = 'INFURA (Morden)';
+export const INFURA_ROPSTEN = 'INFURA (Ropsten)';
 export const BROWSER = 'BROWSER';
 export const CUSTOM = 'CUSTOM';
 
-const ALLOWED_CHOICES = [BROWSER, CUSTOM, INFURA_MAINNET, INFURA_MORDEN]
+const ALLOWED_CHOICES = [BROWSER, CUSTOM, INFURA_MAINNET, INFURA_ROPSTEN]
 
 export const DEFAULT_LOCALHOST_RPCHOST = 'http://localhost:8545'
 
@@ -33,9 +33,9 @@ let getInfuraMainnetWeb3 = _.memoize(function() {
   })
 })
 
-let getInfuraMordenWeb3 = _.memoize(function() {
+let getInfuraRopstenWeb3 = _.memoize(function() {
   return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider('https://morden.infura.io')));
+    resolve(new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io')));
   })
 })
 
@@ -62,8 +62,8 @@ export function getSelectedWeb3(choice, config) {
   return new Promise(function(resolve, reject) {
     if (choice === INFURA_MAINNET) {
       return getInfuraMainnetWeb3().then(resolve, reject);
-    } else if (choice === INFURA_MORDEN) {
-      return getInfuraMordenWeb3().then(resolve, reject);
+    } else if (choice === INFURA_ROPSTEN) {
+      return getInfuraRopstenWeb3().then(resolve, reject);
     } else if (choice === BROWSER) {
       return getBrowserWeb3().then(resolve, reject);
     } else if (choice === CUSTOM) {
@@ -106,9 +106,9 @@ function isInfuraMainnetAvailable() {
   });
 }
 
-function isInfuraMordenAvailable() {
+function isInfuraRopstenAvailable() {
   return new Promise(function(resolve, reject) {
-    getInfuraMordenWeb3().then(function(web3) {
+    getInfuraRopstenWeb3().then(function(web3) {
       web3.net.getListening(function(err, result) {
         if (!err) {
           resolve(result)
@@ -140,16 +140,16 @@ export function getDefaultWeb3() {
       isLocalhostAvailable(),
       isBrowserAvailable(),
       isInfuraMainnetAvailable(),
-      isInfuraMordenAvailable(),
-    ]).then(_.spread(function(localhostAvailable, browserAvailable, infuraMainnetAvailable, infuraMordenAvailable) {
+      isInfuraRopstenAvailable(),
+    ]).then(_.spread(function(localhostAvailable, browserAvailable, infuraMainnetAvailable, infuraRopstenAvailable) {
       if (localhostAvailable === true) {
         resolve(CUSTOM);
       } else if (browserAvailable === true) {
         resolve(BROWSER);
       } else if (infuraMainnetAvailable === true) {
         resolve(INFURA_MAINNET);
-      } else if (infuraMordenAvailable === true) {
-        resolve(INFURA_MORDEN);
+      } else if (infuraRopstenAvailable === true) {
+        resolve(INFURA_ROPSTEN);
       } else {
         resolve(null);
       }

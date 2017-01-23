@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import actions from '../../actions/index'
 import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
 import BSTag from '../bootstrap/BSTag'
-import { BROWSER, CUSTOM, DEFAULT_LOCALHOST_RPCHOST, INFURA_MAINNET, INFURA_MORDEN } from '../../services/web3'
+import { BROWSER, CUSTOM, DEFAULT_LOCALHOST_RPCHOST, INFURA_MAINNET, INFURA_ROPSTEN } from '../../services/web3'
 
 function mapStateToProps(state) {
   return {}
@@ -96,11 +96,11 @@ let ConfigureInfuraWeb3 = connect(mapStateToConfigureCustomWeb3Props)(React.crea
   isMainnetSelected() {
     return this.props.selectedWeb3 === INFURA_MAINNET
   },
-  isMordenSelected() {
-    return this.props.selectedWeb3 === INFURA_MORDEN
+  isRopstenSelected() {
+    return this.props.selectedWeb3 === INFURA_ROPSTEN
   },
   isEitherSelected() {
-    return this.isMainnetSelected() || this.isMordenSelected()
+    return this.isMainnetSelected() || this.isRopstenSelected()
   },
   isAvailable() {
     return true
@@ -108,8 +108,8 @@ let ConfigureInfuraWeb3 = connect(mapStateToConfigureCustomWeb3Props)(React.crea
   handleSelectMainnet() {
     this.props.dispatch(actions.selectWeb3(INFURA_MAINNET))
   },
-  handleSelectMorden() {
-    this.props.dispatch(actions.selectWeb3(INFURA_MORDEN))
+  handleSelectRopsten() {
+    this.props.dispatch(actions.selectWeb3(INFURA_ROPSTEN))
   },
   renderSelectedTag() {
     if (this.isEitherSelected()) {
@@ -129,7 +129,7 @@ let ConfigureInfuraWeb3 = connect(mapStateToConfigureCustomWeb3Props)(React.crea
           <div className="col-sm-4 text-xs-right">
             <div className="btn-group" role="group" aria-label="Basic example">
               <button type="button" className={`btn btn-${this.isMainnetSelected() ? 'success' : 'primary'}`} disabled={this.isMainnetSelected() || !this.isAvailable()} onClick={this.handleSelectMainnet}>Infura (Mainnet)</button>
-              <button type="button" className={`btn btn-${this.isMordenSelected() ? 'success' : 'primary'}`}disabled={this.isMordenSelected() || !this.isAvailable()} onClick={this.handleSelectMorden}>Infura (Morden)</button>
+              <button type="button" className={`btn btn-${this.isRopstenSelected() ? 'success' : 'primary'}`}disabled={this.isRopstenSelected() || !this.isAvailable()} onClick={this.handleSelectRopsten}>Infura (Ropsten)</button>
             </div>
           </div>
         </div>

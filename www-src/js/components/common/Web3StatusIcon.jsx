@@ -4,13 +4,12 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import FAIcon from './FAIcon'
 import LoadingSpinner from './LoadingSpinner'
-import { CUSTOM, INFURA_MAINNET, INFURA_MORDEN, BROWSER } from '../../services/web3'
 
 function mapStateToProps(state) {
   return {
     isChainMetaLoaded: state.chain.metaData.isLoaded,
     isMainnet: state.chain.metaData.isMainnet,
-    isMorden: state.chain.metaData.isMorden,
+    isRopsten: state.chain.metaData.isRopsten,
     selectedWeb3: _.get(state.web3, 'selectedWeb3', null),
     isConnected: _.get(state.web3, 'status.isConnected', null),
   }
@@ -31,8 +30,8 @@ export default connect(mapStateToProps)(React.createClass({
       return null
     } else if (this.props.isMainnet) {
       return '(mainnet)'
-    } else if (this.props.isMorden) {
-      return '(morden)'
+    } else if (this.props.isRopsten) {
+      return '(ropsten)'
     } else {
       return '(???)'
     }

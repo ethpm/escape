@@ -2,12 +2,7 @@ import _ from 'lodash'
 import TYPES from '../actions/types'
 
 var initialState = {
-  metaData: {
-    genesisBlockHash: null,
-    isLoaded: false,
-    isMainnet: null,
-    isRopsten: null,
-  },
+  packageDbAddress: null,
 };
 
 export default function(state, action) {
@@ -18,11 +13,11 @@ export default function(state, action) {
   var newState = state;
 
   switch (action.type) {
-    case TYPES.SET_CHAIN_METADATA:
+    case TYPES.SET_PACKAGE_DB_ADDRESS:
       newState = _.merge(
         {},
         newState,
-        {metaData: action.metaData},
+        {packageDbAddress: action.address},
       );
   }
 

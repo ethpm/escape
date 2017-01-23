@@ -6,6 +6,7 @@ import chain from './chain'
 import config from './config'
 import pagination from './pagination'
 import web3 from './web3'
+import packageIndex from './package_index'
 
 
 export default combineReducers({
@@ -13,6 +14,7 @@ export default combineReducers({
   config,
   pagination,
   web3,
+  packageIndex,
   routing: routerReducer,
   form: formReducer,
 })
