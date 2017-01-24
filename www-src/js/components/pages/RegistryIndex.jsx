@@ -2,13 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
-import HideIfNoWeb3 from '../common/HideIfNoWeb3'
 
 function mapStateToProps(state) {
-  return {}
+  let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS;
+  return {
+    packageIndexAddress: packageIndexAddress,
+    packageIndexData: _.get(state.packageIndex, packageIndexAddress, null),
+  }
 }
 
-export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
+export default connect(mapStateToProps)(React.createClass({
   render() {
     return (
       <div className='row'>
@@ -22,7 +25,7 @@ export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
                   </BSCard.Header>
                   <BSCard.Block>
                     <BSCard.Text>
-                      The package index contains TODO releases from  TODO packages.
+                      The package index contains {this.props.packageIndexData.numReleases} releases from {this.props.packageIndexData.numPackages} packages.
                     </BSCard.Text>
                   </BSCard.Block>
                 </BSCard>
@@ -41,4 +44,4 @@ export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
       </div>
     )
   },
-})))
+}))

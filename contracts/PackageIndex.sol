@@ -165,7 +165,7 @@ contract PackageIndex is Authorized {
                          uint32 minor,
                          uint32 patch,
                          string preRelease,
-                         string build) returns (bool) {
+                         string build) constant returns (bool) {
     var nameHash = packageDb.hashName(name);
     var versionHash = releaseDb.hashVersion(major, minor, patch, preRelease, build);
     return releaseDb.releaseExists(releaseDb.hashRelease(packageDb.hashName(name), versionHash));

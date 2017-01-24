@@ -19,6 +19,9 @@ export default HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
                 <BSCard>
                   <BSCard.Header>
                     Ethereum Smart Contract and Package Index
+                    <Link className='nav-item nav-link' to='/registry'>
+                      Browse Index
+                    </Link>
                   </BSCard.Header>
                   <BSCard.Block>
                     <BSCard.Text>Stub</BSCard.Text>

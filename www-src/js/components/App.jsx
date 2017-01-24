@@ -15,6 +15,7 @@ import actionLogger from '../middlewares/logging'
 
 import MainLayout from './layout/MainLayout'
 import DefaultLayout from './layout/DefaultLayout'
+import RegistryLayout from './layout/RegistryLayout'
 
 import SiteIndex from './pages/SiteIndex'
 import ConfigureIndex from './pages/ConfigureIndex'
@@ -60,11 +61,11 @@ export default React.createClass({
         <Router history={history}>
           <Route path='/' component={MainLayout}>
             <IndexRoute component={SiteIndex} />
-            <Route path="configure" component={ConfigureLayout}>
+            <Route path="configure" component={DefaultLayout}>
               <IndexRoute component={ConfigureIndex} />
               <Route path="web3" component={DefaultLayout} />
             </Route>
-            <Route path="registry" component={DefaultLayout}>
+            <Route path="registry" component={RegistryLayout}>
               <IndexRoute component={RegistryIndex} />
             </Route>
           </Route>

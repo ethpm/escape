@@ -28,66 +28,6 @@
         {
           "name": "nameHash",
           "type": "bytes32"
-        },
-        {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isLatestPreReleaseTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        },
-        {
-          "name": "patch",
-          "type": "uint32"
-        },
-        {
-          "name": "preRelease",
-          "type": "string"
-        },
-        {
-          "name": "build",
-          "type": "string"
-        }
-      ],
-      "name": "hashRelease",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
         }
       ],
       "name": "getPackageName",
@@ -101,78 +41,18 @@
       "type": "function"
     },
     {
-      "constant": true,
+      "constant": false,
       "inputs": [
         {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getMajorMinorPatch",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint32"
-        },
-        {
-          "name": "",
-          "type": "uint32"
-        },
-        {
-          "name": "",
-          "type": "uint32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        },
-        {
-          "name": "patch",
-          "type": "uint32"
-        },
-        {
-          "name": "preRelease",
-          "type": "string"
-        },
-        {
-          "name": "build",
+          "name": "name",
           "type": "string"
         }
       ],
-      "name": "hashVersion",
+      "name": "setPackage",
       "outputs": [
         {
           "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getReleaseLockileURI",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
+          "type": "bool"
         }
       ],
       "payable": false,
@@ -214,126 +94,13 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "reason",
-          "type": "string"
-        }
-      ],
-      "name": "removeRelease",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
       "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getLatestMajorTree",
+      "inputs": [],
+      "name": "getNumPackages",
       "outputs": [
         {
           "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "releaseExists",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        }
-      ],
-      "name": "getLatestPatchTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        },
-        {
-          "name": "patch",
-          "type": "uint32"
-        },
-        {
-          "name": "preRelease",
-          "type": "string"
-        },
-        {
-          "name": "build",
-          "type": "string"
-        },
-        {
-          "name": "releaseLockFileURI",
-          "type": "string"
-        }
-      ],
-      "name": "setRelease",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
+          "type": "uint256"
         }
       ],
       "payable": false,
@@ -349,64 +116,6 @@
       ],
       "name": "setAuthority",
       "outputs": [],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getRelease",
-      "outputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "updateLatestTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getBuild",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
-        }
-      ],
       "payable": false,
       "type": "function"
     },
@@ -432,62 +141,6 @@
         }
       ],
       "name": "getPackageNameHash",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getPackage",
-      "outputs": [
-        {
-          "name": "packageOwner",
-          "type": "address"
-        },
-        {
-          "name": "numReleases",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        },
-        {
-          "name": "patch",
-          "type": "uint32"
-        },
-        {
-          "name": "preRelease",
-          "type": "string"
-        },
-        {
-          "name": "build",
-          "type": "string"
-        }
-      ],
-      "name": "setVersion",
       "outputs": [
         {
           "name": "",
@@ -537,15 +190,23 @@
       "constant": true,
       "inputs": [
         {
-          "name": "versionHash",
+          "name": "nameHash",
           "type": "bytes32"
         }
       ],
-      "name": "versionExists",
+      "name": "getPackageData",
       "outputs": [
         {
-          "name": "",
-          "type": "bool"
+          "name": "packageOwner",
+          "type": "address"
+        },
+        {
+          "name": "createdAt",
+          "type": "uint256"
+        },
+        {
+          "name": "updatedAt",
+          "type": "uint256"
         }
       ],
       "payable": false,
@@ -565,173 +226,20 @@
       "type": "function"
     },
     {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isLatestPatchTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isLatestMinorTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "versionHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "isLatestMajorTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "major",
-          "type": "uint32"
-        },
-        {
-          "name": "minor",
-          "type": "uint32"
-        },
-        {
-          "name": "patch",
-          "type": "uint32"
-        }
-      ],
-      "name": "getLatestPreReleaseTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "major",
-          "type": "uint32"
-        }
-      ],
-      "name": "getLatestMinorTree",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "releaseHash",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getPreRelease",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "nameHash",
-          "type": "bytes32"
-        },
-        {
-          "name": "idx",
-          "type": "uint256"
-        }
-      ],
-      "name": "getPackageReleaseHash",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
       "anonymous": false,
       "inputs": [
+        {
+          "indexed": true,
+          "name": "nameHash",
+          "type": "bytes32"
+        },
         {
           "indexed": true,
           "name": "releaseHash",
           "type": "bytes32"
         }
       ],
-      "name": "ReleaseCreate",
+      "name": "PackageReleaseAdd",
       "type": "event"
     },
     {
@@ -739,28 +247,16 @@
       "inputs": [
         {
           "indexed": true,
-          "name": "releaseHash",
+          "name": "nameHash",
           "type": "bytes32"
-        }
-      ],
-      "name": "ReleaseUpdate",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
+        },
         {
           "indexed": true,
           "name": "releaseHash",
           "type": "bytes32"
-        },
-        {
-          "indexed": false,
-          "name": "reason",
-          "type": "string"
         }
       ],
-      "name": "ReleaseDelete",
+      "name": "PackageReleaseRemove",
       "type": "event"
     },
     {

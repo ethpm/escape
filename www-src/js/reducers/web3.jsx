@@ -52,11 +52,6 @@ export default function(state, action) {
         {web3: action.web3}
       );
       break;
-    case TYPES.SET_WEB3_ETH_ACCOUNTS:
-      newState = Object.assign({}, newState, {
-        accounts: action.accounts,
-      });
-      break;
   }
 
   return newState;

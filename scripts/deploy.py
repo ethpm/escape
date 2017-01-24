@@ -244,43 +244,43 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'authority_address',
     '--authority',
     '-a',
-    default='0xe7e195bbeb00b22f33e700c54044910cad1106a6',
+    default='0xd5bf8d280769df415afbb08a2c04cae8ec432b34',
 )
 @click.option(
     'sem_version_lib_address',
     '--sem-version-lib',
     '-s',
-    default='0xc09ac8d33972c17fbc07ae2a8cc5a2abf6854787',
+    default='0x6bb44911287f12deb91f7d262c16ac7ce06f37d8',
 )
 @click.option(
     'indexed_ordered_set_lib_address',
     '--indexed-ordered-set-lib',
     '-o',
-    default='0x2f1366851a73f2109200d7e6c43e4fa6194ea85c',
+    default='0x6ec0e64f91dab19d23360752f2743c44762796a2',
 )
 @click.option(
     'package_db_address',
     '--package-db',
     '-d',
-    default='0x2954d12773523f864af69d6063e6e0357ee41394',
+    default='0x7b1b9e4c7e054e0a27b766193762f7b59653236c',
 )
 @click.option(
     'release_db_address',
     '--release-db',
     '-r',
-    default='0xbd84152ebb8684a172c939b158637565014dfbe6',
+    default='0xfa36edc9aab94baffcdcf466ddd93990ebe8fe45',
 )
 @click.option(
     'release_validator_address',
     '--release-validator',
     '-v',
-    default='0x916ddf25ac34e082d5ba11edac03ed3c418e9287',
+    default='0xba3433d7d23120ce7dce153db02383a94fcf9bc1',
 )
 @click.option(
     'package_index_address',
     '--package-index',
     '-i',
-    default='0x8db148d0a54887ea7078a0a0bbb94ada1517b828',
+    default='0x1c5e00e663b403ea740317e14c740f9186e574d6',
 )
 def deploy(chain_name,
            authority_address,

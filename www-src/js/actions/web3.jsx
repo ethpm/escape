@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import TYPES from './types'
-import { getDefaultWeb3, getSelectedWeb3, getWeb3Accounts, setWeb3, signData, isConnected, isBrowserAvailable } from '../services/web3'
+import { getDefaultWeb3, getSelectedWeb3, setWeb3, signData, isConnected, isBrowserAvailable } from '../services/web3'
 import { loadChainMetaData, resetChainMetaData } from './chain'
 
 export function initializeWeb3() {
@@ -29,7 +29,6 @@ export function selectWeb3(choice) {
         dispatch(setWeb3Selection(choice))
         dispatch(setWeb3Instance(web3))
       }).then(function() {
-        dispatch(getWeb3AccountList())
         dispatch(loadChainMetaData())
         dispatch(updateWeb3Status())
       })
@@ -117,23 +116,5 @@ export function setWeb3Instance(web3) {
   return {
     type: TYPES.SET_WEB3,
     web3: web3,
-  }
-}
-
-export function getWeb3AccountList() {
-  return function(dispatch, getState) {
-    getWeb3Accounts().then(function(accounts) {
-      console.log('Accounts', accounts)
-      dispatch(setWeb3AccountList(accounts))
-    }, function(error) {
-      console.error(error)
-    })
-  }
-}
-
-export function setWeb3AccountList(accounts) {
-  return {
-    type: TYPES.SET_WEB3_ETH_ACCOUNTS,
-    accounts: accounts,
   }
 }
