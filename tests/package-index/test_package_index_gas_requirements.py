@@ -10,7 +10,7 @@ def test_gas_usage_for_large_deploy_data(chain, package_index):
         releaseLockFileURI='ipfs://QmZrAGa3YwWPkop11vDZjfSmQGWGzjXkh6J3ns7AbENu73',
     ))
 
-    assert package_index.call().getNumReleases(package_name) == 1
+    assert package_index.call().getPackageData(package_name)[2] == 1
     assert receipt_a['gasUsed'] < 2000000
 
     receipt_b = chain.wait.for_receipt(package_index.transact().release(
@@ -23,5 +23,5 @@ def test_gas_usage_for_large_deploy_data(chain, package_index):
         releaseLockFileURI='ipfs://QmZrAGa3YwWPkop11vDZjfSmQGWGzjXkh6J3ns7AbENu73',
     ))
 
-    assert package_index.call().getNumReleases(package_name) == 2
+    assert package_index.call().getPackageData(package_name)[2] == 2
     assert receipt_b['gasUsed'] < 2000000

@@ -6,6 +6,15 @@ import {ReleaseDB} from "./ReleaseDB.sol";
 /// @title Database contract for a package index.
 /// @author Piper Merriam <pipermerriam@gmail.com>
 contract ReleaseValidator {
+  /// @dev Runs validation on all of the data needed for releasing a package.  Returns success.
+  /// @param packageDb The address of the PackageDB
+  /// @param releaseDb The address of the ReleaseDB
+  /// @param callerAddress The address which is attempting to create the release.
+  /// @param name The name of the package.
+  /// @param majorMinorPatch The major/minor/patch portion of the version string.
+  /// @param preRelease The pre-release portion of the version string.
+  /// @param build The build portion of the version string.
+  /// @param releaseLockFileURI The URI of the release lockfile.
   function validateRelease(PackageDB packageDb,
                            ReleaseDB releaseDb,
                            address callerAddress,
@@ -14,7 +23,9 @@ contract ReleaseValidator {
                            string preRelease,
                            string build,
                            string releaseLockFileURI) constant returns (bool) {
-    if (!validateAuthorization(packageDb, name, callerAddress)) {
+    if (address(packageDb) == 0x0 || address(releaseDb) == 0x0) throw;
+
+    if (!validateAuthorization(packageDb, callerAddress, name)) {
       // package exists and msg.sender is not the owner not the package owner.
       return false;
     } else if (!validateIsNewRelease(packageDb, releaseDb, name, majorMinorPatch, preRelease, build)) {
@@ -37,9 +48,13 @@ contract ReleaseValidator {
     return true;
   }
 
+  /// @dev Validate whether the callerAddress is authorized to make this release.
+  /// @param packageDb The address of the PackageDB
+  /// @param callerAddress The address which is attempting to create the release.
+  /// @param name The name of the package.
   function validateAuthorization(PackageDB packageDb,
-                                 string name,
-                                 address callerAddress) constant returns (bool) {
+                                 address callerAddress,
+                                 string name) constant returns (bool) {
     bytes32 nameHash = packageDb.hashName(name);
     if (!packageDb.packageExists(nameHash)) {
       return true;
@@ -51,6 +66,13 @@ contract ReleaseValidator {
     return false;
   }
 
+  /// @dev Validate that the version being released has not already been released.
+  /// @param packageDb The address of the PackageDB
+  /// @param releaseDb The address of the ReleaseDB
+  /// @param name The name of the package.
+  /// @param majorMinorPatch The major/minor/patch portion of the version string.
+  /// @param preRelease The pre-release portion of the version string.
+  /// @param build The build portion of the version string.
   function validateIsNewRelease(PackageDB packageDb,
                                 ReleaseDB releaseDb,
                                 string name,
@@ -70,7 +92,8 @@ contract ReleaseValidator {
   bytes1 constant DASH = bytes1('-');
 
   /// @dev Returns boolean whether the provided package name is valid.
-  /// @param name Package name
+  /// @param packageDb The address of the PackageDB
+  /// @param name The name of the package.
   function validatePackageName(PackageDB packageDb, string name) constant returns (bool) {
     var nameHash = packageDb.hashName(name);
 
@@ -105,6 +128,8 @@ contract ReleaseValidator {
     return true;
   }
 
+  /// @dev Validate that the version is not 0.0.0.
+  /// @param majorMinorPatch The major/minor/patch portion of the version string.
   function validateReleaseVersion(uint32[3] majorMinorPatch) constant returns (bool) {
     if (majorMinorPatch[0] > 0) {
       return true;
@@ -117,9 +142,13 @@ contract ReleaseValidator {
     }
   }
 
-  /// @dev Returns boolean indicating whether the given version hash is the latest version in any branch of the release tree.
-  /// @param nameHash The nameHash of the package to check against.
-  /// @param versionHash The versionHash of the version to check.
+  /// @dev Validate that the version being released is the latest in at least one branch of the release tree.
+  /// @param packageDb The address of the PackageDB
+  /// @param releaseDb The address of the ReleaseDB
+  /// @param name The name of the package.
+  /// @param majorMinorPatch The major/minor/patch portion of the version string.
+  /// @param preRelease The pre-release portion of the version string.
+  /// @param build The build portion of the version string.
   function validateIsAnyLatest(PackageDB packageDb,
                                ReleaseDB releaseDb,
                                string name,
@@ -142,26 +171,29 @@ contract ReleaseValidator {
   }
 
   /// @dev Returns boolean indicating whether there is a latest minor version in the version tree indicated by the provided version has for the package indicated by the provided name hash.
+  /// @param releaseDb The address of the ReleaseDB
   /// @param nameHash The nameHash of the package to check against.
   /// @param versionHash The versionHash of the version to check.
   function hasLatestMinor(ReleaseDB releaseDb, bytes32 nameHash, bytes32 versionHash) constant returns (bool) {
-      var (major,) = releaseDb.getMajorMinorPatch(versionHash);
-      return releaseDb.getLatestMinorTree(nameHash, major) != 0x0;
+    var (major,) = releaseDb.getMajorMinorPatch(versionHash);
+    return releaseDb.getLatestMinorTree(nameHash, major) != 0x0;
   }
 
   /// @dev Returns boolean indicating whether there is a latest patch version in the version tree indicated by the provided version has for the package indicated by the provided name hash.
+  /// @param releaseDb The address of the ReleaseDB
   /// @param nameHash The nameHash of the package to check against.
   /// @param versionHash The versionHash of the version to check.
   function hasLatestPatch(ReleaseDB releaseDb, bytes32 nameHash, bytes32 versionHash) constant returns (bool) {
-      var (major, minor,) = releaseDb.getMajorMinorPatch(versionHash);
-      return releaseDb.getLatestPatchTree(nameHash, major, minor) != 0x0;
+    var (major, minor,) = releaseDb.getMajorMinorPatch(versionHash);
+    return releaseDb.getLatestPatchTree(nameHash, major, minor) != 0x0;
   }
 
   /// @dev Returns boolean indicating whether there is a latest pre-release version in the version tree indicated by the provided version has for the package indicated by the provided name hash.
+  /// @param releaseDb The address of the ReleaseDB
   /// @param nameHash The nameHash of the package to check against.
   /// @param versionHash The versionHash of the version to check.
   function hasLatestPreRelease(ReleaseDB releaseDb, bytes32 nameHash, bytes32 versionHash) constant returns (bool) {
-      var (major, minor, patch) = releaseDb.getMajorMinorPatch(versionHash);
-      return releaseDb.getLatestPreReleaseTree(nameHash, major, minor, patch) != 0x0;
+    var (major, minor, patch) = releaseDb.getMajorMinorPatch(versionHash);
+    return releaseDb.getLatestPreReleaseTree(nameHash, major, minor, patch) != 0x0;
   }
 }

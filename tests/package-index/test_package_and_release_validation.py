@@ -10,7 +10,7 @@ def test_cannot_release_version_0(chain,
     ))
 
     assert package_index.call().packageExists('test') is False
-    assert package_index.call().versionExists('test', 0, 0, 0, '', '') is False
+    assert package_index.call().releaseExists('test', 0, 0, 0, '', '') is False
 
 
 @pytest.mark.parametrize(
@@ -24,25 +24,30 @@ def test_cannot_release_version_0(chain,
 )
 def test_cannot_release_already_released_version(chain,
                                                  package_index,
+                                                 package_db,
+                                                 release_db,
                                                  version):
+    name_hash = package_db.call().hashName('test')
+    version_hash = release_db.call().hashVersion(*version, build='')
+    release_hash = release_db.call().hashRelease(name_hash, version_hash)
+
     assert package_index.call().packageExists('test') is False
-    assert package_index.call().getNumReleases('test') == 0
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', *version, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
-    assert package_index.call().getNumReleases('test') == 1
-    assert package_index.call().getRelease('test', 0)[-1] == 'ipfs://some-ipfs-uri'
+    assert package_index.call().getPackageData('test')[2] == 1
+    assert package_index.call().getReleaseData(release_hash)[-3] == 'ipfs://some-ipfs-uri'
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', *version, build='', releaseLockFileURI='ipfs://some-other-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
-    assert package_index.call().getNumReleases('test') == 1
-    assert package_index.call().getRelease('test', 0)[-1] == 'ipfs://some-ipfs-uri'
+    assert package_index.call().getPackageData('test')[2] == 1
+    assert package_index.call().getReleaseData(release_hash)[-3] == 'ipfs://some-ipfs-uri'
 
 
 @pytest.mark.parametrize(
@@ -59,27 +64,26 @@ def test_cannot_backfile_version(chain,
                                  version_a,
                                  version_b):
     assert package_index.call().packageExists('test') is False
-    assert package_index.call().getNumReleases('test') == 0
-    assert package_index.call().versionExists('test', *version_a, build='') is False
-    assert package_index.call().versionExists('test', *version_b, build='') is False
+    assert package_index.call().releaseExists('test', *version_a, build='') is False
+    assert package_index.call().releaseExists('test', *version_b, build='') is False
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', *version_a, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
-    assert package_index.call().getNumReleases('test') == 1
-    assert package_index.call().versionExists('test', *version_a, build='') is True
-    assert package_index.call().versionExists('test', *version_b, build='') is False
+    assert package_index.call().getPackageData('test')[2] == 1
+    assert package_index.call().releaseExists('test', *version_a, build='') is True
+    assert package_index.call().releaseExists('test', *version_b, build='') is False
 
     chain.wait.for_receipt(package_index.transact().release(
         'test', *version_b, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
-    assert package_index.call().getNumReleases('test') == 1
-    assert package_index.call().versionExists('test', *version_a, build='') is True
-    assert package_index.call().versionExists('test', *version_b, build='') is False
+    assert package_index.call().getPackageData('test')[2] == 1
+    assert package_index.call().releaseExists('test', *version_a, build='') is True
+    assert package_index.call().releaseExists('test', *version_b, build='') is False
 
 
 @pytest.mark.parametrize(

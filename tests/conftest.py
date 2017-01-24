@@ -83,7 +83,22 @@ def release_db(chain, authority):
 
 
 @pytest.fixture()
-def package_index(chain, release_db, package_db, authority, authorize_call, whitelist_call):
+def release_validator(chain, authority):
+    _release_validator = chain.get_contract(
+        'ReleaseValidator',
+        deploy_transaction={'from': authority.call().owner()},
+    )
+    return _release_validator
+
+
+@pytest.fixture()
+def package_index(chain,
+                  authority,
+                  release_db,
+                  package_db,
+                  release_validator,
+                  authorize_call,
+                  whitelist_call):
     _package_index = chain.get_contract(
         'PackageIndex',
         deploy_transaction={'from': authority.call().owner()},
@@ -97,6 +112,16 @@ def package_index(chain, release_db, package_db, authority, authorize_call, whit
         'from': authority.call().owner(),
     }).setPackageDb(package_db.address))
     assert _package_index.call().packageDb() == package_db.address
+
+    chain.wait.for_receipt(_package_index.transact({
+        'from': authority.call().owner(),
+    }).setReleaseDb(release_db.address))
+    assert _package_index.call().releaseDb() == release_db.address
+
+    chain.wait.for_receipt(_package_index.transact({
+        'from': authority.call().owner(),
+    }).setReleaseValidator(release_validator.address))
+    assert _package_index.call().releaseValidator() == release_validator.address
 
     # Release DB
     authorize_call(
@@ -166,7 +191,7 @@ def test_package(chain, package_index, package_owner):
         releaseLockFileURI='ipfs://not-a-real-uri',
     ))
 
-    assert package_index.call().getPackageOwner(package_name) == package_owner
+    assert package_index.call().getPackageData(package_name)[0] == package_owner
 
     return package_name
 
@@ -232,3 +257,12 @@ def extract_event_logs(chain, web3, get_all_event_data):
         else:
             return log_entries
     return _extract_event_logs
+
+
+@pytest.fixture()
+def web3(request):
+    _chain = request.getfuncargvalue('chain')
+    _web3 = _chain.web3
+    _web3.currentProvider.rpc_methods.client.evm.block.gas_limit = 8000000
+    _web3.currentProvider.rpc_methods.evm_mine()
+    return _web3

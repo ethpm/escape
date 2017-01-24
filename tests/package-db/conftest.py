@@ -6,25 +6,7 @@ def package_db_perms(chain, web3, package_db, authorize_call):
     authorize_call(
         web3.eth.coinbase,
         package_db.address,
-        "setRelease(string,uint32,uint32,uint32,string,string,string)",
-        True,
-    )
-    authorize_call(
-        web3.eth.coinbase,
-        package_db.address,
-        "setPackageOwner(bytes32,address)",
-        True,
-    )
-    authorize_call(
-        web3.eth.coinbase,
-        package_db.address,
-        "setVersion(uint32,uint32,uint32,string,string)",
-        True,
-    )
-    authorize_call(
-        web3.eth.coinbase,
-        package_db.address,
-        "removeRelease(bytes32,string)",
+        "setPackage(string)",
         True,
     )
     authorize_call(
@@ -36,6 +18,6 @@ def package_db_perms(chain, web3, package_db, authorize_call):
     authorize_call(
         web3.eth.coinbase,
         package_db.address,
-        "updateLatestTree(bytes32)",
+        "setPackageOwner(bytes32,address)",
         True,
     )

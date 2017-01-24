@@ -53,14 +53,14 @@ contract PackageDB is Authorized {
     // Hash the name and the version for storing data
     bytes32 nameHash = hashName(name);
 
+    var package = _recordedPackages[nameHash];
+
     // Mark the package as existing if it isn't already tracked.
     if (!packageExists(nameHash)) {
-      var package = _recordedPackages[nameHash];
 
       // Set package data
       package.exists = true;
       package.createdAt = now;
-      package.updatedAt = now;
       package.name = name;
 
       // Add the nameHash to the list of all package nameHashes.
@@ -68,6 +68,8 @@ contract PackageDB is Authorized {
 
       PackageCreate(nameHash);
     }
+
+    package.updatedAt = now;
 
     return true;
   }

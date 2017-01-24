@@ -80,7 +80,7 @@ contract ReleaseDB is Authorized {
   /// @param releaseLockFileURI The URI for the release lockfile for this release.
   function setRelease(bytes32 nameHash,
                       bytes32 versionHash,
-                      string releaseLockFileURI) auth public returns (bool) {
+                      string releaseLockFileURI) public auth returns (bool) {
     bytes32 releaseHash = hashRelease(nameHash, versionHash);
 
     var release = _recordedReleases[releaseHash];
@@ -118,9 +118,9 @@ contract ReleaseDB is Authorized {
   /// @dev Removes a release from a package.  Returns success.
   /// @param releaseHash The release hash to be removed
   /// @param reason Explanation for why the removal happened.
-  function removeRelease(bytes32 releaseHash, string reason) auth
+  function removeRelease(bytes32 releaseHash, string reason) public
+                                                             auth
                                                              onlyIfReleaseExists(releaseHash) 
-                                                             public
                                                              returns (bool) {
     var (nameHash, versionHash,) = getReleaseData(releaseHash);
     var (major, minor, patch) = getMajorMinorPatch(versionHash);
@@ -149,6 +149,7 @@ contract ReleaseDB is Authorized {
 
     // Remove the release hash from the list of all release hashes
     _allReleaseHashes.remove(releaseHash);
+    _releaseHashesByNameHash[nameHash].remove(releaseHash);
 
     // Log the removal.
     ReleaseDelete(releaseHash, reason);
@@ -158,7 +159,7 @@ contract ReleaseDB is Authorized {
 
   /// @dev Updates each branch of the tree, replacing the current leaf node with this release hash if this release hash should be the new leaf.  Returns success.
   /// @param releaseHash The releaseHash to check.
-  function updateLatestTree(bytes32 releaseHash) auth public returns (bool) {
+  function updateLatestTree(bytes32 releaseHash) public auth returns (bool) {
     updateMajorTree(releaseHash);
     updateMinorTree(releaseHash);
     updatePatchTree(releaseHash);
@@ -176,7 +177,7 @@ contract ReleaseDB is Authorized {
                       uint32 minor,
                       uint32 patch,
                       string preRelease,
-                      string build) auth public returns (bytes32) {
+                      string build) public auth returns (bytes32) {
     bytes32 versionHash = hashVersion(major, minor, patch, preRelease, build);
 
     if (!_versionExists[versionHash]) {
@@ -295,7 +296,7 @@ contract ReleaseDB is Authorized {
   /// @param versionHash The version hash for the release version.
   function hashRelease(bytes32 nameHash,
                        bytes32 versionHash) constant returns (bytes32) {
-    return sha3(versionHash, versionHash);
+    return sha3(nameHash, versionHash);
   }
 
   /*
