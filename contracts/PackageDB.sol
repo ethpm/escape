@@ -1,112 +1,157 @@
 pragma solidity ^0.4.0;
 
-contract PackageDB {
-  address public owner;
+import {SemVersionLib} from "./SemVersionLib.sol";
+import {IndexedOrderedSetLib} from "./IndexedOrderedSetLib.sol";
+import {Authorized} from "./Authority.sol";
 
-  function PackageDB() {
-    owner = msg.sender;
+
+/// @title Database contract for a package index package data.
+/// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
+contract PackageDB is Authorized {
+  using SemVersionLib for SemVersionLib.SemVersion;
+  using IndexedOrderedSetLib for IndexedOrderedSetLib.IndexedOrderedSet;
+
+  struct Package {
+      bool exists;
+      uint createdAt;
+      uint updatedAt;
+      string name;
+      address owner;
   }
 
-  modifier onlyOwner() {
-    if (msg.sender == owner) {
+  // Package Data: (nameHash => value)
+  mapping (bytes32 => Package) _recordedPackages;
+  IndexedOrderedSetLib.IndexedOrderedSet _allPackageNameHashes;
+
+  // Events
+  event PackageReleaseAdd(bytes32 indexed nameHash, bytes32 indexed releaseHash);
+  event PackageReleaseRemove(bytes32 indexed nameHash, bytes32 indexed releaseHash);
+  event PackageCreate(bytes32 indexed nameHash);
+  event PackageDelete(bytes32 indexed nameHash, string reason);
+  event PackageOwnerUpdate(bytes32 indexed nameHash, address indexed oldOwner, address indexed newOwner);
+
+  /*
+   *  Modifiers
+   */
+  modifier onlyIfPackageExists(bytes32 nameHash) {
+    if (packageExists(nameHash)) {
       _;
     } else {
       throw;
     }
   }
 
-  struct Version {
-    uint32 major;
-    uint32 minor;
-    uint32 patch;
-  }
+  //
+  //  +-------------+
+  //  |  Write API  |
+  //  +-------------+
+  //
 
-  // Package data
-  mapping (bytes32 => string) public releaseLockFiles;
-  mapping (bytes32 => string) public packageNames;
-  mapping (bytes32 => Version[]) public packageVersions;
-  mapping (bytes32 => uint) public packageVersionIds;
-  mapping (bytes32 => address) public packageOwner;
-
-  // Data for determining the latest releases in each bucket.
-  mapping (bytes32 => uint32) public latestMajor; // sha3(name)
-  mapping (bytes32 => uint32) public latestMinor; // sha3(name, major)
-  mapping (bytes32 => uint32) public latestPatch; // sha3(name, major, minor);
-
-  function setRelease(string name,
-               uint32 major,
-               uint32 minor,
-               uint32 patch,
-               string releaseLockFileURI) onlyOwner returns (bool) {
-
+  /// @dev Creates or updates a release for a package.  Returns success.
+  /// @param name Package name
+  function setPackage(string name) public auth returns (bool){
     // Hash the name and the version for storing data
-    bytes32 nameHash = sha3(name);
-    bytes32 versionHash = sha3(name, major, minor, patch);
+    bytes32 nameHash = hashName(name);
 
-    // Get the version id of the version we're trying to set.
-    // If the version doesn't exist, that means we need to make room
-    // for the version in the packageVersions array.
-    // If it does exist, use its existing id.
-    // Note that if the package doesn't exist, the version won't exist either.
-    uint versionId = 0;
+    var package = _recordedPackages[nameHash];
 
-    if (!versionExists(name, major, minor, patch)) {
-      versionId = packageVersions[nameHash].length;
-      packageVersions[nameHash].length += 1;
-    } else {
-      versionId = packageVersionIds[versionHash];
+    // Mark the package as existing if it isn't already tracked.
+    if (!packageExists(nameHash)) {
+
+      // Set package data
+      package.exists = true;
+      package.createdAt = now;
+      package.name = name;
+
+      // Add the nameHash to the list of all package nameHashes.
+      _allPackageNameHashes.add(nameHash);
+
+      PackageCreate(nameHash);
     }
 
-    // Now store all the data
-    releaseLockFiles[versionHash] = releaseLockFileURI;
-    packageNames[nameHash] = name;
-    packageVersions[nameHash][versionId] = Version({
-      major: major,
-      minor: minor,
-      patch: patch
-    });
-    packageVersionIds[versionHash] = versionId;
-
-    // Set the latest releases in each of our three buckets.
-    // Note that hashing ensures we're managing the bucket correctly.
-    bytes32 minorHash = sha3(name, major);
-    bytes32 patchHash = sha3(name, major, minor);
-
-    if (major > latestMajor[nameHash]) {
-      latestMajor[nameHash] = major;
-    }
-
-    if (minor > latestMinor[minorHash]) {
-      latestMinor[minorHash] = minor;
-    }
-
-    if (patch > latestPatch[patchHash]) {
-      latestPatch[patchHash] = patch;
-    }
+    package.updatedAt = now;
 
     return true;
   }
 
-  function setPackageOwner(string name, address newPackageOwner) onlyOwner {
-    bytes32 nameHash = sha3(name);
-    packageOwner[nameHash] = newPackageOwner;
+  /// @dev Removes a package from the package db.  Packages with existing releases may not be removed.  Returns success.
+  /// @param nameHash The name hash of a package.
+  function removePackage(bytes32 nameHash, string reason) public 
+                                                          auth 
+                                                          onlyIfPackageExists(nameHash) 
+                                                          returns (bool) {
+    PackageDelete(nameHash, reason);
+
+    delete _recordedPackages[nameHash];
+    _allPackageNameHashes.remove(nameHash);
+
+    return true;
   }
 
-  function setOwner(address newOwner) onlyOwner {
-    owner = newOwner;
+  /// @dev Sets the owner of a package to the provided address.  Returns success.
+  /// @param nameHash The name hash of a package.
+  /// @param newPackageOwner The address of the new owner.
+  function setPackageOwner(bytes32 nameHash,
+                           address newPackageOwner) public 
+                                                    auth 
+                                                    onlyIfPackageExists(nameHash)
+                                                    returns (bool) {
+    PackageOwnerUpdate(nameHash, _recordedPackages[nameHash].owner, newPackageOwner);
+
+    _recordedPackages[nameHash].owner = newPackageOwner;
+    _recordedPackages[nameHash].updatedAt = now;
+
+    return true;
   }
 
-  function packageExists(string name) constant returns (bool) {
-    bytes32 nameHash = sha3(name);
-    return packageVersions[nameHash].length != 0;
+  //
+  //  +------------+
+  //  |  Read API  |
+  //  +------------+
+  //
+
+  /// @dev Query the existence of a package with the given name.  Returns boolean indicating whether the package exists.
+  /// @param nameHash The name hash of a package.
+  function packageExists(bytes32 nameHash) constant returns (bool) {
+    return _recordedPackages[nameHash].exists;
   }
 
-  function versionExists(string name, uint32 major, uint32 minor, uint32 patch) constant returns (bool) {
-    bytes32 versionHash = sha3(name, major, minor, patch);
-    return sha3(releaseLockFiles[versionHash]) != sha3("");
+  /// @dev Return the total number of packages
+  function getNumPackages() constant returns (uint) {
+    return _allPackageNameHashes.size();
   }
 
-  function numReleases(string name) constant returns (uint) {
-    return packageVersions[sha3(name)].length;
+  /// @dev Returns package namehash at the provided index from the set of all known name hashes.
+  /// @param idx The index of the package name hash to retrieve.
+  function getPackageNameHash(uint idx) constant returns (bytes32) {
+    return _allPackageNameHashes.get(idx);
+  }
+
+  /// @dev Returns information about the package.
+  /// @param nameHash The name hash to look up.
+  function getPackageData(bytes32 nameHash) constant 
+                                            onlyIfPackageExists(nameHash) 
+                                            returns (address packageOwner,
+                                                     uint createdAt,
+                                                     uint updatedAt) {
+    var package = _recordedPackages[nameHash];
+    return (package.owner, package.createdAt, package.updatedAt);
+  }
+
+  /// @dev Returns the package name for the given namehash
+  /// @param nameHash The name hash to look up.
+  function getPackageName(bytes32 nameHash) constant 
+                                            onlyIfPackageExists(nameHash) 
+                                            returns (string) {
+    return _recordedPackages[nameHash].name;
+  }
+
+  /*
+   *  Hash Functions
+   */
+  /// @dev Returns name hash for a given package name.
+  /// @param name Package name
+  function hashName(string name) constant returns (bytes32) {
+    return sha3(name);
   }
 }

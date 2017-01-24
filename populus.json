@@ -1,0 +1,25 @@
+{
+  "compiler": {
+    "settings": {
+      "optimize": true
+    }
+  },
+  "chains": {
+    "ropsten": {
+      "chain": {
+        "class": "populus.chain.ExternalChain"
+      },
+      "web3": {"$ref": "web3.Ropsten"}
+    }
+  },
+  "web3": {
+    "Ropsten": {
+      "provider": {
+        "class": "web3.providers.ipc.IPCProvider",
+        "settings": {
+          "ipc_path": "/Users/piper/Library/Ethereum/ropsten/geth.ipc"
+        }
+      }
+    }
+  }
+}
