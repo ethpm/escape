@@ -257,12 +257,3 @@ def extract_event_logs(chain, web3, get_all_event_data):
         else:
             return log_entries
     return _extract_event_logs
-
-
-@pytest.fixture()
-def web3(request):
-    _chain = request.getfuncargvalue('chain')
-    _web3 = _chain.web3
-    _web3.currentProvider.rpc_methods.client.evm.block.gas_limit = 8000000
-    _web3.currentProvider.rpc_methods.evm_mine()
-    return _web3

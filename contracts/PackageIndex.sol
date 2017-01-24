@@ -168,7 +168,7 @@ contract PackageIndex is Authorized {
                          string build) constant returns (bool) {
     var nameHash = packageDb.hashName(name);
     var versionHash = releaseDb.hashVersion(major, minor, patch, preRelease, build);
-    return releaseDb.releaseExists(releaseDb.hashRelease(packageDb.hashName(name), versionHash));
+    return releaseDb.releaseExists(releaseDb.hashRelease(nameHash, versionHash));
   }
 
   /// @dev Returns the number of packages in the index
@@ -274,6 +274,25 @@ contract PackageIndex is Authorized {
 
     return releaseHashes;
   }
+
+  /// @dev Returns the release lockfile for the given release data
+  /// @param name Package name
+  /// @param major The major portion of the semver version string.
+  /// @param minor The minor portion of the semver version string.
+  /// @param patch The patch portion of the semver version string.
+  /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
+  /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
+  function getReleaseLockileURI(string name,
+                                uint32 major,
+                                uint32 minor,
+                                uint32 patch,
+                                string preRelease,
+                                string build) constant returns (string) {
+    bytes32 versionHash = releaseDb.hashVersion(major, minor, patch, preRelease, build);
+    bytes32 releaseHash = releaseDb.hashRelease(packageDb.hashName(name), versionHash);
+    return getReleaseLockileURI(releaseHash);
+  }
+
 
   //
   // +----------------+
