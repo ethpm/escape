@@ -7,7 +7,7 @@ function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS;
   return {
     packageIndexAddress: packageIndexAddress,
-    packageIndexData: _.get(state.packageIndex, packageIndexAddress, null),
+    packageIndexData: state.packageIndex[packageIndexAddress],
   }
 }
 
@@ -26,6 +26,9 @@ export default connect(mapStateToProps)(React.createClass({
                   <BSCard.Block>
                     <BSCard.Text>
                       The package index contains {this.props.packageIndexData.numReleases} releases from {this.props.packageIndexData.numPackages} packages.
+                      <Link className='nav-item nav-link' to='/registry/packages'>
+                        Browse Packages
+                      </Link>
                     </BSCard.Text>
                   </BSCard.Block>
                 </BSCard>

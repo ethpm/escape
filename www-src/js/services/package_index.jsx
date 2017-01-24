@@ -36,12 +36,26 @@ export function getPackageDbAddress(packageIndexAddress) {
   })
 }
 
+export function getReleaseDbAddress(packageIndexAddress) {
+  return new Promise(function(resolve, reject) {
+    getPackageIndex(packageIndexAddress).then(function(packageIndex) {
+      packageIndex.releaseDb.call(function(err, result) {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  })
+}
+
 export function getNumPackages(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
       packageIndex.getNumPackages.call(function(err, result) {
         if (!err) {
-          resolve(result)
+          resolve(result.toNumber())
         } else {
           reject(err)
         }
@@ -54,6 +68,21 @@ export function getNumReleases(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
       packageIndex.getNumReleases.call(function(err, result) {
+        if (!err) {
+          resolve(result.toNumber())
+        } else {
+          reject(err)
+        }
+      })
+    })
+  })
+}
+
+
+export function getPackageName(packageIndexAddress, nameIdx) {
+  return new Promise(function(resolve, reject) {
+    getPackageIndex(packageIndexAddress).then(function(packageIndex) {
+      packageIndex.getPackageName.call(nameIdx, function(err, result) {
         if (!err) {
           resolve(result)
         } else {

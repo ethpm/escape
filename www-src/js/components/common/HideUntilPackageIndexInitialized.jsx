@@ -10,21 +10,19 @@ function mapStateToProps(state) {
   let isInitialized = _.get(packageIndexData, 'isInitialized')
   return {
     _packageIndexAddress: packageIndexAddress,
-    _isInitialized: isInitialized,
+    _isPackageIndexInitialized: isInitialized,
   }
 }
 
 export default function HideUntilPackageIndexInitialized(WrappedComponent) {
   return connect(mapStateToProps)(React.createClass({
     componentWillMount() {
-      if (!this.props._isInitialized) {
-        this.props.dispatch(actions.initializePackageIndex(this.props._packageIndexAddress))
-      }
+      this.props.dispatch(actions.initializeIndex(this.props._packageIndexAddress))
     },
     render() {
-      if (this.props._isInitialized) {
+      if (this.props._isPackageIndexInitialized) {
         return (
-          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_packageIndexData')} />
+          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isPackageIndexInitialized')} />
         )
       } else {
         return <span><LoadingSpinner /> Waiting for package index to load.</span>
