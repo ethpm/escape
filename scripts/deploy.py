@@ -195,6 +195,46 @@ def set_package_db_address_on_package_index(chain, package_index, package_db):
     return
 
 
+def set_release_db_address_on_package_index(chain, package_index, release_db):
+    if package_index.call().releaseDb() == release_db.address:
+        click.echo("Release DB Address already set")
+        return
+    click.echo("Setting ReleaseDB address for ReleaseIndex contract")
+    click.echo("Sending set transaction... ", nl=False)
+    set_txn_hash = package_index.transact().setReleaseDb(release_db.address)
+    click.echo("SENT")
+    click.echo("Set Transaction Hash: {0}".format(set_txn_hash))
+    click.echo("Waiting for transaction to be mined... ", nl=False)
+    chain.wait.for_receipt(set_txn_hash, timeout=600)
+    click.echo("MINED")
+
+    if package_index.call().releaseDb() != release_db.address:
+        click.echo("Something is wrong. ReleaseDb address not set on index.")
+        import pdb; pdb.set_trace()
+        raise ValueError("Something failed")
+    return
+
+
+def set_release_validator_address_on_package_index(chain, package_index, release_validator):
+    if package_index.call().releaseValidator() == release_validator.address:
+        click.echo("ReleaseValidator Address already set")
+        return
+    click.echo("Setting ReleaseValidator address for ReleaseIndex contract")
+    click.echo("Sending set transaction... ", nl=False)
+    set_txn_hash = package_index.transact().setReleaseValidator(release_validator.address)
+    click.echo("SENT")
+    click.echo("Set Transaction Hash: {0}".format(set_txn_hash))
+    click.echo("Waiting for transaction to be mined... ", nl=False)
+    chain.wait.for_receipt(set_txn_hash, timeout=600)
+    click.echo("MINED")
+
+    if package_index.call().releaseValidator() != release_validator.address:
+        click.echo("Something is wrong. ReleaseDb address not set on index.")
+        import pdb; pdb.set_trace()
+        raise ValueError("Something failed")
+    return
+
+
 @click.command()
 @click.argument(
     'chain_name',
@@ -204,13 +244,7 @@ def set_package_db_address_on_package_index(chain, package_index, package_db):
     'authority_address',
     '--authority',
     '-a',
-    default='0x149c1a0631470aa70fc3a518af5c69d063f455ac',
-)
-@click.option(
-    'enumerable_mapping_lib_address',
-    '--enumerable-mapping-lib',
-    '-e',
-    default='0x6574b5754dcef9475aefa314a6e1128b7af0678a',
+    default='0xe7e195bbeb00b22f33e700c54044910cad1106a6',
 )
 @click.option(
     'sem_version_lib_address',
@@ -228,37 +262,54 @@ def set_package_db_address_on_package_index(chain, package_index, package_db):
     'package_db_address',
     '--package-db',
     '-d',
-    default='0xe499c6aeb304fb9aa62be285a38815209eb820a5',
+    default='0x2954d12773523f864af69d6063e6e0357ee41394',
+)
+@click.option(
+    'release_db_address',
+    '--release-db',
+    '-r',
+    default='0xbd84152ebb8684a172c939b158637565014dfbe6',
+)
+@click.option(
+    'release_validator_address',
+    '--release-validator',
+    '-v',
+    default='0x916ddf25ac34e082d5ba11edac03ed3c418e9287',
 )
 @click.option(
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xa5c180ea1b8cba0ec417c32e7a3d5b556c4e0523',
+    default='0x8db148d0a54887ea7078a0a0bbb94ada1517b828',
 )
 def deploy(chain_name,
            authority_address,
-           enumerable_mapping_lib_address,
            indexed_ordered_set_lib_address,
            sem_version_lib_address,
            package_db_address,
+           release_db_address,
+           release_validator_address,
            package_index_address):
     """
-    1. Deploy WhitelistAuthority
-    2. Deploy Libraries:
+    #. Deploy WhitelistAuthority
+    #. Deploy Libraries:
         - EnumerableMappingLib
         - SemVersionLib
         - IndexedOrderedSetLib
-    3. Deploy PackageDB
+    #. Deploy PackageDB
         - set Authority
-    4. Deploy PackageIndex
+    #. Deploy ReleaseDB
+        - set Authority
+    #. Deploy ReleaseValidator
+    #. Deploy PackageIndex
         - set PackageDB
         - set Authority
-    5. Setup Authorizations
-        - PackageIndex -> PackageDB.setRelease(...)
+    #. Setup Authorizations
+        - PackageIndex -> PackageDB.setPackage(...)
         - PackageIndex -> PackageDB.setPackageOwner(...)
-        - * -> PackageDB.setVersion(...)
-        - * -> PackageDB.updateLatestTree(...)
+        - PackageIndex -> ReleaseDB.setRelease(...)
+        - * -> ReleaseDB.setVersion(...)
+        - * -> ReleaseDB.updateLatestTree(...)
         - * -> PackageIndex.release(...)
         - * -> PackageIndex.transferPackageOwner(...)
     """
@@ -279,38 +330,43 @@ def deploy(chain_name,
         else:
             authority = deploy_contract(chain, 'WhitelistAuthority')
 
+        if release_validator_address:
+            release_validator = chain.contract_factories.ReleaseValidator(address=release_validator_address)
+        else:
+            release_validator = deploy_contract(chain, 'ReleaseValidator')
+
+        if sem_version_lib_address:
+            sem_version_lib = chain.contract_factories.SemVersionLib(
+                address=sem_version_lib_address,
+            )
+        else:
+            sem_version_lib = deploy_contract(chain, 'SemVersionLib')
+
+        if indexed_ordered_set_lib_address:
+            indexed_ordered_set_lib = chain.contract_factories.IndexedOrderedSetLib(
+                address=indexed_ordered_set_lib_address,
+            )
+        else:
+            indexed_ordered_set_lib = deploy_contract(chain, 'IndexedOrderedSetLib')
+
+        link_dependencies = {
+            'SemVersionLib': sem_version_lib.address,
+            'IndexedOrderedSetLib': indexed_ordered_set_lib.address,
+        }
+
         if package_db_address:
             package_db = chain.contract_factories.PackageDB(
                 address=package_db_address,
             )
         else:
-            if enumerable_mapping_lib_address:
-                enumerable_mapping_lib = chain.contract_factories.EnumerableMappingLib(
-                    address=enumerable_mapping_lib_address,
-                )
-            else:
-                enumerable_mapping_lib = deploy_contract(chain, 'EnumerableMappingLib')
-
-            if sem_version_lib_address:
-                sem_version_lib = chain.contract_factories.SemVersionLib(
-                    address=sem_version_lib_address,
-                )
-            else:
-                sem_version_lib = deploy_contract(chain, 'SemVersionLib')
-
-            if indexed_ordered_set_lib_address:
-                indexed_ordered_set_lib = chain.contract_factories.IndexedOrderedSetLib(
-                    address=indexed_ordered_set_lib_address,
-                )
-            else:
-                indexed_ordered_set_lib = deploy_contract(chain, 'IndexedOrderedSetLib')
-
-            link_dependencies = {
-                'EnumerableMappingLib': enumerable_mapping_lib.address,
-                'SemVersionLib': sem_version_lib.address,
-                'IndexedOrderedSetLib': indexed_ordered_set_lib.address,
-            }
             package_db = deploy_contract(chain, 'PackageDB', link_dependencies=link_dependencies)
+
+        if release_db_address:
+            release_db = chain.contract_factories.ReleaseDB(
+                address=release_db_address,
+            )
+        else:
+            release_db = deploy_contract(chain, 'ReleaseDB', link_dependencies=link_dependencies)
 
         if package_index_address:
             package_index = chain.contract_factories.PackageIndex(address=package_index_address)
@@ -320,16 +376,45 @@ def deploy(chain_name,
         click.echo("Beginning permission setup.")
 
         set_package_db_address_on_package_index(chain, package_index, package_db)
+        set_release_db_address_on_package_index(chain, package_index, release_db)
+        set_release_validator_address_on_package_index(chain, package_index, release_validator)
+
         set_authority(chain, authority, package_db)
+        set_authority(chain, authority, release_db)
         set_authority(chain, authority, package_index)
 
+        # Release DB
+        set_can_call(
+            chain=chain,
+            authority=authority,
+            caller_address=package_index.address,
+            code_address=release_db.address,
+            can_call=True,
+            function_signature="setRelease(bytes32,bytes32,string)",
+        )
+        set_anyone_can_call(
+            chain=chain,
+            authority=authority,
+            code_address=release_db.address,
+            can_call=True,
+            function_signature="setVersion(uint32,uint32,uint32,string,string)",
+        )
+        set_anyone_can_call(
+            chain=chain,
+            authority=authority,
+            code_address=release_db.address,
+            can_call=True,
+            function_signature="updateLatestTree(bytes32)",
+        )
+
+        # Package DB
         set_can_call(
             chain=chain,
             authority=authority,
             caller_address=package_index.address,
             code_address=package_db.address,
             can_call=True,
-            function_signature="setRelease(string,uint32,uint32,uint32,string,string,string)",
+            function_signature="setPackage(string)",
         )
         set_can_call(
             chain=chain,
@@ -339,13 +424,8 @@ def deploy(chain_name,
             can_call=True,
             function_signature="setPackageOwner(bytes32,address)",
         )
-        set_anyone_can_call(
-            chain=chain,
-            authority=authority,
-            code_address=package_db.address,
-            can_call=True,
-            function_signature="setVersion(uint32,uint32,uint32,string,string)",
-        )
+
+        # Package Index
         set_anyone_can_call(
             chain=chain,
             authority=authority,

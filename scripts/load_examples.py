@@ -26,7 +26,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
         )
     )
     version_info = semver.parse_version_info(version_string)
-    release_exists = package_index.call().versionExists(
+    release_exists = package_index.call().releaseExists(
         name=package_name,
         major=version_info.major,
         minor=version_info.minor,
@@ -54,7 +54,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
     chain.wait.for_receipt(release_txn_hash, timeout=600)
     click.echo("MINED")
 
-    was_successful = package_index.call().versionExists(
+    was_successful = package_index.call().releaseExists(
         name=package_name,
         major=version_info.major,
         minor=version_info.minor,
@@ -78,7 +78,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xa5c180ea1b8cba0ec417c32e7a3d5b556c4e0523',
+    default='0x8db148d0a54887ea7078a0a0bbb94ada1517b828',
 )
 def load_examples(chain_name,
                   package_index_address):
