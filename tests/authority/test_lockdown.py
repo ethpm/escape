@@ -26,7 +26,7 @@ def test_locking_down_package_index_contract(chain,
     chain.wait.for_receipt(package_index.transact().transferPackageOwner(
         'test-1', accounts[2],
     ))
-    assert package_index.call().getPackageOwner('test-1') == accounts[2]
+    assert package_index.call().getPackageData('test-1')[0] == accounts[2]
 
     whitelist_call(
         package_index.address,
