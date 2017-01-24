@@ -1,0 +1,11 @@
+{
+  "useFlexbox": true,
+  "bootstrapVersion": 4,
+  "styleLoaders": [
+    "style-loader",
+    "css-loader",
+    "postcss-loader",
+    "sass-loader",
+  ],
+  "extractStyles": true,
+}
