@@ -51,6 +51,20 @@ def test_retrieving_release_by_index(chain, web3, package_index, package_db, rel
     assert actual_release_hash_b == release_hash_b
 
 
+def test_direct_retrieval_of_lockfile_uri(chain, web3, package_index, package_db, release_db):
+    name_hash = package_db.call().hashName('test')
+    release_info = ['test', 2, 3, 4, 'c', 'd', 'ipfs://some--ipfs-uri']
+
+    version_hash = release_db.call().hashVersion(*release_info[1:-1])
+
+    release_hash = release_db.call().hashRelease(name_hash, version_hash)
+
+    receipt = chain.wait.for_receipt(package_index.transact().release(*release_info))
+
+    lockfile_uri = package_index.call().getReleaseLockileURI(*release_info[:-1])
+    assert lockfile_uri == release_info[-1]
+
+
 def test_retrieving_release_by_release_hash(chain,
                                             web3,
                                             package_index,
