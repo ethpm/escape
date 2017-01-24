@@ -280,7 +280,7 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'package_index_address',
     '--package-index',
     '-i',
-    default='0x1c5e00e663b403ea740317e14c740f9186e574d6',
+    default='0xb875f8730247c6aaee1eca35eb2bed4cf54209ec',
 )
 def deploy(chain_name,
            authority_address,
