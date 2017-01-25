@@ -14,7 +14,7 @@ contract ReleaseValidator {
   /// @param majorMinorPatch The major/minor/patch portion of the version string.
   /// @param preRelease The pre-release portion of the version string.
   /// @param build The build portion of the version string.
-  /// @param releaseLockFileURI The URI of the release lockfile.
+  /// @param releaseLockfileURI The URI of the release lockfile.
   function validateRelease(PackageDB packageDb,
                            ReleaseDB releaseDb,
                            address callerAddress,
@@ -22,7 +22,7 @@ contract ReleaseValidator {
                            uint32[3] majorMinorPatch,
                            string preRelease,
                            string build,
-                           string releaseLockFileURI) constant returns (bool) {
+                           string releaseLockfileURI) constant returns (bool) {
     if (address(packageDb) == 0x0 || address(releaseDb) == 0x0) throw;
 
     if (!validateAuthorization(packageDb, callerAddress, name)) {
@@ -34,7 +34,7 @@ contract ReleaseValidator {
     } else if (!validatePackageName(packageDb, name)) {
       // invalid package name.
       return false;
-    } else if (!validateReleaseLockfileURI(releaseLockFileURI)) {
+    } else if (!validateReleaseLockfileURI(releaseLockfileURI)) {
       // disallow empty release lockfile URI
       return false;
     } else if (!validateReleaseVersion(majorMinorPatch)) {
@@ -120,9 +120,9 @@ contract ReleaseValidator {
   }
 
   /// @dev Returns boolean whether the provided release lockfile URI is valid.
-  /// @param releaseLockFileURI The URI for a release lockfile.
-  function validateReleaseLockfileURI(string releaseLockFileURI) constant returns (bool) {
-    if (bytes(releaseLockFileURI).length ==0) {
+  /// @param releaseLockfileURI The URI for a release lockfile.
+  function validateReleaseLockfileURI(string releaseLockfileURI) constant returns (bool) {
+    if (bytes(releaseLockfileURI).length ==0) {
       return false;
     }
     return true;

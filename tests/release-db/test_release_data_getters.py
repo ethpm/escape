@@ -20,7 +20,7 @@ def test_creating_initial_release(chain,
     txn_receipt = chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
         versionHash=version_hash,
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     timestamp = web3.eth.getBlock(txn_receipt['blockHash'])['timestamp']

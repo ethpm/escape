@@ -17,7 +17,7 @@ contract ReleaseDB is Authorized {
     uint updatedAt;
     bytes32 nameHash;
     bytes32 versionHash;
-    string releaseLockFileURI;
+    string releaseLockfileURI;
   }
 
   // Release Data: (releaseHash => value)
@@ -77,10 +77,10 @@ contract ReleaseDB is Authorized {
   /// @dev Creates or updates a release for a package.  Returns success.
   /// @param nameHash The name hash of the package.
   /// @param versionHash The version hash for the release version.
-  /// @param releaseLockFileURI The URI for the release lockfile for this release.
+  /// @param releaseLockfileURI The URI for the release lockfile for this release.
   function setRelease(bytes32 nameHash,
                       bytes32 versionHash,
-                      string releaseLockFileURI) public auth returns (bool) {
+                      string releaseLockfileURI) public auth returns (bool) {
     bytes32 releaseHash = hashRelease(nameHash, versionHash);
 
     var release = _recordedReleases[releaseHash];
@@ -107,7 +107,7 @@ contract ReleaseDB is Authorized {
     release.updatedAt = now;
 
     // Save the release lockfile URI
-    release.releaseLockFileURI = releaseLockFileURI;
+    release.releaseLockfileURI = releaseLockfileURI;
 
     // Track latest released versions for each branch of the release tree.
     updateLatestTree(releaseHash);
@@ -271,7 +271,7 @@ contract ReleaseDB is Authorized {
   function getReleaseLockfileURI(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
                                                      constant 
                                                      returns (string) {
-    return _recordedReleases[releaseHash].releaseLockFileURI;
+    return _recordedReleases[releaseHash].releaseLockfileURI;
   }
 
   /*

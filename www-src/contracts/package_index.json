@@ -157,7 +157,7 @@
           "type": "string"
         },
         {
-          "name": "releaseLockFileURI",
+          "name": "releaseLockfileURI",
           "type": "string"
         },
         {
@@ -253,7 +253,7 @@
           "type": "string"
         },
         {
-          "name": "releaseLockFileURI",
+          "name": "releaseLockfileURI",
           "type": "string"
         }
       ],

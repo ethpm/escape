@@ -57,16 +57,16 @@ contract PackageIndex is Authorized {
   /// @param patch The patch portion of the semver version string.
   /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
   /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
-  /// @param releaseLockFileURI The URI for the release lockfile for this release.
+  /// @param releaseLockfileURI The URI for the release lockfile for this release.
   function release(string name,
                    uint32 major,
                    uint32 minor,
                    uint32 patch,
                    string preRelease,
                    string build,
-                   string releaseLockFileURI) public auth returns (bool) {
+                   string releaseLockfileURI) public auth returns (bool) {
     if (address(packageDb) == 0x0 || address(releaseDb) == 0x0 || address(releaseValidator) == 0x0) throw;
-    return release(name, [major, minor, patch], preRelease, build, releaseLockFileURI);
+    return release(name, [major, minor, patch], preRelease, build, releaseLockfileURI);
   }
 
   /// @dev Creates a a new release for the named package.  If this is the first release for the given package then this will also assign msg.sender as the owner of the package.  Returns success.
@@ -75,12 +75,12 @@ contract PackageIndex is Authorized {
   /// @param majorMinorPatch The major/minor/patch portion of the version string.
   /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
   /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
-  /// @param releaseLockFileURI The URI for the release lockfile for this release.
+  /// @param releaseLockfileURI The URI for the release lockfile for this release.
   function release(string name,
                    uint32[3] majorMinorPatch,
                    string preRelease,
                    string build,
-                   string releaseLockFileURI) internal returns (bool) {
+                   string releaseLockfileURI) internal returns (bool) {
     bytes32 versionHash = releaseDb.hashVersion(majorMinorPatch[0], majorMinorPatch[1], majorMinorPatch[2], preRelease, build);
 
     // If the version for this release is not in the version database, populate
@@ -90,7 +90,7 @@ contract PackageIndex is Authorized {
       releaseDb.setVersion(majorMinorPatch[0], majorMinorPatch[1], majorMinorPatch[2], preRelease, build);
     }
 
-    if (!releaseValidator.validateRelease(packageDb, releaseDb, msg.sender, name, majorMinorPatch, preRelease, build, releaseLockFileURI)) {
+    if (!releaseValidator.validateRelease(packageDb, releaseDb, msg.sender, name, majorMinorPatch, preRelease, build, releaseLockfileURI)) {
       // Release is invalid
       return false;
     }
@@ -110,7 +110,7 @@ contract PackageIndex is Authorized {
     }
 
     // Create the release and add it to the list of package release hashes.
-    releaseDb.setRelease(nameHash, versionHash, releaseLockFileURI);
+    releaseDb.setRelease(nameHash, versionHash, releaseLockfileURI);
 
     // Log the release.
     PackageRelease(nameHash, releaseDb.hashRelease(nameHash, versionHash));
@@ -202,7 +202,7 @@ contract PackageIndex is Authorized {
                                                                  uint32 patch,
                                                                  string preRelease,
                                                                  string build,
-                                                                 string releaseLockFileURI,
+                                                                 string releaseLockfileURI,
                                                                  uint createdAt,
                                                                  uint updatedAt) {
     bytes32 versionHash;
@@ -210,8 +210,8 @@ contract PackageIndex is Authorized {
     (major, minor, patch) = releaseDb.getMajorMinorPatch(versionHash);
     preRelease = getPreRelease(releaseHash);
     build = getBuild(releaseHash);
-    releaseLockFileURI = getReleaseLockfileURI(releaseHash);
-    return (major, minor, patch, preRelease, build, releaseLockFileURI, createdAt, updatedAt);
+    releaseLockfileURI = getReleaseLockfileURI(releaseHash);
+    return (major, minor, patch, preRelease, build, releaseLockfileURI, createdAt, updatedAt);
   }
 
   /// @dev Returns the release hash at the provide index in the array of all release hashes.

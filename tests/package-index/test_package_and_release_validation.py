@@ -34,7 +34,7 @@ def test_cannot_release_already_released_version(chain,
     assert package_index.call().packageExists('test') is False
 
     chain.wait.for_receipt(package_index.transact().release(
-        'test', *version, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
+        'test', *version, build='', releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
@@ -42,7 +42,7 @@ def test_cannot_release_already_released_version(chain,
     assert package_index.call().getReleaseData(release_hash)[-3] == 'ipfs://some-ipfs-uri'
 
     chain.wait.for_receipt(package_index.transact().release(
-        'test', *version, build='', releaseLockFileURI='ipfs://some-other-ipfs-uri',
+        'test', *version, build='', releaseLockfileURI='ipfs://some-other-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
@@ -68,7 +68,7 @@ def test_cannot_backfile_version(chain,
     assert package_index.call().releaseExists('test', *version_b, build='') is False
 
     chain.wait.for_receipt(package_index.transact().release(
-        'test', *version_a, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
+        'test', *version_a, build='', releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
@@ -77,7 +77,7 @@ def test_cannot_backfile_version(chain,
     assert package_index.call().releaseExists('test', *version_b, build='') is False
 
     chain.wait.for_receipt(package_index.transact().release(
-        'test', *version_b, build='', releaseLockFileURI='ipfs://some-ipfs-uri',
+        'test', *version_b, build='', releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True

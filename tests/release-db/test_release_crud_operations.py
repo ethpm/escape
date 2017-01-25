@@ -12,7 +12,7 @@ def test_creating_initial_release(chain, package_db, release_db, extract_event_l
     txn_receipt = chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
         versionHash=version_hash,
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert release_db.call().releaseExists(release_hash) is True
@@ -32,7 +32,7 @@ def test_updating_release(chain, package_db, release_db, extract_event_logs):
     chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
         versionHash=version_hash,
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert release_db.call().releaseExists(release_hash) is True
@@ -42,7 +42,7 @@ def test_updating_release(chain, package_db, release_db, extract_event_logs):
     txn_receipt = chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
         versionHash=version_hash,
-        releaseLockFileURI='ipfs://some-updated-ipfs-uri',
+        releaseLockfileURI='ipfs://some-updated-ipfs-uri',
     ))
 
     assert release_db.call().releaseExists(release_hash) is True
@@ -64,7 +64,7 @@ def test_deleting_a_release(chain, package_db, release_db, extract_event_logs):
     chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
         versionHash=version_hash,
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert release_db.call().releaseExists(release_hash) is True

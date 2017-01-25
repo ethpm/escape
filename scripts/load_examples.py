@@ -46,7 +46,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
         patch=version_info.patch,
         preRelease=version_info.prerelease or '',
         build=version_info.build or '',
-        releaseLockFileURI=release_lockfile_uri,
+        releaseLockfileURI=release_lockfile_uri,
     )
     click.echo("SENT")
     click.echo("Release Transaction Hash: {0}".format(release_txn_hash))
@@ -78,7 +78,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xc5dadcbf033bbc7c634445cd8b60eb504ef348d1',
+    default='0xbab799ff7d9e13a50696a8bebb7a1b77ae519586',
 )
 def load_examples(chain_name,
                   package_index_address):
