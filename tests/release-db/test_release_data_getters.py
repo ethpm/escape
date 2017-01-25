@@ -33,4 +33,4 @@ def test_creating_initial_release(chain,
     assert release_db.call().getMajorMinorPatch(version_hash) == [1, 2, 3]
     assert release_db.call().getPreRelease(release_hash) == 'beta.1'
     assert release_db.call().getBuild(release_hash) == 'build.abcd1234'
-    assert release_db.call().getReleaseLockileURI(release_hash) == 'ipfs://some-ipfs-uri'
+    assert release_db.call().getReleaseLockfileURI(release_hash) == 'ipfs://some-ipfs-uri'
