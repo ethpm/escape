@@ -269,8 +269,8 @@ contract ReleaseDB is Authorized {
   /// @dev Returns the URI of the release lockfile for the given release hash.
   /// @param releaseHash Release hash
   function getReleaseLockfileURI(bytes32 releaseHash) onlyIfReleaseExists(releaseHash)
-                                                     constant 
-                                                     returns (string) {
+                                                      constant 
+                                                      returns (string) {
     return _recordedReleases[releaseHash].releaseLockfileURI;
   }
 
