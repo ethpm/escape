@@ -53,7 +53,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     v124b1bah = release_db.call().hashRelease(name_hash, v124b1bavh)
     v124h = release_db.call().hashRelease(name_hash, v124vh)
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v100vh, releaseLockFileURI='ipfs://some-ipfs-uri-a'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v100vh, releaseLockfileURI='ipfs://some-ipfs-uri-a'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 1
 
@@ -62,7 +62,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPatchTree(name_hash, 1, 0) == v100h
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110vh, releaseLockFileURI='ipfs://some-ipfs-uri-b'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110vh, releaseLockfileURI='ipfs://some-ipfs-uri-b'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 2
 
@@ -73,7 +73,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 0) == v100h
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v101vh, releaseLockFileURI='ipfs://some-ipfs-uri-c'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v101vh, releaseLockfileURI='ipfs://some-ipfs-uri-c'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 3
 
@@ -85,7 +85,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 0, 1) == v101h
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v200vh, releaseLockFileURI='ipfs://some-ipfs-uri-d'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v200vh, releaseLockfileURI='ipfs://some-ipfs-uri-d'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 4
 
@@ -100,7 +100,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 1, 0) == v110h
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v123vh, releaseLockFileURI='ipfs://some-ipfs-uri-e'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v123vh, releaseLockfileURI='ipfs://some-ipfs-uri-e'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 5
 
@@ -117,7 +117,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 3) == v123h
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bzvh, releaseLockFileURI='ipfs://some-ipfs-uri-f'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bzvh, releaseLockfileURI='ipfs://some-ipfs-uri-f'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 6
 
@@ -135,7 +135,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124a1bzh
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bavh, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bavh, releaseLockfileURI='ipfs://some-ipfs-uri-g'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 7
 
@@ -153,7 +153,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124a1bah
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a2bavh, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a2bavh, releaseLockfileURI='ipfs://some-ipfs-uri-g'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 8
 
@@ -171,7 +171,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124a2bah
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a10bavh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a10bavh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 9
 
@@ -189,7 +189,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124a10bah
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124b1bavh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124b1bavh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 10
 
@@ -207,7 +207,7 @@ def test_package_version_tree_tracking(chain, package_db, release_db):
     assert release_db.call().getLatestPreReleaseTree(name_hash, 1, 2, 4) == v124b1bah
     assert release_db.call().getLatestPreReleaseTree(name_hash, 2, 0, 0) == v200h
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124vh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124vh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
 
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 11
 
@@ -272,18 +272,18 @@ def test_version_tree_is_updated_when_releases_are_removed(chain, package_db, re
     v124b1bavh = release_db.call().hashVersion(*v124b1ba[1:])
     v124vh = release_db.call().hashVersion(*v124[1:])
 
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v100vh, releaseLockFileURI='ipfs://some-ipfs-uri-a'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110b1vh, releaseLockFileURI='ipfs://some-ipfs-uri-b1'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110vh, releaseLockFileURI='ipfs://some-ipfs-uri-b'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v101vh, releaseLockFileURI='ipfs://some-ipfs-uri-c'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v200vh, releaseLockFileURI='ipfs://some-ipfs-uri-d'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v123vh, releaseLockFileURI='ipfs://some-ipfs-uri-e'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bzvh, releaseLockFileURI='ipfs://some-ipfs-uri-f'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bavh, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a2bavh, releaseLockFileURI='ipfs://some-ipfs-uri-g'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a10bavh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124b1bavh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
-    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124vh, releaseLockFileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v100vh, releaseLockfileURI='ipfs://some-ipfs-uri-a'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110b1vh, releaseLockfileURI='ipfs://some-ipfs-uri-b1'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v110vh, releaseLockfileURI='ipfs://some-ipfs-uri-b'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v101vh, releaseLockfileURI='ipfs://some-ipfs-uri-c'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v200vh, releaseLockfileURI='ipfs://some-ipfs-uri-d'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v123vh, releaseLockfileURI='ipfs://some-ipfs-uri-e'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bzvh, releaseLockfileURI='ipfs://some-ipfs-uri-f'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a1bavh, releaseLockfileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a2bavh, releaseLockfileURI='ipfs://some-ipfs-uri-g'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124a10bavh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124b1bavh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
+    chain.wait.for_receipt(release_db.transact().setRelease(name_hash, v124vh, releaseLockfileURI='ipfs://some-ipfs-uri-h'))
 
     # v200h
     # 1: v124h

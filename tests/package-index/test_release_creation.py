@@ -11,7 +11,7 @@ def test_creating_initial_release(chain, web3, package_index):
         patch=3,
         preRelease='',
         build='',
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists('test') is True
@@ -59,7 +59,7 @@ def test_only_owner_can_release_package(chain,
         patch=0,
         preRelease='',
         build='',
-        releaseLockFileURI='ipfs://some-ipfs-uri',
+        releaseLockfileURI='ipfs://some-ipfs-uri',
     ))
 
     assert package_index.call().packageExists(test_package) is True

@@ -188,7 +188,7 @@ def test_package(chain, package_index, package_owner):
         patch=3,
         preRelease='',
         build='',
-        releaseLockFileURI='ipfs://not-a-real-uri',
+        releaseLockfileURI='ipfs://not-a-real-uri',
     ))
 
     assert package_index.call().getPackageData(package_name)[0] == package_owner
