@@ -35,7 +35,7 @@ from populus import Project
     'release_db_address',
     '--release-db',
     '-r',
-    default='0xfa36edc9aab94baffcdcf466ddd93990ebe8fe45',
+    default='0x974b8c7f490ceb30d24932a45a386d0b29840cec',
 )
 @click.option(
     'release_validator_address',
@@ -47,7 +47,7 @@ from populus import Project
     'package_index_address',
     '--package-index',
     '-i',
-    default='0x1c5e00e663b403ea740317e14c740f9186e574d6',
+    default='0xc5dadcbf033bbc7c634445cd8b60eb504ef348d1',
 )
 def deploy(chain_name,
            authority_address,

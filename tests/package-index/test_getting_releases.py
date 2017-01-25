@@ -61,7 +61,7 @@ def test_direct_retrieval_of_lockfile_uri(chain, web3, package_index, package_db
 
     receipt = chain.wait.for_receipt(package_index.transact().release(*release_info))
 
-    lockfile_uri = package_index.call().getReleaseLockileURI(*release_info[:-1])
+    lockfile_uri = package_index.call().getReleaseLockfileURI(*release_info[:-1])
     assert lockfile_uri == release_info[-1]
 
 

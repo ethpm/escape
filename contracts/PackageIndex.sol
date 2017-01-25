@@ -210,7 +210,7 @@ contract PackageIndex is Authorized {
     (major, minor, patch) = releaseDb.getMajorMinorPatch(versionHash);
     preRelease = getPreRelease(releaseHash);
     build = getBuild(releaseHash);
-    releaseLockFileURI = getReleaseLockileURI(releaseHash);
+    releaseLockFileURI = getReleaseLockfileURI(releaseHash);
     return (major, minor, patch, preRelease, build, releaseLockFileURI, createdAt, updatedAt);
   }
 
@@ -282,7 +282,7 @@ contract PackageIndex is Authorized {
   /// @param patch The patch portion of the semver version string.
   /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
   /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
-  function getReleaseLockileURI(string name,
+  function getReleaseLockfileURI(string name,
                                 uint32 major,
                                 uint32 minor,
                                 uint32 patch,
@@ -290,7 +290,7 @@ contract PackageIndex is Authorized {
                                 string build) constant returns (string) {
     bytes32 versionHash = releaseDb.hashVersion(major, minor, patch, preRelease, build);
     bytes32 releaseHash = releaseDb.hashRelease(packageDb.hashName(name), versionHash);
-    return getReleaseLockileURI(releaseHash);
+    return getReleaseLockfileURI(releaseHash);
   }
 
 
@@ -315,11 +315,11 @@ contract PackageIndex is Authorized {
     return fetchString(address(packageDb), GET_PACKAGE_NAME_SIG, nameHash);
   }
 
-  bytes4 constant GET_RELEASE_LOCKFILE_URI_SIG = bytes4(sha3("getReleaseLockileURI(bytes32)"));
+  bytes4 constant GET_RELEASE_LOCKFILE_URI_SIG = bytes4(sha3("getReleaseLockfileURI(bytes32)"));
 
   /// @dev Retrieves the release lockfile URI from the package db.
   /// @param releaseHash The release hash to retrieve the URI from.
-  function getReleaseLockileURI(bytes32 releaseHash) internal returns (string) {
+  function getReleaseLockfileURI(bytes32 releaseHash) internal returns (string) {
     return fetchString(address(releaseDb), GET_RELEASE_LOCKFILE_URI_SIG, releaseHash);
   }
 

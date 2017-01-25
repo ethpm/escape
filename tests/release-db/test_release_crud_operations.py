@@ -37,7 +37,7 @@ def test_updating_release(chain, package_db, release_db, extract_event_logs):
 
     assert release_db.call().releaseExists(release_hash) is True
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 1
-    assert release_db.call().getReleaseLockileURI(release_hash) == 'ipfs://some-ipfs-uri'
+    assert release_db.call().getReleaseLockfileURI(release_hash) == 'ipfs://some-ipfs-uri'
 
     txn_receipt = chain.wait.for_receipt(release_db.transact().setRelease(
         nameHash=name_hash,
@@ -47,7 +47,7 @@ def test_updating_release(chain, package_db, release_db, extract_event_logs):
 
     assert release_db.call().releaseExists(release_hash) is True
     assert release_db.call().getNumReleasesForNameHash(name_hash) == 1
-    assert release_db.call().getReleaseLockileURI(release_hash) == 'ipfs://some-updated-ipfs-uri'
+    assert release_db.call().getReleaseLockfileURI(release_hash) == 'ipfs://some-updated-ipfs-uri'
 
     event_logs = extract_event_logs('ReleaseUpdate', release_db, txn_receipt['transactionHash'])
     assert event_logs['args']['releaseHash'] == release_hash
