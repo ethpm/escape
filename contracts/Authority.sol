@@ -48,7 +48,7 @@ contract Authorized {
 
 
 contract WhitelistAuthority is Authority, Authorized {
-    mapping (address => 
+    mapping (address =>
              mapping (address =>
                       mapping (bytes4 => bool))) _canCall;
     mapping (address => mapping (bytes4 => bool)) _anyoneCanCall;
@@ -81,26 +81,11 @@ contract WhitelistAuthority is Authority, Authorized {
         return true;
     }
 
-    function setCanCall(address callerAddress,
-                        address codeAddress,
-                        string functionSignature,
-                        bool can) auth public returns (bool) {
-        bytes4 sig = bytes4(sha3(functionSignature));
-        return setCanCall(callerAddress, codeAddress, sig, can);
-    }
-
     function setAnyoneCanCall(address codeAddress,
                               bytes4 sig,
                               bool can) auth public returns (bool) {
         _anyoneCanCall[codeAddress][sig] = can;
         SetAnyoneCanCall(codeAddress, sig, can);
         return true;
-    }
-
-    function setAnyoneCanCall(address codeAddress,
-                              string functionSignature,
-                              bool can) auth public returns (bool) {
-        bytes4 sig = bytes4(sha3(functionSignature));
-        return setAnyoneCanCall(codeAddress, sig, can);
     }
 }
