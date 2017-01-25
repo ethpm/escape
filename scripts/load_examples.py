@@ -78,7 +78,7 @@ def publish_release(chain, package_index, package_name, version_string, release_
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xb875f8730247c6aaee1eca35eb2bed4cf54209ec',
+    default='0xc5dadcbf033bbc7c634445cd8b60eb504ef348d1',
 )
 def load_examples(chain_name,
                   package_index_address):

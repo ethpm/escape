@@ -268,7 +268,7 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'release_db_address',
     '--release-db',
     '-r',
-    default='0xfa36edc9aab94baffcdcf466ddd93990ebe8fe45',
+    default='0x974b8c7f490ceb30d24932a45a386d0b29840cec',
 )
 @click.option(
     'release_validator_address',
@@ -280,7 +280,7 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xb875f8730247c6aaee1eca35eb2bed4cf54209ec',
+    default='0xc5dadcbf033bbc7c634445cd8b60eb504ef348d1',
 )
 def deploy(chain_name,
            authority_address,
