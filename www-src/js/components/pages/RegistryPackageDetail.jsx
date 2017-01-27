@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
 import HideUntilPackageMetaLoaded from '../common/HideUntilPackageMetaLoaded'
+import DateTimeDisplay from '../common/DateTimeDisplay'
+import EthereumAddress from '../common/EthereumAddress'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
@@ -34,6 +36,12 @@ let PageInner = HideUntilPackageMetaLoaded(connect(mapStateToProps)(React.create
     return (
       <div>
         <h1>{packageMeta.get('idx')}: {packageMeta.get('name')}</h1>
+        <ul>
+          <li>Owner: <EthereumAddress address={packageMeta.get('owner')} imageSize={16} /></li>
+          <li>Num Releases: {packageMeta.get('numReleases')}</li>
+          <li>Created: <DateTimeDisplay when={packageMeta.get('createdAt')} /></li>
+          <li>Updated: <DateTimeDisplay when={packageMeta.get('updatedAt')} /></li>
+        </ul>
       </div>
     )
   }

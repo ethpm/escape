@@ -70,12 +70,12 @@ export default function(state, action) {
         newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
           action.idx,
           Immutable.fromJS({
-            meta: {isLoaded: false},
+            meta: {idx: action.idx, isLoaded: false},
           }),
         ),
       )
       break
-    case TYPES.SET_PACKAGE_META:
+    case TYPES.SET_PACKAGE_NAME:
       newState = newState.setIn(
         [action.packageIndexAddress, 'packageData', 'packages'],
         newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
@@ -84,7 +84,21 @@ export default function(state, action) {
             action.idx,
           ).mergeIn(
             ['meta'],
-            Immutable.fromJS(action.data),
+            Immutable.Map({name: action.name}),
+          )
+        ),
+      )
+      break
+    case TYPES.SET_PACKAGE_META_DETAILS:
+      newState = newState.setIn(
+        [action.packageIndexAddress, 'packageData', 'packages'],
+        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
+          action.idx,
+          newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).get(
+            action.idx,
+          ).mergeIn(
+            ['meta'],
+            Immutable.fromJS(action.metaDetails),
           )
         ),
       )

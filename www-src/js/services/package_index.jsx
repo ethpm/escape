@@ -64,7 +64,7 @@ export function getNumPackages(packageIndexAddress) {
   })
 }
 
-export function getNumReleases(packageIndexAddress) {
+export function getTotalNumReleases(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
       packageIndex.getNumReleases.call(function(err, result) {
@@ -85,6 +85,25 @@ export function getPackageName(packageIndexAddress, nameIdx) {
       packageIndex.getPackageName.call(nameIdx, function(err, result) {
         if (!err) {
           resolve(result)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  })
+}
+
+export function getPackageData(packageIndexAddress, packageName) {
+  return new Promise(function(resolve, reject) {
+    getPackageIndex(packageIndexAddress).then(function(packageIndex) {
+      packageIndex.getPackageData.call(packageName, function(err, result) {
+        if (!err) {
+          resolve({
+            owner: result[0],
+            createdAt: new Date(result[1].toNumber()),
+            numReleases: result[2].toNumber(),
+            updatedAt: new Date(result[3].toNumber()),
+          })
         } else {
           reject(err)
         }
