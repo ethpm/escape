@@ -26,18 +26,21 @@ export default function(state, action) {
         newState,
         {config: {[action.key]: action.config}},
       );
+      break
     case TYPES.SET_WEB3_STATUS:
       newState = _.merge(
         {},
         newState,
         {status: {isConnected: action.isConnected}},
       );
+      break
     case TYPES.SET_WEB3_BROWSER_AVAILABILITY:
       newState = _.merge(
         {},
         newState,
         {isBrowserAvailable: action.isAvailable},
       );
+      break
     case TYPES.SET_WEB3_SELECTION:
       newState = _.merge(
         {},
