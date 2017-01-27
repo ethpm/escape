@@ -18,7 +18,6 @@ function mapStateToProps(state) {
 export default function HideUntilPackageDataInitialized(WrappedComponent) {
   return HideUntilPackageIndexInitialized(connect(mapStateToProps)(React.createClass({
     componentWillMount() {
-      console.log('in will data mount')
       this.props.dispatch(actions.initializePackageData(this.props._packageIndexAddress))
     },
     render() {
@@ -27,7 +26,7 @@ export default function HideUntilPackageDataInitialized(WrappedComponent) {
           <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isPackageDataInitialized')} />
         )
       } else {
-        return <span><LoadingSpinner /> Waiting for package index to load.</span>
+        return <span><LoadingSpinner /> Waiting for package data to load.</span>
       }
     }
   })))

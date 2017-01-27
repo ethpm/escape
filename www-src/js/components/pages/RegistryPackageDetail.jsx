@@ -16,7 +16,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps)(React.createClass({
   render() {
     return (
-      <PageInner packageIdx={this.props.packageIdx} />
+      <PageInner packageIdx={this.props.params.packageIdx} />
     )
   },
 }))
@@ -24,13 +24,13 @@ export default connect(mapStateToProps)(React.createClass({
 
 let PageInner = HideUntilPackageDetailsLoaded(connect(mapStateToProps)(React.createClass({
   getPackageDetails() {
-    return this.props.packageData[this.props.packageIdx]
+    return this.props.packageData.packages[this.props.packageIdx]
   },
   render() {
     let packageDetails = this.getPackageDetails()
     return (
       <div>
-        <h1>{packageDetails.name}</h1>
+        <h1>{packageDetails.meta.idx}: {packageDetails.meta.name}</h1>
       </div>
     )
   }

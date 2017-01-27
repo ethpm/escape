@@ -152,7 +152,6 @@ export function setNumReleases(packageIndexAddress, numReleases) {
 }
 
 export function initializePackageData(packageIndexAddress) {
-  console.log('initializing packageData')
   return function(dispatch, getState) {
     let state = getState()
     let packageIndexData = state.packageIndex[packageIndexAddress]
@@ -164,7 +163,7 @@ export function initializePackageData(packageIndexAddress) {
       _.chain(packageIndexData.numPackages)
        .range()
        .map(function(idx) {
-         return dispatch(initializePackage(packageIndexAddress, idx));
+         return dispatch(triggerPackageMetaLoad(packageIndexAddress, idx));
        })
        .value()
     ).then(function(result) {
@@ -190,21 +189,19 @@ export function setPackageDataInitialized(packageIndexAddress) {
   }
 }
 
-export function initializePackage(packageIndexAddress, idx) {
-  console.log('initializing', idx)
+export function triggerPackageMetaLoad(packageIndexAddress, idx) {
   return function(dispatch, getState) {
     return getPackageName(packageIndexAddress, idx).then(function(result) {
       let packageData = getState().packageIndex[packageIndexAddress].packageData
 
       if (_.isEmpty(_.get(packageData.packages, idx))) {
-        dispatch(setEmptyPackage(packageIndexAddress, idx))
+        dispatch(setEmptyPackageMeta(packageIndexAddress, idx))
       }
 
-      dispatch(loadPackage(packageIndexAddress, idx)).then(function(result) {
-        dispatch(setPackageInitialized(packageIndexAddress, idx))
+      dispatch(loadPackageMeta(packageIndexAddress, idx)).then(function(result) {
+        dispatch(setPackageMetaLoaded(packageIndexAddress, idx))
         return Promise.resolve()
       }, function(error) {
-        debugger;
         console.error(error)
       })
     }, function(error) {
@@ -213,18 +210,18 @@ export function initializePackage(packageIndexAddress, idx) {
   }
 }
 
-export function setEmptyPackage(packageIndexAddress, idx) {
+export function setEmptyPackageMeta(packageIndexAddress, idx) {
   return {
-    type: TYPES.SET_EMPTY_PACKAGE,
+    type: TYPES.SET_EMPTY_PACKAGE_META,
     packageIndexAddress: packageIndexAddress,
     idx: idx,
   }
 }
 
-export function loadPackage(packageIndexAddress, idx) {
+export function loadPackageMeta(packageIndexAddress, idx) {
   return function(dispatch, getState) {
     return getPackageName(packageIndexAddress, idx).then(function(result) {
-      dispatch(setPackage(packageIndexAddress, idx, {
+      dispatch(setPackageMeta(packageIndexAddress, idx, {
         idx: idx,
         name: result,
       }))
@@ -235,18 +232,18 @@ export function loadPackage(packageIndexAddress, idx) {
   }
 }
 
-export function setPackage(packageIndexAddress, idx, data) {
+export function setPackageMeta(packageIndexAddress, idx, data) {
   return {
-    type: TYPES.SET_PACKAGE,
+    type: TYPES.SET_PACKAGE_META,
     packageIndexAddress: packageIndexAddress,
     data: data,
     idx: idx,
   }
 }
 
-export function setPackageInitialized(packageIndexAddress, idx) {
+export function setPackageMetaLoaded(packageIndexAddress, idx) {
   return {
-    type: TYPES.SET_PACKAGE_INITIALIZED,
+    type: TYPES.SET_PACKAGE_META_LOADED,
     packageIndexAddress: packageIndexAddress,
     idx: idx,
   }

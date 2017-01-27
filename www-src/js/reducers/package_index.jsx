@@ -106,31 +106,7 @@ export default function(state, action) {
           ),
         },
       )
-    case TYPES.SET_EMPTY_PACKAGE:
-      newState = _.merge(
-        {},
-        newState,
-        {
-          [action.packageIndexAddress]: _.merge(
-            {},
-            newState[action.packageIndexAddress],
-            {
-              packageData: _.merge(
-                {},
-                newState[action.packageIndexAddress].packageData,
-                {
-                  packages: _.merge(
-                    [],
-                    newState[action.packageIndexAddress].packageData.packages,
-                    {[action.idx]: {isInitialized: false}},
-                  ),
-                },
-              ),
-            },
-          ),
-        },
-      )
-    case TYPES.SET_PACKAGE:
+    case TYPES.SET_EMPTY_PACKAGE_META:
       newState = _.merge(
         {},
         newState,
@@ -150,7 +126,7 @@ export default function(state, action) {
                       [action.idx]: _.merge(
                         {},
                         newState[action.packageIndexAddress].packageData.packages[action.idx],
-                        action.data,
+                        {meta: {isLoaded: false}},
                       ),
                     },
                   ),
@@ -160,7 +136,7 @@ export default function(state, action) {
           ),
         },
       )
-    case TYPES.SET_PACKAGE_INITIALIZED:
+    case TYPES.SET_PACKAGE_META:
       newState = _.merge(
         {},
         newState,
@@ -180,7 +156,51 @@ export default function(state, action) {
                       [action.idx]: _.merge(
                         {},
                         newState[action.packageIndexAddress].packageData.packages[action.idx],
-                        {isInitialized: true},
+                        {
+                          meta: _.merge(
+                            {},
+                            newState[action.packageIndexAddress].packageData.packages[action.idx].meta,
+
+                            action.data,
+                          ),
+                        },
+                      ),
+                    },
+                  ),
+                },
+              ),
+            },
+          ),
+        },
+      )
+    case TYPES.SET_PACKAGE_META_LOADED:
+      newState = _.merge(
+        {},
+        newState,
+        {
+          [action.packageIndexAddress]: _.merge(
+            {},
+            newState[action.packageIndexAddress],
+            {
+              packageData: _.merge(
+                {},
+                newState[action.packageIndexAddress].packageData,
+                {
+                  packages: _.merge(
+                    [],
+                    newState[action.packageIndexAddress].packageData.packages,
+                    {
+                      [action.idx]: _.merge(
+                        {},
+                        newState[action.packageIndexAddress].packageData.packages[action.idx],
+                        {
+                          meta: _.merge(
+                            {},
+                            newState[action.packageIndexAddress].packageData.packages[action.idx].meta,
+
+                            {isLoaded: true},
+                          ),
+                        },
                       ),
                     },
                   ),

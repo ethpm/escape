@@ -28,17 +28,17 @@ export default connect(mapStateToProps)(React.createClass({
       )
     } else {
       return _.map(this.props.packageData.packages, function(packageData, idx) {
-        if (packageData === undefined || !packageData.isInitialized) {
+        if (packageData === undefined || !packageData.meta.isLoaded) {
           return (
-            <tr>
+            <tr key={idx}>
               <td colSpan="2">Loading Package Data</td>
             </tr>
           )
         }
         return (
           <tr key={idx}>
-            <td>{idx + 1}</td>
-            <td>{packageData.name}</td>
+            <td><Link to={`/registry/packages/${idx}`}>{packageData.meta.idx + 1}</Link></td>
+            <td>{packageData.meta.name}</td>
           </tr>
         )
       })
