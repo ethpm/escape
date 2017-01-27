@@ -26,7 +26,7 @@ export default function HideUntilIndexDataLoaded(WrappedComponent) {
           <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isIndexDataLoaded')} />
         )
       } else {
-        return <span><LoadingSpinner /> Waiting for package data to load.</span>
+        return <span><LoadingSpinner /> Waiting for package index data to load.</span>
       }
     }
   })))

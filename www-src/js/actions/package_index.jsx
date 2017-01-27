@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import TYPES from './types'
-import { getPackageDbAddress, getReleaseDbAddress, getNumPackages, getTotalNumReleases, getPackageName, getPackageData } from '../services/package_index'
+import { getPackageDbAddress, getReleaseDbAddress, getNumPackages, getTotalNumReleases, getPackageName, getPackageData, getAllPackageReleaseHashes, getReleaseData, getPackageReleaseHash } from '../services/package_index'
 
 export function triggerIndexMetaLoad(packageIndexAddress) {
   /*
@@ -186,8 +186,8 @@ export function loadIndexData(packageIndexAddress) {
     return Promise.all(
       _.chain(state.packageIndex.getIn([packageIndexAddress, 'numPackages']))
        .range()
-       .map(function(idx) {
-         return dispatch(triggerPackageMetaLoad(packageIndexAddress, idx));
+       .map(function(packageIdx) {
+         return dispatch(triggerPackageMetaLoad(packageIndexAddress, packageIdx));
        })
        .value()
     )
@@ -208,18 +208,18 @@ export function setIndexDataLoaded(packageIndexAddress) {
   }
 }
 
-export function triggerPackageMetaLoad(packageIndexAddress, idx) {
+export function triggerPackageMetaLoad(packageIndexAddress, packageIdx) {
   return function(dispatch, getState) {
-    let packages= getState().packageIndex.getIn(
+    let packages = getState().packageIndex.getIn(
       [packageIndexAddress, 'packageData', 'packages'],
     )
 
-    if (_.isEmpty(packages.get(idx))) {
-      dispatch(setEmptyPackageMeta(packageIndexAddress, idx))
+    if (_.isEmpty(packages.getIn([packageIdx, 'meta']))) {
+      dispatch(setEmptyPackageMeta(packageIndexAddress, packageIdx))
     }
 
-    return dispatch(loadPackageMeta(packageIndexAddress, idx)).then(function(result) {
-      dispatch(setPackageMetaLoaded(packageIndexAddress, idx))
+    return dispatch(loadPackageMeta(packageIndexAddress, packageIdx)).then(function(result) {
+      dispatch(setPackageMetaLoaded(packageIndexAddress, packageIdx))
       return Promise.resolve()
     }, function(error) {
       console.error(error)
@@ -227,38 +227,38 @@ export function triggerPackageMetaLoad(packageIndexAddress, idx) {
   }
 }
 
-export function setEmptyPackageMeta(packageIndexAddress, idx) {
+export function setEmptyPackageMeta(packageIndexAddress, packageIdx) {
   return {
     type: TYPES.SET_EMPTY_PACKAGE_META,
     packageIndexAddress: packageIndexAddress,
-    idx: idx,
+    packageIdx: packageIdx,
   }
 }
 
-export function loadPackageMeta(packageIndexAddress, idx) {
+export function loadPackageMeta(packageIndexAddress, packageIdx) {
   return function(dispatch, getState) {
     return Promise.all([
-      dispatch(loadPackageName(packageIndexAddress, idx)),
-      dispatch(loadPackageMetaDetails(packageIndexAddress, idx)),
+      dispatch(loadPackageName(packageIndexAddress, packageIdx)),
+      dispatch(loadPackageMetaDetails(packageIndexAddress, packageIdx)),
     ])
   }
 }
 
-export function loadPackageName(packageIndexAddress, idx) {
+export function loadPackageName(packageIndexAddress, packageIdx) {
   return function(dispatch, getState) {
-    return getPackageName(packageIndexAddress, idx).then(function(result) {
-      return dispatch(setPackageName(packageIndexAddress, idx, result))
+    return getPackageName(packageIndexAddress, packageIdx).then(function(result) {
+      return dispatch(setPackageName(packageIndexAddress, packageIdx, result))
     }, function(error) {
       console.error(error)
     })
   }
 }
 
-export function loadPackageMetaDetails(packageIndexAddress, idx) {
+export function loadPackageMetaDetails(packageIndexAddress, packageIdx) {
   return function(dispatch, getState) {
-    return getPackageName(packageIndexAddress, idx).then(function(packageName) {
+    return getPackageName(packageIndexAddress, packageIdx).then(function(packageName) {
       getPackageData(packageIndexAddress, packageName).then(function(result) {
-        return dispatch(setPackageMetaDetails(packageIndexAddress, idx, result))
+        return dispatch(setPackageMetaDetails(packageIndexAddress, packageIdx, result))
       }, function(error) {
         console.error(error)
       })
@@ -266,49 +266,193 @@ export function loadPackageMetaDetails(packageIndexAddress, idx) {
   }
 }
 
-export function setPackageMetaDetails(packageIndexAddress, idx, metaDetails) {
+export function setPackageMetaDetails(packageIndexAddress, packageIdx, metaDetails) {
   return {
     type: TYPES.SET_PACKAGE_META_DETAILS,
     packageIndexAddress: packageIndexAddress,
-    idx: idx,
+    packageIdx: packageIdx,
     metaDetails: metaDetails,
   }
 }
 
-export function setPackageName(packageIndexAddress, idx, name) {
+export function setPackageName(packageIndexAddress, packageIdx, name) {
   return {
     type: TYPES.SET_PACKAGE_NAME,
     packageIndexAddress: packageIndexAddress,
-    idx: idx,
+    packageIdx: packageIdx,
     name: name,
   }
 }
 
-export function setPackageMetaLoaded(packageIndexAddress, idx) {
+export function setPackageMetaLoaded(packageIndexAddress, packageIdx) {
   return {
     type: TYPES.SET_PACKAGE_META_LOADED,
     packageIndexAddress: packageIndexAddress,
-    idx: idx,
+    packageIdx: packageIdx,
   }
 }
 
-export function triggerPackageReleaseLoad(packageIndexAddress, idx) {
+export function triggerAllPackageReleasesLoad(packageIndexAddress, packageIdx) {
   return function(dispatch, getState) {
-    return getPackageName(packageIndexAddress, idx).then(function(result) {
-      let packages= getState().packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
+    let packages = getState().packageIndex.getIn(
+      [packageIndexAddress, 'packageData', 'packages']
+    )
 
-      if (_.isEmpty(packages.get(idx))) {
-        dispatch(setEmptyPackageMeta(packageIndexAddress, idx))
-      }
+    if (_.isEmpty(packages.getIn([packageIdx, 'releaseData']))) {
+      dispatch(setEmptyPackageReleases(packageIndexAddress, packageIdx))
+    }
 
-      dispatch(loadPackageMeta(packageIndexAddress, idx)).then(function(result) {
-        dispatch(setPackageMetaLoaded(packageIndexAddress, idx))
-        return Promise.resolve()
+    return dispatch(loadAllPackageReleases(packageIndexAddress, packageIdx)).then(function(result) {
+      return dispatch(setPackageReleasesLoaded(packageIndexAddress, packageIdx))
+    }, function(error) {
+      console.error(error)
+    })
+  }
+}
+
+export function setEmptyPackageReleases(packageIndexAddress, packageIdx) {
+  return {
+    type: TYPES.SET_EMPTY_PACKAGE_RELEASES,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+  }
+}
+
+export function setPackageReleasesLoaded(packageIndexAddress, packageIdx) {
+  return {
+    type: TYPES.SET_PACKAGE_RELEASES_LOADED,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+  }
+}
+
+export function loadAllPackageReleases(packageIndexAddress, packageIdx) {
+  return function(dispatch, getState) {
+    return getPackageName(packageIndexAddress, packageIdx).then(function(packageName) {
+      return getAllPackageReleaseHashes(packageIndexAddress, packageName).then(function(allReleaseHashes) {
+        return Promise.all(
+          _.chain(allReleaseHashes)
+           .map(function(releaseHash, releaseIdx) {
+             return dispatch(triggerReleaseLoad(
+               packageIndexAddress,
+               packageIdx,
+               releaseIdx,
+               releaseHash,
+             ))
+           })
+           .value()
+        )
+      })
+    })
+  }
+}
+
+export function triggerReleaseLoad(packageIndexAddress, packageIdx, releaseIdx) {
+  return function(dispatch, getState) {
+    let release = getState().packageIndex.getIn(
+      [packageIndexAddress, 'packageData', 'packages', packageIdx, 'releaseData', 'releases', releaseIdx]
+    )
+    if (_.isEmpty(release)) {
+      dispatch(setEmptyReleaseData(packageIndexAddress, packageIdx, releaseIdx))
+    }
+
+    return dispatch(loadRelease(packageIndexAddress, packageIdx, releaseIdx)).then(function(result) {
+      return dispatch(setReleaseLoaded(packageIndexAddress, packageIdx, releaseIdx))
+    }, function(error) {
+      console.error(error)
+    })
+  }
+}
+
+export function setEmptyReleaseData(packageIndexAddress, packageIdx, releaseIdx) {
+  return {
+    type: TYPES.SET_EMPTY_RELEASE_DATA,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+    releaseIdx: releaseIdx,
+  }
+}
+
+export function loadRelease(packageIndexAddress, packageIdx, releaseIdx) {
+  return function(dispatch, getState) {
+    return Promise.all([
+      dispatch(loadReleaseHash(packageIndexAddress, packageIdx, releaseIdx)),
+      dispatch(loadReleaseDetails(packageIndexAddress, packageIdx, releaseIdx)),
+    ])
+  }
+}
+
+export function loadReleaseHash(packageIndexAddress, packageIdx, releaseIdx) {
+  return function(dispatch, getState) {
+    return getPackageName(packageIndexAddress, packageIdx).then(function(packageName) {
+      return getPackageReleaseHash(packageIndexAddress, packageName, releaseIdx).then(function(releaseHash) {
+        return dispatch(setReleaseHash(packageIndexAddress, packageIdx, releaseIdx, releaseHash))
       }, function(error) {
         console.error(error)
       })
     }, function(error) {
       console.error(error)
     })
+  }
+}
+
+export function setReleaseHash(packageIndexAddress, packageIdx, releaseIdx, releaseHash) {
+  return {
+    type: TYPES.SET_RELEASE_HASH,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+    releaseIdx: releaseIdx,
+    releaseHash: releaseHash,
+  }
+}
+
+export function loadReleaseDetails(packageIndexAddress, packageIdx, releaseIdx) {
+  return function(dispatch, getState) {
+    return getPackageName(packageIndexAddress, packageIdx).then(function(packageName) {
+      return getPackageReleaseHash(packageIndexAddress, packageName, releaseIdx).then(function(releaseHash) {
+        return getReleaseData(packageIndexAddress, releaseHash).then(function(result) {
+          let releaseMeta = _.pick(result, ['createdAt', 'updatedAt'])
+          let releaseData = _.omit(result, ['createdAt', 'updatedAt'])
+
+          dispatch(setReleaseMeta(packageIndexAddress, packageIdx, releaseIdx, releaseMeta))
+          dispatch(setReleaseData(packageIndexAddress, packageIdx, releaseIdx, releaseData))
+        }, function(error) {
+          console.error(error)
+        })
+      }, function(error) {
+        console.error(error)
+      })
+    }, function(error) {
+      console.error(error)
+    })
+  }
+}
+
+export function setReleaseMeta(packageIndexAddress, packageIdx, releaseIdx, releaseMeta) {
+  return {
+    type: TYPES.SET_RELEASE_META,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+    releaseIdx: releaseIdx,
+    releaseMeta: releaseMeta,
+  }
+}
+
+export function setReleaseData(packageIndexAddress, packageIdx, releaseIdx, releaseData) {
+  return {
+    type: TYPES.SET_RELEASE_DATA,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+    releaseIdx: releaseIdx,
+    releaseData: releaseData,
+  }
+}
+
+export function setReleaseLoaded(packageIndexAddress, packageIdx, releaseIdx) {
+  return {
+    type: TYPES.SET_RELEASE_LOADED,
+    packageIndexAddress: packageIndexAddress,
+    packageIdx: packageIdx,
+    releaseIdx: releaseIdx,
   }
 }

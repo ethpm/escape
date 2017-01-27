@@ -23,7 +23,7 @@ export default function HideUntilIndexMetaLoaded(WrappedComponent) {
           <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isIndexMetaLoaded')} />
         )
       } else {
-        return <span><LoadingSpinner /> Waiting for package index to load.</span>
+        return <span><LoadingSpinner /> Waiting for package index metadata to load.</span>
       }
     }
   }))

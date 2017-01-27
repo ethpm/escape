@@ -76,5 +76,8 @@
   "homepage": "https://github.com/ConsenSys/escape#readme",
   "devDependencies": {
     "react-dev-tools": "^0.0.1"
+  },
+  "engines": {
+    "node": "6.9.4"
   }
 }

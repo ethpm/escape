@@ -52,10 +52,7 @@ export default function(state, action) {
     case TYPES.SET_EMPTY_INDEX_DATA:
       newState = newState.mergeIn(
         [action.packageIndexAddress, 'packageData'],
-        Immutable.fromJS({
-          packages: [],
-          isLoaded: false,
-        })
+        Immutable.fromJS({packages: [], isLoaded: false})
       )
       break
     case TYPES.SET_INDEX_DATA_LOADED:
@@ -66,55 +63,126 @@ export default function(state, action) {
       break
     case TYPES.SET_EMPTY_PACKAGE_META:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'packages'],
-        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
-          action.idx,
-          Immutable.fromJS({
-            meta: {idx: action.idx, isLoaded: false},
-          }),
-        ),
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'meta'
+        ],
+        Immutable.fromJS({packageIdx: action.packageIdx, isLoaded: false}),
       )
       break
     case TYPES.SET_PACKAGE_NAME:
-      newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'packages'],
-        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
-          action.idx,
-          newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).get(
-            action.idx,
-          ).mergeIn(
-            ['meta'],
-            Immutable.Map({name: action.name}),
-          )
-        ),
+      newState = newState.mergeIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'meta'
+        ],
+        Immutable.Map({name: action.name}),
       )
       break
     case TYPES.SET_PACKAGE_META_DETAILS:
-      newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'packages'],
-        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
-          action.idx,
-          newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).get(
-            action.idx,
-          ).mergeIn(
-            ['meta'],
-            Immutable.fromJS(action.metaDetails),
-          )
-        ),
+      newState = newState.mergeIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'meta'
+        ],
+        Immutable.fromJS(action.metaDetails),
       )
       break
     case TYPES.SET_PACKAGE_META_LOADED:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'packages'],
-        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
-          action.idx,
-          newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).get(
-            action.idx,
-          ).setIn(
-            ['meta', 'isLoaded'],
-            true,
-          )
-        ),
+        [
+          action.packageIndexAddress,'packageData', 'packages',
+          action.packageIdx,
+          'meta', 'isLoaded',
+        ],
+        true,
+      )
+      break
+    case TYPES.SET_EMPTY_PACKAGE_RELEASES:
+      newState = newState.setIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData'
+        ],
+        Immutable.fromJS({releases: [], isLoaded: false}),
+      )
+      break
+    case TYPES.SET_PACKAGE_RELEASES_LOADED:
+      newState = newState.setIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'isLoaded',
+        ],
+        true,
+      )
+      break
+    case TYPES.SET_EMPTY_RELEASE_DATA:
+      newState = newState.setIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'releases',
+          action.releaseIdx,
+        ],
+        Immutable.fromJS({
+          'meta': {
+            releaseIdx: action.releaseIdx,
+            isLoaded: false,
+          },
+          'data': {}
+        }),
+      )
+    case TYPES.SET_RELEASE_HASH:
+      newState = newState.setIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'releases',
+          action.releaseIdx,
+          'meta', 'releaseHash',
+        ],
+        action.releaseHash,
+      )
+      break
+    case TYPES.SET_RELEASE_META:
+      newState = newState.mergeIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'releases',
+          action.releaseIdx,
+          'meta',
+        ],
+        Immutable.fromJS(action.releaseMeta),
+      )
+      break
+    case TYPES.SET_RELEASE_DATA:
+      newState = newState.mergeIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'releases',
+          action.releaseIdx,
+          'data',
+        ],
+        Immutable.fromJS(action.releaseData),
+      )
+      break
+    case TYPES.SET_RELEASE_LOADED:
+      newState = newState.setIn(
+        [
+          action.packageIndexAddress, 'packageData', 'packages',
+          action.packageIdx,
+          'releaseData', 'releases',
+          action.releaseIdx,
+          'meta', 'isLoaded',
+        ],
+        true,
       )
       break
   }
