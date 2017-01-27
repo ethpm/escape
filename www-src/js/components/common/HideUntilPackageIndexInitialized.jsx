@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
@@ -6,8 +5,7 @@ import LoadingSpinner from './LoadingSpinner'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packageIndexData = _.get(state.packageIndex, packageIndexAddress, {})
-  let isInitialized = _.get(packageIndexData, 'isInitialized')
+  let isInitialized = state.packageIndex.getIn([packageIndexAddress, 'isInitialized'], false)
   return {
     _packageIndexAddress: packageIndexAddress,
     _isPackageIndexInitialized: isInitialized,

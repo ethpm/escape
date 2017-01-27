@@ -154,13 +154,13 @@ export function setNumReleases(packageIndexAddress, numReleases) {
 export function initializePackageData(packageIndexAddress) {
   return function(dispatch, getState) {
     let state = getState()
-    let packageIndexData = state.packageIndex[packageIndexAddress]
-    if (_.isEmpty(_.get(packageIndexData, 'packageData'))) {
+    let packageIndexData = state.packageIndex.get(packageIndexAddress)
+    if (!packageIndexData.has('packageData')) {
       dispatch(setEmptyPackageData(packageIndexAddress))
     }
 
     return Promise.all(
-      _.chain(packageIndexData.numPackages)
+      _.chain(packageIndexData.get('numPackages'))
        .range()
        .map(function(idx) {
          return dispatch(triggerPackageMetaLoad(packageIndexAddress, idx));

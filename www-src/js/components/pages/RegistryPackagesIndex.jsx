@@ -5,43 +5,38 @@ import BSCard from '../bootstrap/BSCard'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packageData = state.packageIndex[packageIndexAddress].packageData
+  let packages = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
   return {
     packageIndexAddress: packageIndexAddress,
-    packageData: packageData,
+    packages: packages,
   }
 }
 
 export default connect(mapStateToProps)(React.createClass({
   renderTableRows() {
-    if (_.isEmpty(this.props.packageData.packages) && !this.props.packageData.isInitialized) {
+    if (this.props.packages.size == 0 && !this.props.packageData.isInitialized) {
       return (
         <tr>
           <td colSpan="2">No Packages</td>
         </tr>
       )
-    } else if (!this.props.packageData.isInitialized) {
-      return (
-        <tr>
-          <td colSpan="2">Loading Package Data</td>
-        </tr>
-      )
     } else {
-      return _.map(this.props.packageData.packages, function(packageData, idx) {
-        if (packageData === undefined || !packageData.meta.isLoaded) {
+      return this.props.packages.map(function(packageData, idx) {
+        if (packageData === undefined || !packageData.getIn(['meta', 'isLoaded'])) {
           return (
             <tr key={idx}>
               <td colSpan="2">Loading Package Data</td>
             </tr>
           )
         }
+        let packageMeta = packageData.get('meta')
         return (
           <tr key={idx}>
-            <td><Link to={`/registry/packages/${idx}`}>{packageData.meta.idx + 1}</Link></td>
-            <td>{packageData.meta.name}</td>
+            <td><Link to={`/registry/packages/${idx}`}>{packageMeta.get('idx') + 1}</Link></td>
+            <td>{packageMeta.get('name')}</td>
           </tr>
         )
-      })
+      }).toJS()
     }
   },
   render() {

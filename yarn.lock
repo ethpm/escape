@@ -1980,6 +1980,10 @@ image-size@~0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.1.tgz#28eea8548a4b1443480ddddc1e083ae54652439f"
 
+immutable@^3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
+
 in-publish@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/in-publish/-/in-publish-2.0.0.tgz#e20ff5e3a2afc2690320b6dc552682a9c7fadf51"
@@ -3504,6 +3508,10 @@ redux-localstorage-debounce@^0.1.0:
 redux-localstorage-filter@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/redux-localstorage-filter/-/redux-localstorage-filter-0.1.1.tgz#94c5ab68d8cda479bb3cc6cdf03569f8f63a188d"
+
+redux-localstorage-immutable@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/redux-localstorage-immutable/-/redux-localstorage-immutable-1.0.4.tgz#bc65aefd69bd0447a6d3223b3ac0f25d9b34a968"
 
 redux-localstorage@rc:
   version "1.0.0-rc5"

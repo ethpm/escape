@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
@@ -7,8 +6,9 @@ import HideUntilPackageIndexInitialized from './HideUntilPackageIndexInitialized
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packageIndexData = _.get(state.packageIndex, packageIndexAddress, {})
-  let isInitialized = _.get(packageIndexData, 'packageData.isInitialized', false)
+  let isInitialized = state.packageIndex.getIn([
+    packageIndexAddress, 'packageData', 'isInitialized',
+  ], false)
   return {
     _packageIndexAddress: packageIndexAddress,
     _isPackageDataInitialized: isInitialized,
