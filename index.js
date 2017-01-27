@@ -8,6 +8,8 @@ app.get('/*', function(req, res) {
   res.sendfile('index.html', {root: './build'})
 })
 
-app.listen(8080, function () {
-  console.log('Listening on localhost:8080')
+const port = process.env.PORT || 8080
+
+app.listen(port, function () {
+  console.log('Listening on localhost:' + port)
 })
