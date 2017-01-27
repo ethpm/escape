@@ -5,22 +5,22 @@ import LoadingSpinner from './LoadingSpinner'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let isInitialized = state.packageIndex.getIn([packageIndexAddress, 'isInitialized'], false)
+  let isLoaded = state.packageIndex.getIn([packageIndexAddress, 'isLoaded'], false)
   return {
     _packageIndexAddress: packageIndexAddress,
-    _isPackageIndexInitialized: isInitialized,
+    _isIndexMetaLoaded: isLoaded,
   }
 }
 
-export default function HideUntilPackageIndexInitialized(WrappedComponent) {
+export default function HideUntilIndexMetaLoaded(WrappedComponent) {
   return connect(mapStateToProps)(React.createClass({
     componentWillMount() {
-      this.props.dispatch(actions.initializeIndex(this.props._packageIndexAddress))
+      this.props.dispatch(actions.triggerIndexMetaLoad(this.props._packageIndexAddress))
     },
     render() {
-      if (this.props._isPackageIndexInitialized) {
+      if (this.props._isIndexMetaLoaded) {
         return (
-          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isPackageIndexInitialized')} />
+          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_isIndexMetaLoaded')} />
         )
       } else {
         return <span><LoadingSpinner /> Waiting for package index to load.</span>

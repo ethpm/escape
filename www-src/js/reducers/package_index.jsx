@@ -13,15 +13,15 @@ export default function(state, action) {
   var newState = state
 
   switch (action.type) {
-    case TYPES.SET_EMPTY_INDEX_DATA:
+    case TYPES.SET_EMPTY_INDEX_META:
       newState = newState.set(
         action.packageIndexAddress,
-        Immutable.Map({isInitialized: false}),
+        Immutable.Map({isLoaded: false}),
       )
       break
-    case TYPES.SET_INDEX_INITIALIZED:
+    case TYPES.SET_INDEX_META_LOADED:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'isInitialized'],
+        [action.packageIndexAddress, 'isLoaded'],
         true,
       )
       break
@@ -29,6 +29,12 @@ export default function(state, action) {
       newState = newState.setIn(
         [action.packageIndexAddress, 'packageDbAddress'],
         action.packageDbAddress,
+      )
+      break
+    case TYPES.SET_RELEASE_DB_ADDRESS:
+      newState = newState.setIn(
+        [action.packageIndexAddress, 'releaseDbAddress'],
+        action.releaseDbAddress,
       )
       break
     case TYPES.SET_NUM_PACKAGES:
@@ -43,30 +49,28 @@ export default function(state, action) {
         action.numReleases,
       )
       break
-    case TYPES.SET_EMPTY_PACKAGE_DATA:
-      newState = newState.setIn(
+    case TYPES.SET_EMPTY_INDEX_DATA:
+      newState = newState.mergeIn(
         [action.packageIndexAddress, 'packageData'],
         Immutable.fromJS({
           packages: [],
-          isInitialized: false,
+          isLoaded: false,
         })
       )
       break
-    case TYPES.SET_PACKAGE_DATA_INITIALIZED:
+    case TYPES.SET_INDEX_DATA_LOADED:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'isInitialized'],
+        [action.packageIndexAddress, 'packageData', 'isLoaded'],
         true,
       )
       break
     case TYPES.SET_EMPTY_PACKAGE_META:
       newState = newState.setIn(
         [action.packageIndexAddress, 'packageData', 'packages'],
-        newState.getIn(
-          [action.packageIndexAddress, 'packageData', 'packages'],
-        ).set(
+        newState.getIn([action.packageIndexAddress, 'packageData', 'packages']).set(
           action.idx,
-          Immutable.Map({
-            meta: Immutable.Map({isLoaded: false}),
+          Immutable.fromJS({
+            meta: {isLoaded: false},
           }),
         ),
       )

@@ -2,6 +2,56 @@ import _ from 'lodash'
 import TYPES from './types'
 import { getPackageDbAddress, getReleaseDbAddress, getNumPackages, getNumReleases, getPackageName } from '../services/package_index'
 
+export function triggerIndexMetaLoad(packageIndexAddress) {
+  /*
+   *  Initializer for the data associated with a package index.  Initializes
+   *  the storage data to an empty object and then loads any of the index level
+   *  metadata.
+   */
+  return function(dispatch, getState) {
+    // First check to see if we're already initialized.  If so, return early.
+    let state = getState()
+
+    // Make sure that there is an object in place
+    if (_.isEmpty(state.packageIndex.get(packageIndexAddress))) {
+      dispatch(setEmptyIndexMeta(packageIndexAddress))
+    }
+
+    // Now l
+    return dispatch(loadIndexMeta(packageIndexAddress)).then(function(result) {
+      dispatch(setIndexMetaLoaded(packageIndexAddress))
+      return Promise.resolve()
+    }, function(error) {
+      console.error(error)
+    })
+  }
+}
+
+export function loadIndexMeta(packageIndexAddress) {
+  return function(dispatch, getState) {
+    // First check to see if we're already initialized.  If so, return early.
+    let state = getState()
+
+    // Now l
+    return Promise.all([
+      dispatch(loadPackageDbAddress(packageIndexAddress)),
+      dispatch(loadReleaseDbAddress(packageIndexAddress)),
+      dispatch(loadNumPackages(packageIndexAddress)),
+      dispatch(loadNumReleases(packageIndexAddress)),
+    ])
+  }
+}
+
+export function setEmptyIndexMeta(packageIndexAddress) {
+  /*
+   * Write an empty object into the storage for the given packageIndexAddress.
+   */
+  return {
+    type: TYPES.SET_EMPTY_INDEX_META,
+    packageIndexAddress: packageIndexAddress,
+  }
+}
+
 export function loadPackageDbAddress(packageIndexAddress) {
   /*
    *  Loads the current PackageDB address for the package index.
@@ -46,58 +96,9 @@ export function setReleaseDbAddress(packageIndexAddress, releaseDbAddress) {
    *  Setter for `loadReleaseDbAddress`
    */
   return {
-    type: TYPES.SET_PACKAGE_DB_ADDRESS,
+    type: TYPES.SET_RELEASE_DB_ADDRESS,
     packageIndexAddress: packageIndexAddress,
     releaseDbAddress: releaseDbAddress,
-  }
-}
-
-export function initializeIndex(packageIndexAddress) {
-  /*
-   *  Initializer for the data associated with a package index.  Initializes
-   *  the storage data to an empty object and then loads any of the index level
-   *  metadata.
-   */
-  return function(dispatch, getState) {
-    // First check to see if we're already initialized.  If so, return early.
-    let state = getState()
-
-    // Make sure that there is an object in place
-    if (!_.isObject(_.get(state.packageIndex, packageIndexAddress, null))) {
-      dispatch(setEmptyIndexData(packageIndexAddress))
-    }
-
-    // Now l
-    return Promise.all([
-      dispatch(loadPackageDbAddress(packageIndexAddress)),
-      dispatch(loadNumPackages(packageIndexAddress)),
-      dispatch(loadNumReleases(packageIndexAddress)),
-    ]).then(function(result) {
-      dispatch(setIndexInitialized(packageIndexAddress))
-      return Promise.resolve()
-    }, function(error) {
-      console.error(error)
-    })
-  }
-}
-
-export function setEmptyIndexData(packageIndexAddress) {
-  /*
-   * Write an empty object into the storage for the given packageIndexAddress.
-   */
-  return {
-    type: TYPES.SET_EMPTY_INDEX_DATA,
-    packageIndexAddress: packageIndexAddress,
-  }
-}
-
-export function setIndexInitialized(packageIndexAddress) {
-  /*
-   * Mark the package index data as having been initialized.
-   */
-  return {
-    type: TYPES.SET_INDEX_INITIALIZED,
-    packageIndexAddress: packageIndexAddress,
   }
 }
 
@@ -151,23 +152,27 @@ export function setNumReleases(packageIndexAddress, numReleases) {
   }
 }
 
-export function initializePackageData(packageIndexAddress) {
+export function setIndexMetaLoaded(packageIndexAddress) {
+  /*
+   * Mark the package index data as having been initialized.
+   */
+  return {
+    type: TYPES.SET_INDEX_META_LOADED,
+    packageIndexAddress: packageIndexAddress,
+  }
+}
+
+export function triggerIndexDataLoad(packageIndexAddress) {
   return function(dispatch, getState) {
     let state = getState()
     let packageIndexData = state.packageIndex.get(packageIndexAddress)
-    if (!packageIndexData.has('packageData')) {
-      dispatch(setEmptyPackageData(packageIndexAddress))
+
+    if (_.isEmpty(state.packageIndex.getIn([packageIndexAddress, 'packageData']))) {
+      dispatch(setEmptyIndexData(packageIndexAddress))
     }
 
-    return Promise.all(
-      _.chain(packageIndexData.get('numPackages'))
-       .range()
-       .map(function(idx) {
-         return dispatch(triggerPackageMetaLoad(packageIndexAddress, idx));
-       })
-       .value()
-    ).then(function(result) {
-      dispatch(setPackageDataInitialized(packageIndexAddress))
+    return dispatch(loadIndexData(packageIndexAddress)).then(function(result) {
+      dispatch(setIndexDataLoaded(packageIndexAddress))
       return Promise.resolve()
     }, function(error) {
       console.error(error)
@@ -175,16 +180,30 @@ export function initializePackageData(packageIndexAddress) {
   }
 }
 
-export function setEmptyPackageData(packageIndexAddress) {
+export function loadIndexData(packageIndexAddress) {
+  return function(dispatch, getState) {
+    let state = getState()
+    return Promise.all(
+      _.chain(state.packageIndex.getIn([packageIndexAddress, 'numPackages']))
+       .range()
+       .map(function(idx) {
+         return dispatch(triggerPackageMetaLoad(packageIndexAddress, idx));
+       })
+       .value()
+    )
+  }
+}
+
+export function setEmptyIndexData(packageIndexAddress) {
   return {
-    type: TYPES.SET_EMPTY_PACKAGE_DATA,
+    type: TYPES.SET_EMPTY_INDEX_DATA,
     packageIndexAddress: packageIndexAddress,
   }
 }
 
-export function setPackageDataInitialized(packageIndexAddress) {
+export function setIndexDataLoaded(packageIndexAddress) {
   return {
-    type: TYPES.SET_PACKAGE_DATA_INITIALIZED,
+    type: TYPES.SET_INDEX_DATA_LOADED,
     packageIndexAddress: packageIndexAddress,
   }
 }
@@ -192,9 +211,9 @@ export function setPackageDataInitialized(packageIndexAddress) {
 export function triggerPackageMetaLoad(packageIndexAddress, idx) {
   return function(dispatch, getState) {
     return getPackageName(packageIndexAddress, idx).then(function(result) {
-      let packageData = getState().packageIndex[packageIndexAddress].packageData
+      let packages= getState().packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
 
-      if (_.isEmpty(_.get(packageData.packages, idx))) {
+      if (_.isEmpty(packages.get(idx))) {
         dispatch(setEmptyPackageMeta(packageIndexAddress, idx))
       }
 

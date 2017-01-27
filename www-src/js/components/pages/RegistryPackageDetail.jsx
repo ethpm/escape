@@ -2,14 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
-import HideUntilPackageDetailsLoaded from '../common/HideUntilPackageDetailsLoaded'
+import HideUntilPackageMetaLoaded from '../common/HideUntilPackageMetaLoaded'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packageData = state.packageIndex[packageIndexAddress].packageData
+  let packages = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
   return {
     packageIndexAddress: packageIndexAddress,
-    packageData: packageData,
+    packages: packages,
   }
 }
 
@@ -22,15 +22,18 @@ export default connect(mapStateToProps)(React.createClass({
 }))
 
 
-let PageInner = HideUntilPackageDetailsLoaded(connect(mapStateToProps)(React.createClass({
-  getPackageDetails() {
-    return this.props.packageData.packages[this.props.packageIdx]
+let PageInner = HideUntilPackageMetaLoaded(connect(mapStateToProps)(React.createClass({
+  getPackage() {
+    return this.props.packages.get(this.props.packageIdx)
+  },
+  getPackageMeta() {
+    return this.getPackage().get('meta')
   },
   render() {
-    let packageDetails = this.getPackageDetails()
+    let packageMeta = this.getPackageMeta()
     return (
       <div>
-        <h1>{packageDetails.meta.idx}: {packageDetails.meta.name}</h1>
+        <h1>{packageMeta.get('idx')}: {packageMeta.get('name')}</h1>
       </div>
     )
   }

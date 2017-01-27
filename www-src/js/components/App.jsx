@@ -5,6 +5,7 @@ import { Provider, connect } from 'react-redux'
 import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux'
 import thunk from 'redux-thunk'
 import persistState, {mergePersistedState} from 'redux-localstorage';
+import { serialize, deserialize } from 'redux-localstorage-immutable';
 import adapter from 'redux-localstorage/lib/adapters/localStorage';
 import filter from 'redux-localstorage-filter';
 import debounce from 'redux-localstorage-debounce';
@@ -26,10 +27,12 @@ import RegistryPackagesIndex from './pages/RegistryPackagesIndex'
 import RegistryPackageDetail from './pages/RegistryPackageDetail'
 
 const reducer = compose(
+  //mergePersistedState(deserialize)
   mergePersistedState()
 )(rootReducer)
 
 const storage = compose(
+  //serialize,
   debounce(100, 1000),
   filter([
     'web3.config',
