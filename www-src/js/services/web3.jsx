@@ -146,10 +146,10 @@ export function getDefaultWeb3() {
         resolve(CUSTOM);
       } else if (browserAvailable === true) {
         resolve(BROWSER);
-      } else if (infuraMainnetAvailable === true) {
-        resolve(INFURA_MAINNET);
       } else if (infuraRopstenAvailable === true) {
         resolve(INFURA_ROPSTEN);
+      } else if (infuraMainnetAvailable === true) {
+        resolve(INFURA_MAINNET);
       } else {
         resolve(null);
       }

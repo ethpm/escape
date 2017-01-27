@@ -69,7 +69,7 @@ export default React.createClass({
             <IndexRoute component={SiteIndex} />
             <Route path="configure" component={DefaultLayout}>
               <IndexRoute component={ConfigureIndex} />
-              <Route path="web3" component={DefaultLayout} />
+              <Route path="web3" component={ConfigureWeb3} />
             </Route>
             <Route path="registry" component={RegistryLayout}>
               <IndexRoute component={RegistryIndex} />
