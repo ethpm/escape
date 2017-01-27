@@ -142,12 +142,12 @@ export function getDefaultWeb3() {
       isInfuraMainnetAvailable(),
       isInfuraRopstenAvailable(),
     ]).then(_.spread(function(localhostAvailable, browserAvailable, infuraMainnetAvailable, infuraRopstenAvailable) {
-      if (localhostAvailable === true) {
+      if (infuraRopstenAvailable === true) {
+        resolve(INFURA_ROPSTEN);
+      } else if (localhostAvailable === true) {
         resolve(CUSTOM);
       } else if (browserAvailable === true) {
         resolve(BROWSER);
-      } else if (infuraRopstenAvailable === true) {
-        resolve(INFURA_ROPSTEN);
       } else if (infuraMainnetAvailable === true) {
         resolve(INFURA_MAINNET);
       } else {

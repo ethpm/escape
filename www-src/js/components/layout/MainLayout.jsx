@@ -15,7 +15,7 @@ let TopNavigation = connect(mapStateToProps)(React.createClass({
     return (
       <nav id='top-nav' className='navbar navbar-dark bg-inverse'>
         <Link className='navbar-brand' to='/'>Escape</Link>
-        <div className="navbar-nav">
+        <div className="navbar-nav pull-right">
           <Link className='nav-item nav-link' to='/configure/web3'>
             <Web3StatusIcon />
           </Link>
