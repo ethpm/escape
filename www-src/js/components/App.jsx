@@ -23,6 +23,7 @@ import ConfigureIndex from './pages/ConfigureIndex'
 import ConfigureWeb3 from './pages/ConfigureWeb3'
 import RegistryIndex from './pages/RegistryIndex'
 import RegistryPackagesIndex from './pages/RegistryPackagesIndex'
+import RegistryPackageDetail from './pages/RegistryPackageDetail'
 
 const reducer = compose(
   mergePersistedState()
@@ -71,6 +72,7 @@ export default React.createClass({
               <IndexRoute component={RegistryIndex} />
               <Route path="packages" component={RegistryPackagesLayout}>
                 <IndexRoute component={RegistryPackagesIndex} />
+                <Route path=":packageIdx" component={RegistryPackageDetail} />
               </Route>
             </Route>
           </Route>
