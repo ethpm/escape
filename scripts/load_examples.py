@@ -7,13 +7,13 @@ from populus import Project
 
 
 EXAMPLE_PACKAGES = (
-    ('epm-owned', '1.0.0', 'ipfs://QmUwVUMVtkVctrLDeL12SoeCPUacELBU8nAxRtHUzvtjND'),
-    ('epm-transferable', '1.0.0', 'ipfs://QmaTMa6MwtH6CisPypiFkFdd1ByrFAvdExcQkUQwqbMeZx'),
-    ('epm-standard-token', '1.0.0', 'ipfs://QmegJYswSDXUJbKWBuTj7AGBY15XceKxnF1o1Vo2VvVPLQ'),
-    ('epm-piper-coin', '1.0.0', 'ipfs://QmYxRT4k5ByUH4N4A455M5s1RxsgUfqyYrntcuuxdHezXv'),
-    ('epm-safe-math-lib', '1.0.0', 'ipfs://QmfUwis9K2SLwnUh62PDb929JzU5J2aFKd4kS1YErYajdq'),
-    ('epm-escrow', '1.0.0', 'ipfs://Qmb4YtjwsAQyYXmCwSF71Lez9d7qchPc6WkT2iGc9m1gX6'),
-    ('epm-wallet', '1.0.0', 'ipfs://QmSg2QvGhQrYgQqbTGVYjGmF9hkEZrxQNmSXsr8fFyYtD4'),
+    ('example-package-owned', '1.0.0', 'ipfs://QmUwVUMVtkVctrLDeL12SoeCPUacELBU8nAxRtHUzvtjND'),
+    ('example-package-transferable', '1.0.0', 'ipfs://QmaTMa6MwtH6CisPypiFkFdd1ByrFAvdExcQkUQwqbMeZx'),
+    ('example-package-standard-token', '1.0.0', 'ipfs://QmegJYswSDXUJbKWBuTj7AGBY15XceKxnF1o1Vo2VvVPLQ'),
+    ('example-package-piper-coin', '1.0.0', 'ipfs://QmYxRT4k5ByUH4N4A455M5s1RxsgUfqyYrntcuuxdHezXv'),
+    ('example-package-safe-math-lib', '1.0.0', 'ipfs://QmfUwis9K2SLwnUh62PDb929JzU5J2aFKd4kS1YErYajdq'),
+    ('example-package-escrow', '1.0.0', 'ipfs://Qmb4YtjwsAQyYXmCwSF71Lez9d7qchPc6WkT2iGc9m1gX6'),
+    ('example-package-wallet', '1.0.0', 'ipfs://QmSg2QvGhQrYgQqbTGVYjGmF9hkEZrxQNmSXsr8fFyYtD4'),
 )
 
 
@@ -78,12 +78,12 @@ def publish_release(chain, package_index, package_name, version_string, release_
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xbab799ff7d9e13a50696a8bebb7a1b77ae519586',
+    default='0x8011df4830b4f696cd81393997e5371b93338878',
 )
 def load_examples(chain_name,
                   package_index_address):
     """
-    Load the e
+    Load the example packages into the index.
     """
     project = Project()
     click.echo("Starting {0} chain... ".format(chain_name), nl=False)

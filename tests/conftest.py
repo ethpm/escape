@@ -111,17 +111,17 @@ def package_index(chain,
     chain.wait.for_receipt(_package_index.transact({
         'from': authority.call().owner(),
     }).setPackageDb(package_db.address))
-    assert _package_index.call().packageDb() == package_db.address
+    assert _package_index.call().getPackageDb() == package_db.address
 
     chain.wait.for_receipt(_package_index.transact({
         'from': authority.call().owner(),
     }).setReleaseDb(release_db.address))
-    assert _package_index.call().releaseDb() == release_db.address
+    assert _package_index.call().getReleaseDb() == release_db.address
 
     chain.wait.for_receipt(_package_index.transact({
         'from': authority.call().owner(),
     }).setReleaseValidator(release_validator.address))
-    assert _package_index.call().releaseValidator() == release_validator.address
+    assert _package_index.call().getReleaseValidator() == release_validator.address
 
     # Release DB
     authorize_call(

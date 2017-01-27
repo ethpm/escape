@@ -4,21 +4,16 @@ pragma solidity ^0.4.0;
 import {PackageDB} from "./PackageDB.sol";
 import {ReleaseDB} from "./ReleaseDB.sol";
 import {ReleaseValidator} from "./ReleaseValidator.sol";
+import {PackageIndexInterface} from "./PackageIndexInterface.sol";
 import {Authorized} from "./Authority.sol";
 
 
 /// @title Database contract for a package index.
 /// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
-contract PackageIndex is Authorized {
-  PackageDB public packageDb;
-  ReleaseDB public releaseDb;
-  ReleaseValidator public releaseValidator;
-
-  //
-  // Events
-  //
-  event PackageRelease(bytes32 indexed nameHash, bytes32 indexed releaseHash);
-  event PackageTransfer(address indexed oldOwner, address indexed newOwner);
+contract PackageIndex is Authorized, PackageIndexInterface {
+  PackageDB private packageDb;
+  ReleaseDB private releaseDb;
+  ReleaseValidator private releaseValidator;
 
   //
   // Administrative API
@@ -146,6 +141,21 @@ contract PackageIndex is Authorized {
   // |  Read API  |
   // +------------+
   //
+
+  /// @dev Returns the address of the packageDb
+  function getPackageDb() constant returns (address) {
+    return address(packageDb);
+  }
+
+  /// @dev Returns the address of the releaseDb
+  function getReleaseDb() constant returns (address) {
+    return address(releaseDb);
+  }
+
+  /// @dev Returns the address of the releaseValidator
+  function getReleaseValidator() constant returns (address) {
+    return address(releaseValidator);
+  }
 
   /// @dev Query the existence of a package with the given name.  Returns boolean indicating whether the package exists.
   /// @param name Package name
