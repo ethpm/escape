@@ -176,7 +176,7 @@ def set_anyone_can_call(chain, authority, code_address, can_call, function_signa
 
 
 def set_package_db_address_on_package_index(chain, package_index, package_db):
-    if package_index.call().packageDb() == package_db.address:
+    if package_index.call().getPackageDb() == package_db.address:
         click.echo("Package DB Address already set")
         return
     click.echo("Setting PackageDB address for PackageIndex contract")
@@ -188,7 +188,7 @@ def set_package_db_address_on_package_index(chain, package_index, package_db):
     chain.wait.for_receipt(set_txn_hash, timeout=600)
     click.echo("MINED")
 
-    if package_index.call().packageDb() != package_db.address:
+    if package_index.call().getPackageDb() != package_db.address:
         click.echo("Something is wrong. PackageDb address not set on index.")
         import pdb; pdb.set_trace()
         raise ValueError("Something failed")
@@ -196,7 +196,7 @@ def set_package_db_address_on_package_index(chain, package_index, package_db):
 
 
 def set_release_db_address_on_package_index(chain, package_index, release_db):
-    if package_index.call().releaseDb() == release_db.address:
+    if package_index.call().getReleaseDb() == release_db.address:
         click.echo("Release DB Address already set")
         return
     click.echo("Setting ReleaseDB address for ReleaseIndex contract")
@@ -208,7 +208,7 @@ def set_release_db_address_on_package_index(chain, package_index, release_db):
     chain.wait.for_receipt(set_txn_hash, timeout=600)
     click.echo("MINED")
 
-    if package_index.call().releaseDb() != release_db.address:
+    if package_index.call().getReleaseDb() != release_db.address:
         click.echo("Something is wrong. ReleaseDb address not set on index.")
         import pdb; pdb.set_trace()
         raise ValueError("Something failed")
@@ -216,7 +216,7 @@ def set_release_db_address_on_package_index(chain, package_index, release_db):
 
 
 def set_release_validator_address_on_package_index(chain, package_index, release_validator):
-    if package_index.call().releaseValidator() == release_validator.address:
+    if package_index.call().getReleaseValidator() == release_validator.address:
         click.echo("ReleaseValidator Address already set")
         return
     click.echo("Setting ReleaseValidator address for ReleaseIndex contract")
@@ -228,7 +228,7 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     chain.wait.for_receipt(set_txn_hash, timeout=600)
     click.echo("MINED")
 
-    if package_index.call().releaseValidator() != release_validator.address:
+    if package_index.call().getReleaseValidator() != release_validator.address:
         click.echo("Something is wrong. ReleaseDb address not set on index.")
         import pdb; pdb.set_trace()
         raise ValueError("Something failed")
@@ -244,43 +244,43 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'authority_address',
     '--authority',
     '-a',
-    default='0x29658b7e2d9e7607ad57a93171a066bd073e7c17',
+    default='0x06658b994d95d1e8432192b9e3c0b2dbce6fe66f',
 )
 @click.option(
     'sem_version_lib_address',
     '--sem-version-lib',
     '-s',
-    default='0xd432635fa80bcf7d63bbf494d4ada4179559b286',
+    default='0xd49cce0631b148a61e562f32ef53605cebd593cb',
 )
 @click.option(
     'indexed_ordered_set_lib_address',
     '--indexed-ordered-set-lib',
     '-o',
-    default='0xb61cf6fe13fe544b67d6ed95f2596ea36082b1a3',
+    default='0x0a038b2b9b1be306aee706aabd9d402cb66eb02f',
 )
 @click.option(
     'package_db_address',
     '--package-db',
     '-d',
-    default='0xc8bfa2fcefc0f8ae7b7b542f8e9b45145dce4e77',
+    default='0x489d3a2c3b0f392fa780ab76a17f1586fd19e77c',
 )
 @click.option(
     'release_db_address',
     '--release-db',
     '-r',
-    default='0xa6d6ae350583b93ad1bd03f25aaba2050d467183',
+    default='0x666495528e96a6fc3bb809151d3a73f1cf2585f9',
 )
 @click.option(
     'release_validator_address',
     '--release-validator',
     '-v',
-    default='0xedcee68a853c74aed5f593349af41495e75de0e1',
+    default='0x5b745832e56ab7b97990890161b43db4ce0aa6cc',
 )
 @click.option(
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xbab799ff7d9e13a50696a8bebb7a1b77ae519586',
+    default='0x8011df4830b4f696cd81393997e5371b93338878',
 )
 def deploy(chain_name,
            authority_address,

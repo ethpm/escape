@@ -8,31 +8,42 @@ contract Authority {
 }
 
 
-contract Authorized {
+contract AuthorizedInterface {
     address public owner;
     Authority public authority;
+
+    modifier auth {
+        if (!isAuthorized()) throw;
+        _;
+    }
 
     event OwnerUpdate(address indexed oldOwner, address indexed newOwner);
     event AuthorityUpdate(address indexed oldAuthority, address indexed newAuthority);
 
+    function setOwner(address newOwner) public auth returns (bool);
+
+    function setAuthority(Authority newAuthority) public auth returns (bool);
+
+    function isAuthorized() internal returns (bool);
+}
+
+
+contract Authorized is AuthorizedInterface {
     function Authorized() {
         owner = msg.sender;
         OwnerUpdate(0x0, owner);
     }
 
-    function setOwner(address newOwner) auth {
+    function setOwner(address newOwner) public auth returns (bool) {
         OwnerUpdate(owner, newOwner);
         owner = newOwner;
+        return true;
     }
 
-    function setAuthority(Authority newAuthority) auth {
+    function setAuthority(Authority newAuthority) public auth returns (bool) {
         AuthorityUpdate(authority, newAuthority);
         authority = newAuthority;
-    }
-
-    modifier auth {
-        if (!isAuthorized()) throw;
-        _;
+        return true;
     }
 
     function isAuthorized() internal returns (bool) {
@@ -47,12 +58,7 @@ contract Authorized {
 }
 
 
-contract WhitelistAuthority is Authority, Authorized {
-    mapping (address =>
-             mapping (address =>
-                      mapping (bytes4 => bool))) _canCall;
-    mapping (address => mapping (bytes4 => bool)) _anyoneCanCall;
-
+contract WhitelistAuthorityInterface is Authority, AuthorizedInterface {
     event SetCanCall(address indexed callerAddress,
                      address indexed codeAddress,
                      bytes4 indexed sig,
@@ -61,6 +67,23 @@ contract WhitelistAuthority is Authority, Authorized {
     event SetAnyoneCanCall(address indexed codeAddress,
                            bytes4 indexed sig,
                            bool can);
+
+    function setCanCall(address callerAddress,
+                        address codeAddress,
+                        bytes4 sig,
+                        bool can) auth public returns (bool);
+
+    function setAnyoneCanCall(address codeAddress,
+                              bytes4 sig,
+                              bool can) auth public returns (bool);
+}
+
+
+contract WhitelistAuthority is WhitelistAuthorityInterface, Authorized {
+    mapping (address =>
+             mapping (address =>
+                      mapping (bytes4 => bool))) _canCall;
+    mapping (address => mapping (bytes4 => bool)) _anyoneCanCall;
 
     function canCall(address callerAddress,
                      address codeAddress,

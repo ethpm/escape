@@ -5,7 +5,7 @@ var app = express()
 app.use('/static', express.static('build'))
 
 app.get('/*', function(req, res) {
-  res.sendfile('index.html', {root: './build'})
+  res.sendFile('index.html', {root: './build'})
 })
 
 const port = process.env.PORT || 8080

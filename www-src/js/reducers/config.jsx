@@ -2,7 +2,7 @@ import TYPES from '../actions/types'
 
 
 let initialState = {
-  PACKAGE_INDEX_ADDRESS: '0xbab799ff7d9e13a50696a8bebb7a1b77ae519586',
+  PACKAGE_INDEX_ADDRESS: '0x8011df4830b4f696cd81393997e5371b93338878',
 };
 
 

@@ -2,6 +2,7 @@ import click
 
 from populus import Project
 
+
 @click.command()
 @click.argument(
     'chain_name',
@@ -11,74 +12,54 @@ from populus import Project
     'authority_address',
     '--authority',
     '-a',
-    default='0x29658b7e2d9e7607ad57a93171a066bd073e7c17',
+    default='0x06658b994d95d1e8432192b9e3c0b2dbce6fe66f',
 )
 @click.option(
     'sem_version_lib_address',
     '--sem-version-lib',
     '-s',
-    default='0xd432635fa80bcf7d63bbf494d4ada4179559b286',
+    default='0xd49cce0631b148a61e562f32ef53605cebd593cb',
 )
 @click.option(
     'indexed_ordered_set_lib_address',
     '--indexed-ordered-set-lib',
     '-o',
-    default='0xb61cf6fe13fe544b67d6ed95f2596ea36082b1a3',
+    default='0x0a038b2b9b1be306aee706aabd9d402cb66eb02f',
 )
 @click.option(
     'package_db_address',
     '--package-db',
     '-d',
-    default='0xc8bfa2fcefc0f8ae7b7b542f8e9b45145dce4e77',
+    default='0x489d3a2c3b0f392fa780ab76a17f1586fd19e77c',
 )
 @click.option(
     'release_db_address',
     '--release-db',
     '-r',
-    default='0xa6d6ae350583b93ad1bd03f25aaba2050d467183',
+    default='0x666495528e96a6fc3bb809151d3a73f1cf2585f9',
 )
 @click.option(
     'release_validator_address',
     '--release-validator',
     '-v',
-    default='0xedcee68a853c74aed5f593349af41495e75de0e1',
+    default='0x5b745832e56ab7b97990890161b43db4ce0aa6cc',
 )
 @click.option(
     'package_index_address',
     '--package-index',
     '-i',
-    default='0xbab799ff7d9e13a50696a8bebb7a1b77ae519586',
+    default='0x8011df4830b4f696cd81393997e5371b93338878',
 )
-def deploy(chain_name,
-           authority_address,
-           indexed_ordered_set_lib_address,
-           sem_version_lib_address,
-           package_db_address,
-           release_db_address,
-           release_validator_address,
-           package_index_address):
+def repl(chain_name,
+         authority_address,
+         indexed_ordered_set_lib_address,
+         sem_version_lib_address,
+         package_db_address,
+         release_db_address,
+         release_validator_address,
+         package_index_address):
     """
-    #. Deploy WhitelistAuthority
-    #. Deploy Libraries:
-        - EnumerableMappingLib
-        - SemVersionLib
-        - IndexedOrderedSetLib
-    #. Deploy PackageDB
-        - set Authority
-    #. Deploy ReleaseDB
-        - set Authority
-    #. Deploy ReleaseValidator
-    #. Deploy PackageIndex
-        - set PackageDB
-        - set Authority
-    #. Setup Authorizations
-        - PackageIndex -> PackageDB.setPackage(...)
-        - PackageIndex -> PackageDB.setPackageOwner(...)
-        - PackageIndex -> ReleaseDB.setRelease(...)
-        - * -> ReleaseDB.setVersion(...)
-        - * -> ReleaseDB.updateLatestTree(...)
-        - * -> PackageIndex.release(...)
-        - * -> PackageIndex.transferPackageOwner(...)
+    Enter a python REPL with all the contracts available.
     """
     project = Project()
     click.echo("Starting {0} chain... ".format(chain_name), nl=False)
@@ -100,10 +81,11 @@ def deploy(chain_name,
             address=release_db_address,
         )
         package_index = chain.contract_factories.PackageIndex(address=package_index_address)
+
         import pdb; pdb.set_trace()
 
-        x = 3
+        pass
 
 
 if __name__ == '__main__':
-    deploy()
+    repl()
