@@ -16,7 +16,7 @@ export function getPackageIndex(packageIndexAddress) {
 export function getPackageDbAddress(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
-      packageIndex.getReleaseDb.call(function(err, result) {
+      packageIndex.getPackageDb.call(function(err, result) {
         if (!err) {
           resolve(result)
         } else {
@@ -30,7 +30,7 @@ export function getPackageDbAddress(packageIndexAddress) {
 export function getReleaseDbAddress(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
-      packageIndex.getPackageDb.call(function(err, result) {
+      packageIndex.getReleaseDb.call(function(err, result) {
         if (!err) {
           resolve(result)
         } else {
