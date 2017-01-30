@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
+import DateTimeDisplay from '../common/DateTimeDisplay'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
@@ -32,9 +33,10 @@ export default connect(mapStateToProps)(React.createClass({
         let packageMeta = packageData.get('meta')
         return (
           <tr key={idx}>
-            <td><Link to={`/registry/packages/${packageMeta.get('packageIdx')}`}>{packageMeta.get('packageIdx') + 1}</Link></td>
-            <td>{packageMeta.get('name')}</td>
+            <td>{packageMeta.get('packageIdx') + 1}</td>
+            <td><Link to={`/registry/packages/${packageMeta.get('packageIdx')}`}>{packageMeta.get('name')}</Link></td>
             <td>{packageMeta.get('numReleases')}</td>
+            <td><DateTimeDisplay when={packageMeta.get('updatedAt')} /></td>
           </tr>
         )
       }).toJS()
@@ -47,7 +49,8 @@ export default connect(mapStateToProps)(React.createClass({
           <tr>
             <th>#</th>
             <th>Package Name</th>
-            <th>Num Releases</th>
+            <th># Releases</th>
+            <th>Last Updated</th>
           </tr>
         </thead>
         <tbody>
