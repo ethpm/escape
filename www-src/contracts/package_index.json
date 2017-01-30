@@ -66,7 +66,63 @@
         }
       ],
       "name": "setOwner",
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "major",
+          "type": "uint32"
+        },
+        {
+          "name": "minor",
+          "type": "uint32"
+        },
+        {
+          "name": "patch",
+          "type": "uint32"
+        },
+        {
+          "name": "preRelease",
+          "type": "string"
+        },
+        {
+          "name": "build",
+          "type": "string"
+        }
+      ],
+      "name": "getReleaseLockfileURI",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getPackageDb",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
       "payable": false,
       "type": "function"
     },
@@ -89,7 +145,7 @@
       "type": "function"
     },
     {
-      "constant": false,
+      "constant": true,
       "inputs": [
         {
           "name": "name",
@@ -121,6 +177,19 @@
         {
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getReleaseValidator",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
         }
       ],
       "payable": false,
@@ -311,7 +380,12 @@
         }
       ],
       "name": "setAuthority",
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
       "payable": false,
       "type": "function"
     },
@@ -336,46 +410,7 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "releaseDb",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
       "name": "owner",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "packageDb",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "releaseValidator",
       "outputs": [
         {
           "name": "",
@@ -499,6 +534,19 @@
         {
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getReleaseDb",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
         }
       ],
       "payable": false,

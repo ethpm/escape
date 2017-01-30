@@ -6,6 +6,7 @@ import HideUntilPackageMetaLoaded from '../common/HideUntilPackageMetaLoaded'
 import HideUntilPackageReleasesLoaded from '../common/HideUntilPackageReleasesLoaded'
 import DateTimeDisplay from '../common/DateTimeDisplay'
 import EthereumAddress from '../common/EthereumAddress'
+import SemVersionNumber from '../common/SemVersionNumber'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
@@ -74,14 +75,17 @@ let ReleaseTable = HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React
         }
         let releaseMeta = releaseDetails.get('meta')
         let releaseData = releaseDetails.get('data')
+        let versionData = {
+          major: releaseData.get('major'),
+          minor: releaseData.get('minor'),
+          patch: releaseData.get('patch'),
+          preRelease: releaseData.get('preRelease'),
+          build: releaseData.get('build'),
+        }
         return (
           <tr key={idx}>
             <td>{releaseMeta.get('releaseIdx') + 1}</td>
-            <td>{releaseData.get('major')}</td>
-            <td>{releaseData.get('minor')}</td>
-            <td>{releaseData.get('patch')}</td>
-            <td>{releaseData.get('preRelease')}</td>
-            <td>{releaseData.get('build')}</td>
+            <td><SemVersionNumber {...versionData} /></td>
             <td><DateTimeDisplay when={releaseMeta.get('createdAt')} /></td>
             <td>{releaseData.get('releaseLockfileURI')}</td>
           </tr>
@@ -95,11 +99,7 @@ let ReleaseTable = HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React
         <thead>
           <tr>
             <th>#</th>
-            <th>Major</th>
-            <th>Minor</th>
-            <th>Patch</th>
-            <th>Pre Release</th>
-            <th>Build</th>
+            <th>Version</th>
             <th>Created</th>
             <th>Lockfile</th>
           </tr>
