@@ -12,9 +12,7 @@ export default HideIfNoWeb3(HideUntilIndexMetaLoaded(connect(mapStateToProps)(Re
   render() {
     return (
       <div id="registry-layout">
-        <div className="container">
-          {this.props.children}
-        </div>
+        {this.props.children}
       </div>
     )
   }

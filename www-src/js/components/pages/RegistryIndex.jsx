@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
+import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
 import SyntaxHighlighter from "react-syntax-highlighter/dist/light"
 import docco from 'react-syntax-highlighter/dist/styles/docco'; 
 
@@ -20,6 +21,14 @@ export default connect(mapStateToProps)(React.createClass({
   render() {
     return (
       <div className='container'>
+        <div className='row'>
+          <div className='col-sm-12'>
+            <BSBreadcrumb>
+              <BSBreadcrumb.Crumb linkTo='/' crumbText='Home' />
+              <BSBreadcrumb.Crumb crumbText='Registry' />
+            </BSBreadcrumb>
+          </div>
+        </div>
         <div className='row'>
           <div className='col-sm-7'>
             <div className="jumbotron">

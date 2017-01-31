@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
-import BSCard from '../bootstrap/BSCard'
+import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
 import HideUntilPackageMetaLoaded from '../common/HideUntilPackageMetaLoaded'
 import HideUntilPackageReleasesLoaded from '../common/HideUntilPackageReleasesLoaded'
 import DateTimeDisplay from '../common/DateTimeDisplay'
@@ -19,11 +19,29 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(React.createClass({
+  getPackageMeta() {
+    return this.props.packages.getIn([this.props.params.packageIdx, 'meta'])
+  },
   render() {
+    let packageMeta = this.getPackageMeta()
     return (
-      <div>
-        <PageInner packageIdx={this.props.params.packageIdx} />
-        <ReleaseTable packageIdx={this.props.params.packageIdx} />
+      <div className="container">
+        <div className='row'>
+          <div className='col-sm-12'>
+            <BSBreadcrumb>
+              <BSBreadcrumb.Crumb linkTo='/' crumbText='Home' />
+              <BSBreadcrumb.Crumb linkTo='/registry' crumbText='Registry' />
+              <BSBreadcrumb.Crumb linkTo='/registry/packages' crumbText="Package Index" />
+              <BSBreadcrumb.Crumb crumbText={`${packageMeta.get('name')} Package`} />
+            </BSBreadcrumb>
+          </div>
+        </div>
+        <div className="row">
+          <div className='col-sm-12'>
+            <PageInner packageIdx={this.props.params.packageIdx} />
+            <ReleaseTable packageIdx={this.props.params.packageIdx} />
+          </div>
+        </div>
       </div>
     )
   },

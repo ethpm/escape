@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
+import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
 import DateTimeDisplay from '../common/DateTimeDisplay'
 
 function mapStateToProps(state) {
@@ -44,19 +45,34 @@ export default connect(mapStateToProps)(React.createClass({
   },
   render() {
     return (
-      <table className="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Package Name</th>
-            <th># Releases</th>
-            <th>Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.renderTableRows()}
-        </tbody>
-      </table>
+      <div className="container">
+        <div className='row'>
+          <div className='col-sm-12'>
+            <BSBreadcrumb>
+              <BSBreadcrumb.Crumb linkTo='/' crumbText='Home' />
+              <BSBreadcrumb.Crumb linkTo='/registry' crumbText='Registry' />
+              <BSBreadcrumb.Crumb crumbText="Package Index" />
+            </BSBreadcrumb>
+          </div>
+        </div>
+        <div className="row">
+          <div className='col-sm-12'>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Package Name</th>
+                  <th># Releases</th>
+                  <th>Last Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.renderTableRows()}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     )
   },
 }))
