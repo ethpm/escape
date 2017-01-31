@@ -7,6 +7,7 @@ import HideUntilPackageReleasesLoaded from '../common/HideUntilPackageReleasesLo
 import DateTimeDisplay from '../common/DateTimeDisplay'
 import EthereumAddress from '../common/EthereumAddress'
 import SemVersionNumber from '../common/SemVersionNumber'
+import IPFSGatewayURI from '../common/IPFSGatewayURI'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
@@ -87,7 +88,7 @@ let ReleaseTable = HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React
             <td>{releaseMeta.get('releaseIdx') + 1}</td>
             <td><SemVersionNumber {...versionData} /></td>
             <td><DateTimeDisplay when={releaseMeta.get('createdAt')} /></td>
-            <td>{releaseData.get('releaseLockfileURI')}</td>
+            <td><IPFSGatewayURI ipfsURI={releaseData.get('releaseLockfileURI')} /></td>
           </tr>
         )
       }).toJS()

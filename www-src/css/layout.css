@@ -1,3 +1,23 @@
-#top-nav {
-  margin-bottom: 15px;
+#default-layout {
+  margin-top: 15px;
+}
+
+#registry-layout {
+  margin-top: 15px;
+}
+
+#landing-page {
+  background: #fff url("../images/spider-web.jpg") no-repeat scroll;
+}
+
+#landing-page-top {
+  height: 600px;
+  margin-bottom: 20px;
+}
+
+#landing-page-top-title {
+  background-color: #333;
+  border-color: #333;
+  margin-top: 75px;
+  color: #ccc;
 }

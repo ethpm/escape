@@ -9,7 +9,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps)(React.createClass({
   render() {
     return (
-      <div>
+      <div id="default-layout">
         <div className="container">
           {this.props.children}
         </div>

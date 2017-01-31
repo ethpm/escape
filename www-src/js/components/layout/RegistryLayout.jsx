@@ -11,7 +11,7 @@ function mapStateToProps(state) {
 export default HideIfNoWeb3(HideUntilIndexMetaLoaded(connect(mapStateToProps)(React.createClass({
   render() {
     return (
-      <div>
+      <div id="registry-layout">
         <div className="container">
           {this.props.children}
         </div>

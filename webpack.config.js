@@ -34,6 +34,13 @@ module.exports = {
         loader: 'json-loader',
       },
       {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file-loader?hash=sha512&digest=hex&name=images/[hash].[ext]',
+          'image-webpack-loader?bypassOnDebug'
+        ]
+      },
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
