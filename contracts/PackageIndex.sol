@@ -293,11 +293,11 @@ contract PackageIndex is Authorized, PackageIndexInterface {
   /// @param preRelease The pre-release portion of the semver version string.  Use empty string if the version string has no pre-release portion.
   /// @param build The build portion of the semver version string.  Use empty string if the version string has no build portion.
   function getReleaseLockfileURI(string name,
-                                uint32 major,
-                                uint32 minor,
-                                uint32 patch,
-                                string preRelease,
-                                string build) constant returns (string) {
+                                 uint32 major,
+                                 uint32 minor,
+                                 uint32 patch,
+                                 string preRelease,
+                                 string build) constant returns (string) {
     bytes32 versionHash = releaseDb.hashVersion(major, minor, patch, preRelease, build);
     bytes32 releaseHash = releaseDb.hashRelease(packageDb.hashName(name), versionHash);
     return getReleaseLockfileURI(releaseHash);
