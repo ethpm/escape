@@ -47244,7 +47244,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                 ' then integration with the package index is easy.  Take a look at the ',
                 _react2.default.createElement(
                   'a',
-                  { target: '_blank', href: 'https://github.com/ConsenSys/escape/blob/master/README.md#integrating-your-tool-with-the-ethereum-package-index', __source: {
+                  { target: '_blank', href: 'https://github.com/ConsenSys/escape/blob/master/README.md#integrating-your-tool-with-the-ethereum-package-registry', __source: {
                       fileName: _jsxFileName,
                       lineNumber: 79
                     }
