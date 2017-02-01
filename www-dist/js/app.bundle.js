@@ -48716,7 +48716,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       lineNumber: 38
                     }
                   },
-                  'I know change be a little scary but we\'re sure that once you try it you\'ll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.'
+                  'I know change can be a little scary but we\'re sure that once you try it you\'ll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.'
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,

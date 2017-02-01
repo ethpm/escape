@@ -35,7 +35,7 @@ export default connect(mapStateToProps)(React.createClass({
 
                   <BSCard.Text>Since we care about you and really want you to succeed we made you something that should help. It's called a <strong>package index</strong>.</BSCard.Text>
 
-                  <BSCard.Text>I know change be a little scary but we're sure that once you try it you'll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.</BSCard.Text>
+                  <BSCard.Text>I know change can be a little scary but we're sure that once you try it you'll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.</BSCard.Text>
 
                   <BSCard.Text>Please give it a try.  We really do want the best for you.</BSCard.Text>
 
