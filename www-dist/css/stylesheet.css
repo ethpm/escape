@@ -21,6 +21,21 @@
   color: #666;
   font-size: 1.5em;
   margin-bottom: 180px; }
+
+#landing-page-letter .btn {
+  color: #000; }
+
+.btn-truffle {
+  color: #fff;
+  background-color: #00D1B2;
+  border-color: #00D1B2; }
+
+i.truffle-logo {
+  background: url(../images/848fa5bbc6cb0db556d2fdad55fa10c8.png) no-repeat scroll;
+  background-size: 20px;
+  display: inline-block;
+  width: 20px;
+  height: 20px; }
 span.ethereum-address-icon {
   background-size: cover;
   background-repeat: no-repeat;

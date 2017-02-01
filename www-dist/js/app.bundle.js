@@ -46767,6 +46767,7 @@ function mapStateToProps(state) {
 }
 
 var POPULUS_CODE = "$ pip install populus\n$ populus package install owned";
+var TRUFFLE_CODE = "$ npm install truffle\n$ truffle install owned";
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.createClass({
   render: function render() {
@@ -46774,21 +46775,21 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
       'div',
       { className: 'container', __source: {
           fileName: _jsxFileName,
-          lineNumber: 30
+          lineNumber: 31
         }
       },
       _react2.default.createElement(
         'div',
         { className: 'row', __source: {
             fileName: _jsxFileName,
-            lineNumber: 31
+            lineNumber: 32
           }
         },
         _react2.default.createElement(
           'div',
           { className: 'col-sm-12', __source: {
               fileName: _jsxFileName,
-              lineNumber: 32
+              lineNumber: 33
             }
           },
           _react2.default.createElement(
@@ -46796,17 +46797,17 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 33
+                lineNumber: 34
               }
             },
             _react2.default.createElement(_BSBreadcrumb2.default.Crumb, { linkTo: '/', crumbText: 'Home', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 34
+                lineNumber: 35
               }
             }),
             _react2.default.createElement(_BSBreadcrumb2.default.Crumb, { crumbText: 'Registry', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 35
+                lineNumber: 36
               }
             })
           )
@@ -46816,21 +46817,21 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
         'div',
         { className: 'row', __source: {
             fileName: _jsxFileName,
-            lineNumber: 39
+            lineNumber: 40
           }
         },
         _react2.default.createElement(
           'div',
           { className: 'col-sm-12', __source: {
               fileName: _jsxFileName,
-              lineNumber: 40
+              lineNumber: 41
             }
           },
           _react2.default.createElement(
             'div',
             { className: 'jumbotron', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 41
+                lineNumber: 42
               }
             },
             _react2.default.createElement(
@@ -46838,7 +46839,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 42
+                  lineNumber: 43
                 }
               },
               'The Ethereum Package Registry'
@@ -46848,7 +46849,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 43
+                  lineNumber: 44
                 }
               },
               'The Ethereum Package Registry is a package index for Ethereum smart contract packages.  The registry is based on the ',
@@ -46856,7 +46857,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                 'a',
                 { href: 'https://github.com/ethereum/EIPs/issues/190', target: '_blank', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 43
+                    lineNumber: 44
                   }
                 },
                 'ERC190 Smart Contract Packaging Specification'
@@ -46868,7 +46869,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 44
+                  lineNumber: 45
                 }
               },
               'There are currently ',
@@ -46882,7 +46883,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 45
+                  lineNumber: 46
                 }
               },
               'You can view the Package Index contract on the Ropsten test network ',
@@ -46890,12 +46891,12 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                 'a',
                 { href: 'https://testnet.etherscan.io/address/0x8011df4830b4f696cd81393997e5371b93338878', target: '_blank', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 45
+                    lineNumber: 46
                   }
                 },
                 _react2.default.createElement(_EthereumAddress2.default, { imageSize: 16, address: '0x8011df4830b4f696cd81393997e5371b93338878', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 45
+                    lineNumber: 46
                   }
                 })
               )
@@ -46904,12 +46905,12 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               _reactRouter.Link,
               { className: 'btn btn-primary pull-right', to: 'registry/packages', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 46
+                  lineNumber: 47
                 }
               },
               _react2.default.createElement(_FAIcon2.default, { icon: 'search', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 46
+                  lineNumber: 47
                 }
               }),
               ' Browse Packages'
@@ -46920,7 +46921,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
           'div',
           { className: 'col-sm-6', __source: {
               fileName: _jsxFileName,
-              lineNumber: 49
+              lineNumber: 50
             }
           },
           _react2.default.createElement(
@@ -46928,7 +46929,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 50
+                lineNumber: 51
               }
             },
             _react2.default.createElement(
@@ -46936,28 +46937,49 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 51
+                  lineNumber: 52
                 }
               },
-              'Get started with Truffle'
+              _react2.default.createElement('i', { className: 'truffle-logo', __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 52
+                }
+              }),
+              ' Get started with Truffle'
             ),
             _react2.default.createElement(
               _BSCard2.default.Block,
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 52
+                  lineNumber: 53
                 }
               },
               _react2.default.createElement(
-                _BSCard2.default.Text,
-                {
-                  __source: {
+                _light2.default,
+                { language: 'bash', style: _docco2.default, __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 53
+                    lineNumber: 54
                   }
                 },
-                'TODO'
+                TRUFFLE_CODE
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'text-center', __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 55
+                  }
+                },
+                _react2.default.createElement(
+                  'a',
+                  { className: 'btn btn-truffle', target: '_blank', href: 'http://truffleframework.com/docs/', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 56
+                    }
+                  },
+                  'Truffle Documentation'
+                )
               )
             )
           )
@@ -46966,7 +46988,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
           'div',
           { className: 'col-sm-6', __source: {
               fileName: _jsxFileName,
-              lineNumber: 57
+              lineNumber: 61
             }
           },
           _react2.default.createElement(
@@ -46974,7 +46996,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 58
+                lineNumber: 62
               }
             },
             _react2.default.createElement(
@@ -46982,7 +47004,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 59
+                  lineNumber: 63
                 }
               },
               'Get started with Populus'
@@ -46992,14 +47014,14 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 60
+                  lineNumber: 64
                 }
               },
               _react2.default.createElement(
                 _light2.default,
                 { language: 'bash', style: _docco2.default, __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 61
+                    lineNumber: 65
                   }
                 },
                 POPULUS_CODE
@@ -47008,14 +47030,14 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                 'div',
                 { className: 'text-center', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 62
+                    lineNumber: 66
                   }
                 },
                 _react2.default.createElement(
                   'a',
                   { className: 'btn btn-success', target: '_blank', href: 'http://populus.readthedocs.io/en/feat-v2/tutorial.html', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 63
+                      lineNumber: 67
                     }
                   },
                   'Populus Documentation'
@@ -48118,6 +48140,20 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                     },
                     'Piper & Tim'
                   )
+                ),
+                _react2.default.createElement(
+                  _reactRouter.Link,
+                  { className: 'btn btn-info pull-right', to: 'registry', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 42
+                    }
+                  },
+                  'Give it a try ',
+                  _react2.default.createElement(_FAIcon2.default, { icon: 'arrow-right', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 42
+                    }
+                  })
                 )
               )
             )
