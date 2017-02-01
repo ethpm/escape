@@ -48278,7 +48278,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       lineNumber: 33
                     }
                   },
-                  'We need to have a talk.  You haven\'t been the easiest platform to work with.  Don\'t get me wrong, you have some great qualities that we love but it\'s time you grew up a bit and started acting a bit more... ',
+                  'We need to talk. You\'re not the easiest platform to work with. Don\'t get me wrong, you have some great qualities but it\'s time to grow up and start acting a bit more... ',
                   _react2.default.createElement(
                     'em',
                     {
@@ -48288,24 +48288,23 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       }
                     },
                     'mature'
-                  ),
-                  '.'
+                  )
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 35
+                      lineNumber: 36
                     }
                   },
-                  'Since we care about you and really want you to succeed we made you something that should help.  It\'s a ',
+                  'Since we care about you and really want you to succeed we made you something that should help. It\'s called a ',
                   _react2.default.createElement(
                     'strong',
                     {
                       __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 35
+                        lineNumber: 36
                       }
                     },
                     'package index'
@@ -48317,17 +48316,17 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 37
+                      lineNumber: 38
                     }
                   },
-                  'I know that new things can be a little scary but we\'re sure that once you try it you\'ll love it.  Developers are going to want to play with you more.  Their bosses may even stop seeing you as the dangerous kid teaching all their devs bad software habits like copy/pasting code.'
+                  'I know change be a little scary but we\'re sure that once you try it you\'ll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.'
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 39
+                      lineNumber: 40
                     }
                   },
                   'Please give it a try.  We really do want the best for you.'
@@ -48337,7 +48336,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 41
+                      lineNumber: 42
                     }
                   },
                   _react2.default.createElement(
@@ -48345,7 +48344,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                     {
                       __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 41
+                        lineNumber: 42
                       }
                     },
                     'Piper & Tim'
@@ -48355,13 +48354,13 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                   _reactRouter.Link,
                   { className: 'btn btn-primary pull-right', to: 'registry', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 42
+                      lineNumber: 43
                     }
                   },
                   'Go to the Registry ',
                   _react2.default.createElement(_FAIcon2.default, { icon: 'arrow-right', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 42
+                      lineNumber: 43
                     }
                   })
                 )
