@@ -4,11 +4,13 @@ import { Router, Route, Link, IndexRoute, browserHistory } from 'react-router'
 import { Provider, connect } from 'react-redux'
 import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux'
 import thunk from 'redux-thunk'
-import persistState, {mergePersistedState} from 'redux-localstorage';
-import { serialize, deserialize } from 'redux-localstorage-immutable';
-import adapter from 'redux-localstorage/lib/adapters/localStorage';
-import filter from 'redux-localstorage-filter';
-import debounce from 'redux-localstorage-debounce';
+import persistState, {mergePersistedState} from 'redux-localstorage'
+import { serialize, deserialize } from 'redux-localstorage-immutable'
+import adapter from 'redux-localstorage/lib/adapters/localStorage'
+import filter from 'redux-localstorage-filter'
+import debounce from 'redux-localstorage-debounce'
+
+import PiwikReactRouter from 'piwik-react-router'
 
 import rootReducer from '../reducers/index'
 import actions from '../actions/index'
@@ -40,12 +42,12 @@ const storage = compose(
     'web3.selectedWeb3',
     //'packageIndex.*.packageData.packages',
   ]),
-)(adapter(window.localStorage));
+)(adapter(window.localStorage))
 
 const enhancer = compose(
   applyMiddleware(thunk, routerMiddleware(browserHistory, actionLogger)),
   persistState(storage),
-);
+)
 
 function createReduxStore() {
   return createStore(
@@ -53,6 +55,11 @@ function createReduxStore() {
     enhancer,
   )
 }
+
+let piwik = PiwikReactRouter({
+  url: 'pipermerriam.piwikpro.com',
+  siteId: 1,
+})
 
 const store = createReduxStore()
 const history = syncHistoryWithStore(browserHistory, store)
@@ -65,7 +72,7 @@ export default React.createClass({
   render() {
     return (
       <Provider store={store}>
-        <Router history={history}>
+        <Router history={piwik.connectToHistory(history)}>
           <Route path='/' component={MainLayout}>
             <IndexRoute component={SiteIndex} />
             <Route path="docs/integration-guide" component={DefaultLayout}>
