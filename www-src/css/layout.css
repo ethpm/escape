@@ -11,19 +11,19 @@
 }
 
 #landing-page-top {
-  height: 350px;
+  height: 200px;
   margin-bottom: 20px;
 }
 
 #landing-page-top-title {
   background-color: #333;
   border-color: #333;
-  margin-top: 75px;
+  margin-top: 25px;
   color: #ccc;
 }
 
 #landing-page-letter {
   color: #666;
-  font-style: italic;
   font-size: 1.5em;
+  margin-bottom: 180px;
 }
