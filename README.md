@@ -24,9 +24,9 @@ The deployed instance of the Package Index can be found on the Ropsten testnet @
 The full build assets including ABIs for all contracts can be found in
 [`./build-assets/contract-build-assets.json`](./build-assets/contract-build-assets.json).
 
-## Integrating your tool with the Ethereum Package Index
+## Integrating your tool with the Ethereum Package Registry
 
-Integrating your tool with the Etheruem Package Index is easy, and is simply a matter of calling specific functions on the PackageIndex contract deployed to ropsten.
+Integrating your tool with the Etheruem Package Registry is easy, and is simply a matter of calling specific functions on the PackageIndex contract deployed to ropsten.
 
 The most important things any tool or package manager needs to know are the following:
 
