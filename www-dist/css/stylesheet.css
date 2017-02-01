@@ -5,22 +5,22 @@
   margin-top: 15px; }
 
 #landing-page {
-  background: #333 url(../images/3d08ed86330618b7f66080be3d4b49c0.jpg) no-repeat scroll; }
+  background: #333 url(../images/014abdfeedf299e7c38d2c34304a6482.jpg) no-repeat scroll; }
 
 #landing-page-top {
-  height: 350px;
+  height: 200px;
   margin-bottom: 20px; }
 
 #landing-page-top-title {
   background-color: #333;
   border-color: #333;
-  margin-top: 75px;
+  margin-top: 25px;
   color: #ccc; }
 
 #landing-page-letter {
   color: #666;
-  font-style: italic;
-  font-size: 1.5em; }
+  font-size: 1.5em;
+  margin-bottom: 180px; }
 span.ethereum-address-icon {
   background-size: cover;
   background-repeat: no-repeat;

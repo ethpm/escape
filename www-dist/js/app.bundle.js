@@ -47951,7 +47951,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
           },
           _react2.default.createElement(
             'div',
-            { id: 'landing-page-top', className: 'col-sm-7 offset-sm-5', __source: {
+            { id: 'landing-page-top', className: 'col-sm-8 offset-sm-2', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 18
               }
@@ -48046,7 +48046,18 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       lineNumber: 33
                     }
                   },
-                  'We need to talk.  You\'re not the easiest platform to work with.  Don\'t get me wrong, you have some great qualities that we love but it\'s time you grew up a bit and started acting a bit more... mature.'
+                  'We need to have a talk.  You haven\'t been the easiest platform to work with.  Don\'t get me wrong, you have some great qualities that we love but it\'s time you grew up a bit and started acting a bit more... ',
+                  _react2.default.createElement(
+                    'em',
+                    {
+                      __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 33
+                      }
+                    },
+                    'mature'
+                  ),
+                  '.'
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,
@@ -48067,7 +48078,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                     },
                     'package index'
                   ),
-                  '.  I know that new things can be a little scary but we\'re sure that if you try it you\'ll find it\'s better.  Developers are going to want to play with you more.  Their bosses may even stop seeing you as the dangerous kid teaching all their devs bad software habits like copy/pasting code.'
+                  '.'
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,
@@ -48077,7 +48088,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       lineNumber: 37
                     }
                   },
-                  'We hope you\'ll give it a try.  We really do want the best for you.'
+                  'I know that new things can be a little scary but we\'re sure that once you try it you\'ll love it.  Developers are going to want to play with you more.  Their bosses may even stop seeing you as the dangerous kid teaching all their devs bad software habits like copy/pasting code.'
                 ),
                 _react2.default.createElement(
                   _BSCard2.default.Text,
@@ -48087,7 +48098,26 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                       lineNumber: 39
                     }
                   },
-                  'Piper & Tim'
+                  'Please give it a try.  We really do want the best for you.'
+                ),
+                _react2.default.createElement(
+                  _BSCard2.default.Text,
+                  {
+                    __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 41
+                    }
+                  },
+                  _react2.default.createElement(
+                    'em',
+                    {
+                      __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 41
+                      }
+                    },
+                    'Piper & Tim'
+                  )
                 )
               )
             )
