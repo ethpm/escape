@@ -2,6 +2,8 @@ var express = require('express')
 
 var app = express()
 
+const staticRoot = process.env.STATIC_ROOT || 'build'
+
 app.use('/static', express.static('build'))
 
 app.get('/*', function(req, res) {

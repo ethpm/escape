@@ -59,8 +59,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "web": "node index.js",
-    "postinstall": "webpack"
+    "web": "node index.js"
   },
   "repository": {
     "type": "git",
