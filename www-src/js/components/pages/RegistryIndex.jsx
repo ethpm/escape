@@ -23,6 +23,7 @@ function mapStateToProps(state) {
 }
 
 const POPULUS_CODE = "$ pip install populus\n$ populus package install owned"
+const TRUFFLE_CODE = "$ npm install truffle\n$ truffle install owned"
 
 export default connect(mapStateToProps)(React.createClass({
   render() {
@@ -48,9 +49,12 @@ export default connect(mapStateToProps)(React.createClass({
           </div>
           <div className='col-sm-6'>
             <BSCard>
-              <BSCard.Header>Get started with Truffle</BSCard.Header>
+              <BSCard.Header><i className="truffle-logo" /> Get started with Truffle</BSCard.Header>
               <BSCard.Block>
-                <BSCard.Text>TODO</BSCard.Text>
+                <SyntaxHighlighter language='bash' style={docco}>{TRUFFLE_CODE}</SyntaxHighlighter>
+                <div className="text-center">
+                  <a className="btn btn-truffle" target="_blank" href="http://truffleframework.com/docs/">Truffle Documentation</a>
+                </div>
               </BSCard.Block>
             </BSCard>
           </div>

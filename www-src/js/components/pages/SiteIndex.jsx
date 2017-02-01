@@ -39,6 +39,7 @@ export default connect(mapStateToProps)(React.createClass({
                   <BSCard.Text>Please give it a try.  We really do want the best for you.</BSCard.Text>
 
                   <BSCard.Text><em>Piper &amp; Tim</em></BSCard.Text>
+                    <Link className="btn btn-info pull-right" to="registry">Give it a try <FAIcon icon="arrow-right" /></Link>
                 </BSCard.Block>
               </BSCard>
             </div>
