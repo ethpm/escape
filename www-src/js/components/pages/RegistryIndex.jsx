@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import SyntaxHighlighter from "react-syntax-highlighter/dist/light"
 import docco from 'react-syntax-highlighter/dist/styles/docco'; 
 import actions from '../../actions'
+import EthereumAddress from '../common/EthereumAddress'
 import FAIcon from '../common/FAIcon'
 import BSCard from '../bootstrap/BSCard'
 import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
@@ -39,13 +40,12 @@ export default connect(mapStateToProps)(React.createClass({
           <div className='col-sm-12'>
             <div className="jumbotron">
               <h2>The Ethereum Package Registry</h2>
-              <p>The Ethereum Package Registry is a package index for Ethereum smart contract packages.  The registry is based on the <a href="https://github.com/ethereum/EIPs/issues/190">ERC190 Smart Contract Packaging Specification</a>.</p>
+              <p>The Ethereum Package Registry is a package index for Ethereum smart contract packages.  The registry is based on the <a href="https://github.com/ethereum/EIPs/issues/190" target="_blank">ERC190 Smart Contract Packaging Specification</a>.</p>
               <p>There are currently {this.props.numPackages} packages here with a total of {this.props.totalNumReleases} releases.</p>
+              <p>You can view the Package Index contract on the Ropsten test network <a href="https://testnet.etherscan.io/address/0x8011df4830b4f696cd81393997e5371b93338878" target="_blank"><EthereumAddress imageSize={16} address="0x8011df4830b4f696cd81393997e5371b93338878" /></a></p>
               <Link className="btn btn-primary pull-right" to="registry/packages"><FAIcon icon="search" /> Browse Packages</Link>
             </div>
           </div>
-        </div>
-        <div className='row'>
           <div className='col-sm-6'>
             <BSCard>
               <BSCard.Header>Get started with Truffle</BSCard.Header>

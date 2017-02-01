@@ -7,11 +7,11 @@
 }
 
 #landing-page {
-  background: #fff url("../images/spider-web.jpg") no-repeat scroll;
+  background: #333 url("../images/spider-web.jpg") no-repeat scroll;
 }
 
 #landing-page-top {
-  height: 600px;
+  height: 350px;
   margin-bottom: 20px;
 }
 
@@ -20,4 +20,10 @@
   border-color: #333;
   margin-top: 75px;
   color: #ccc;
+}
+
+#landing-page-letter {
+  color: #666;
+  font-style: italic;
+  font-size: 1.5em;
 }
