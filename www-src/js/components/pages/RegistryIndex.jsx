@@ -10,8 +10,12 @@ function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS;
   return {
     packageIndexAddress: packageIndexAddress,
-    numReleases: state.packageIndex.getIn([packageIndexAddress, 'numReleases']),
-    numPackages: state.packageIndex.getIn([packageIndexAddress, 'numPackages']),
+    numPackages: state.packageIndex.getIn(
+      [packageIndexAddress, 'packageData', 'meta', 'numPackages']
+    ),
+    totalNumReleases: state.packageIndex.getIn(
+      [packageIndexAddress, 'releaseData', 'meta', 'totalNumReleases']
+    ),
   }
 }
 
@@ -34,7 +38,7 @@ export default connect(mapStateToProps)(React.createClass({
             <div className="jumbotron">
               <h2>The Ethereum Package Registry</h2>
               <p>The Ethereum Package Registry is a package index for Ethereum smart contract packages.  The registry is based on the <a href="https://github.com/ethereum/EIPs/issues/190">ERC190 Smart Contract Packaging Specification</a>.</p>
-              <p>There are currently {this.props.numPackages} packages here with a total of {this.props.numReleases} releases.</p>
+              <p>There are currently {this.props.numPackages} packages here with a total of {this.props.totalNumReleases} releases.</p>
               <Link className="btn btn-primary pull-right" to="registry/packages">Browse Packages</Link>
             </div>
           </div>

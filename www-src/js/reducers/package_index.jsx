@@ -13,130 +13,80 @@ export default function(state, action) {
   var newState = state
 
   switch (action.type) {
-    case TYPES.SET_EMPTY_INDEX_META:
+    case TYPES.SET_EMPTY_INDEX_DATA:
       newState = newState.set(
         action.packageIndexAddress,
-        Immutable.Map({isLoaded: false}),
-      )
-      break
-    case TYPES.SET_INDEX_META_LOADED:
-      newState = newState.setIn(
-        [action.packageIndexAddress, 'isLoaded'],
-        true,
+        Immutable.fromJS({
+          meta: {
+            packageIndexAddress: action.packageIndexAddress,
+          },
+          packageData: {
+            meta: {},
+            packages: {},
+            packageList: [],
+          },
+          releaseData: {
+            meta: {},
+            releases: {},
+            releaseList: [],
+          }
+        })
       )
       break
     case TYPES.SET_PACKAGE_DB_ADDRESS:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'packageDbAddress'],
+        [action.packageIndexAddress, 'meta', 'packageDbAddress'],
         action.packageDbAddress,
       )
       break
     case TYPES.SET_RELEASE_DB_ADDRESS:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'releaseDbAddress'],
+        [action.packageIndexAddress, 'meta', 'releaseDbAddress'],
         action.releaseDbAddress,
       )
       break
     case TYPES.SET_NUM_PACKAGES:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'numPackages'],
+        [action.packageIndexAddress, 'packageData', 'meta', 'numPackages'],
         action.numPackages,
       )
-      break
-    case TYPES.SET_NUM_RELEASES:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'numReleases'],
-        action.numReleases,
+        [action.packageIndexAddress, 'packageData', 'packageList'],
+        newState.getIn([action.packageIndexAddress, 'packageData', 'packageList']).setSize(
+          action.numPackages,
+        ),
       )
       break
-    case TYPES.SET_EMPTY_INDEX_DATA:
-      newState = newState.mergeIn(
-        [action.packageIndexAddress, 'packageData'],
-        Immutable.fromJS({packages: [], isLoaded: false})
-      )
-      break
-    case TYPES.SET_INDEX_DATA_LOADED:
+    case TYPES.SET_TOTAL_NUM_RELEASES:
       newState = newState.setIn(
-        [action.packageIndexAddress, 'packageData', 'isLoaded'],
-        true,
+        [action.packageIndexAddress, 'releaseData', 'meta', 'totalNumReleases'],
+        action.totalNumReleases,
       )
-      break
-    case TYPES.SET_EMPTY_PACKAGE_META:
       newState = newState.setIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'meta'
-        ],
-        Immutable.fromJS({packageIdx: action.packageIdx, isLoaded: false}),
+        [action.packageIndexAddress, 'releaseData', 'releaseList'],
+        newState.getIn([action.packageIndexAddress, 'releaseData', 'releaseList']).setSize(
+          action.totalNumReleases,
+        ),
       )
       break
     case TYPES.SET_PACKAGE_NAME:
-      newState = newState.mergeIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'meta'
-        ],
-        Immutable.Map({name: action.name}),
+      newState = newState.setIn(
+        [action.packageIndexAddress, 'packageData', 'packageList', action.packageIdx],
+        action.packageName,
       )
       break
-    case TYPES.SET_PACKAGE_META_DETAILS:
-      newState = newState.mergeIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'meta'
-        ],
-        Immutable.fromJS(action.metaDetails),
-      )
-      break
-    case TYPES.SET_PACKAGE_META_LOADED:
+    case TYPES.SET_PACKAGE_DATA:
       newState = newState.setIn(
         [
           action.packageIndexAddress,'packageData', 'packages',
-          action.packageIdx,
-          'meta', 'isLoaded',
+          action.packageName,
         ],
-        true,
+        Immutable.fromJS(action.packageData),
       )
       break
-    case TYPES.SET_EMPTY_PACKAGE_RELEASES:
-      newState = newState.setIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData'
-        ],
-        Immutable.fromJS({releases: [], isLoaded: false}),
-      )
-      break
-    case TYPES.SET_PACKAGE_RELEASES_LOADED:
-      newState = newState.setIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'isLoaded',
-        ],
-        true,
-      )
-      break
-    case TYPES.SET_EMPTY_RELEASE_DATA:
-      newState = newState.setIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'releases',
-          action.releaseIdx,
-        ],
-        Immutable.fromJS({
-          'meta': {
-            releaseIdx: action.releaseIdx,
-            isLoaded: false,
-          },
-          'data': {}
-        }),
-      )
+    //
+    // Breakpoint
+    //
     case TYPES.SET_RELEASE_HASH:
       newState = newState.setIn(
         [
