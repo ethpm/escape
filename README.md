@@ -55,7 +55,7 @@ PackageIndex index = PackageIndex(0x8011df4830b4f696cd81393997e5371b93338878);
 // First get the unique hashed identifiers of each release
 bytes32[] memory releaseHashes = index.getAllPackageReleaseHashes("owned");
 
-// Next, loop through getting the data.
+// Next, loop through getting the data for each release.
 for (uint i = 0; i < releaseHashes.length; i++) {
     bytes32 hash = releaseHashes[i];
 
