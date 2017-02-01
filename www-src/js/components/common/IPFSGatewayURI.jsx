@@ -3,7 +3,6 @@ import React from 'react'
 
 export default React.createClass({
   getIPFSGatewayURI() {
-    let url = new URL(this.props.ipfsURI)
     let [, ipfsHash] = this.props.ipfsURI.split('://')
     return `https://gateway.ipfs.io/ipfs/${ipfsHash}`
   },

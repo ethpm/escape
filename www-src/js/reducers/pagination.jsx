@@ -65,8 +65,6 @@ export default function(state, action) {
 
   switch (action.type) {
     case TYPES.PAGINATION_SET_PAGE_NUMBER:
-      console.log('SET PAGE NUMBER')
-
       var paginator = _.get(
         newState.paginators,
         action.paginatorKey,
@@ -82,8 +80,6 @@ export default function(state, action) {
       }
       break
     case TYPES.PAGINATION_INITIALIZE_PAGINATOR:
-      console.log('INITIALIZING PAGINATOR')
-
       var paginator = new Paginator({
         items: action.items,
       })

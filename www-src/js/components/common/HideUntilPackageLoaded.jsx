@@ -3,11 +3,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import LoadingSpinner from './LoadingSpinner'
-import HideUntilPackageNameLoaded from './HideUntilPackageNameLoaded'
+import HideUntilPackageListLoaded from './HideUntilPackageListLoaded'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packagesList = state.packageIndex.getIn(
+  let packageList = state.packageIndex.getIn(
     [packageIndexAddress, 'packageData', 'packageList']
   )
   let packages = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
@@ -19,9 +19,9 @@ function mapStateToProps(state) {
 }
 
 export default function HideUntilPackageLoaded(WrappedComponent) {
-  return HideUntilPackageNameLoaded(connect(mapStateToProps)(React.createClass({
+  return HideUntilPackageListLoaded(connect(mapStateToProps)(React.createClass({
     getPackageName() {
-      return this.props.packageList.get(this.props.packageIdx)
+      return this.props._packageList.get(this.props.packageIdx)
     },
     isPackageLoaded() {
       let packageName = this.getPackageName()
@@ -39,7 +39,7 @@ export default function HideUntilPackageLoaded(WrappedComponent) {
       }
     },
     render() {
-      if (this.isPackageMetaLoaded()) {
+      if (this.isPackageLoaded()) {
         return (
           <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_packages', '_packageList')} />
         )

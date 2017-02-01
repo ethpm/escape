@@ -3,54 +3,46 @@ import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import LoadingSpinner from './LoadingSpinner'
-import HideUntilPackageReleasesLoaded from './HideUntilPackageReleasesLoaded'
+import HideUntilIndexDataLoaded from './HideUntilIndexDataLoaded'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
-  let packages = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
+  let releases = state.packageIndex.getIn([packageIndexAddress, 'releaseData', 'releases'])
   return {
     _packageIndexAddress: packageIndexAddress,
-    _packages: packages,
+    _releases: releases,
   }
 }
 
-export default function HideUntilReleasetaLoaded(WrappedComponent) {
-  return HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React.createClass({
-    isReleasetaLoaded() {
-      return this.props._packages.getIn(
-        [
-          this.props.packageIdx,
-          'releaseData', 'releases',
-          this.props.releaseIdx,
-          'meta', 'isLoaded',
-        ],
-        false,
-      )
-    },
-    getReleaseHash() {
-      return this.props._packages.getIn(
-        [
-          this.props.packageIdx,
-          'releaseData', 'releases',
-          this.props.releaseIdx,
-          'meta', 'releaseHash',
-        ],
-      )
+export default function HideUntilReleaseLoaded(WrappedComponent) {
+  return HideUntilIndexDataLoaded(connect(mapStateToProps)(React.createClass({
+    isReleaseLoaded() {
+      return _.every([
+        this.props._releases.hasIn([this.props.releaseHash, 'meta', 'createdAt']),
+        this.props._releases.hasIn([this.props.releaseHash, 'meta', 'updatedAt']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'major']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'minor']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'patch']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'preRelease']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'build']),
+        this.props._releases.hasIn([this.props.releaseHash, 'details', 'releaseLockfileURI']),
+      ])
     },
     componentWillMount() {
-      this.props.dispatch(actions.triggerReleaseLoad(
-        this.props._packageIndexAddress,
-        this.props.packageIdx,
-        this.props.releaseIdx,
-      ))
+      if (!this.isReleaseLoaded()) {
+        this.props.dispatch(actions.loadReleaseData(
+          this.props._packageIndexAddress,
+          this.props.releaseHash,
+        ))
+      }
     },
     render() {
-      if (this.isReleasetaLoaded()) {
+      if (this.isReleaseLoaded()) {
         return (
-          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_packages')} />
+          <WrappedComponent {..._.omit(this.props, '_packageIndexAddress', '_releases')} />
         )
       } else {
-        return <span><LoadingSpinner /> Waiting for package data to load.</span>
+        return <span><LoadingSpinner /> Waiting for release data to load.</span>
       }
     }
   })))

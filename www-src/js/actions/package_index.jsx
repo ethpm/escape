@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import TYPES from './types'
-import { getPackageDbAddress, getReleaseDbAddress, getNumPackages, getTotalNumReleases, getPackageName, getPackageData, getAllPackageReleaseHashes, getReleaseData, getPackageReleaseHash } from '../services/package_index'
+import { getPackageDbAddress, getReleaseDbAddress, getNumPackages, getTotalNumReleases, getPackageName, getPackageData, getAllPackageReleaseHashes, getReleaseData, getReleaseHash } from '../services/package_index'
 
 /*
  * Index Level Actions
@@ -143,11 +143,13 @@ export function setTotalNumReleases(packageIndexAddress, totalNumReleases) {
 export function loadPackageList(packageIndexAddress) {
   return function(dispatch, getState) {
     let state = getState()
-    let packageList = state.getIn([packageIndexAddress, 'packageData', 'packageList'])
+    let packageList = state.packageIndex.getIn(
+      [packageIndexAddress, 'packageData', 'packageList']
+    )
     return Promise.all(
       _.chain(packageList.size)
        .range()
-       .filter(packageList.has.bind(packageList))
+       .remove(packageList.has.bind(packageList))
        .forEach(function(packageIdx) {
          return dispatch(loadPackageName(packageIndexAddress, packageIdx));
        })
@@ -219,9 +221,9 @@ export function loadReleaseList(packageIndexAddress) {
     return Promise.all(
       _.chain(releaseList.size)
        .range()
-       .filter(releaseList.has.bind(releaseList))
-       .map(function(packageIdx) {
-         return dispatch(loadPackageName(packageIndexAddress, packageIdx));
+       .remove(releaseList.has.bind(releaseList))
+       .map(function(releaseIdx) {
+         return dispatch(loadReleaseHash(packageIndexAddress, releaseIdx));
        })
        .value()
     ).then(function(result) {
@@ -229,6 +231,25 @@ export function loadReleaseList(packageIndexAddress) {
     }, function(error) {
       console.error(error)
     })
+  }
+}
+
+export function loadReleaseHash(packageIndexAddress, releaseIdx) {
+  return function(dispatch, getState) {
+    getReleaseHash(packageIndexAddress, releaseIdx).then(function(result) {
+      return dispatch(setReleaseHash(packageIndexAddress, releaseIdx, result))
+    }, function(error) {
+      console.error(error)
+    })
+  }
+}
+
+export function setReleaseHash(packageIndexAddress, releaseIdx, releaseHash) {
+  return {
+    type: TYPES.SET_RELEASE_HASH,
+    packageIndexAddress: packageIndexAddress,
+    releaseIdx: releaseIdx,
+    releaseHash: releaseHash,
   }
 }
 
@@ -251,3 +272,13 @@ export function loadReleaseData(packageIndexAddress, releaseHash) {
     })
   }
 }
+
+export function setReleaseData(packageIndexAddress, releaseHash, releaseData) {
+  return {
+    type: TYPES.SET_RELEASE_DATA,
+    packageIndexAddress: packageIndexAddress,
+    releaseHash: releaseHash,
+    releaseData: releaseData,
+  }
+}
+

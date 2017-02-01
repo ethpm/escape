@@ -84,55 +84,19 @@ export default function(state, action) {
         Immutable.fromJS(action.packageData),
       )
       break
-    //
-    // Breakpoint
-    //
     case TYPES.SET_RELEASE_HASH:
       newState = newState.setIn(
         [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'releases',
+          action.packageIndexAddress, 'releaseData', 'releaseList',
           action.releaseIdx,
-          'meta', 'releaseHash',
         ],
         action.releaseHash,
       )
       break
-    case TYPES.SET_RELEASE_META:
-      newState = newState.mergeIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'releases',
-          action.releaseIdx,
-          'meta',
-        ],
-        Immutable.fromJS(action.releaseMeta),
-      )
-      break
     case TYPES.SET_RELEASE_DATA:
-      newState = newState.mergeIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'releases',
-          action.releaseIdx,
-          'data',
-        ],
-        Immutable.fromJS(action.releaseData),
-      )
-      break
-    case TYPES.SET_RELEASE_LOADED:
       newState = newState.setIn(
-        [
-          action.packageIndexAddress, 'packageData', 'packages',
-          action.packageIdx,
-          'releaseData', 'releases',
-          action.releaseIdx,
-          'meta', 'isLoaded',
-        ],
-        true,
+        [action.packageIndexAddress, 'releaseData', 'releases', action.releaseHash],
+        Immutable.fromJS(action.releaseData),
       )
       break
   }

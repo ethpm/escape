@@ -3,6 +3,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import LoadingSpinner from './LoadingSpinner'
+import HideIfNoWeb3 from '../common/HideIfNoWeb3'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
@@ -18,7 +19,7 @@ function mapStateToProps(state) {
 }
 
 export default function HideUntilIndexDataLoaded(WrappedComponent) {
-  return connect(mapStateToProps)(React.createClass({
+  return HideIfNoWeb3(connect(mapStateToProps)(React.createClass({
     componentWillMount() {
       if (!this.props._isLoaded) {
         this.props.dispatch(actions.loadIndexData(this.props._packageIndexAddress))
@@ -33,5 +34,5 @@ export default function HideUntilIndexDataLoaded(WrappedComponent) {
         return <span><LoadingSpinner /> Waiting for package index data to load.</span>
       }
     }
-  }))
+  })))
 }

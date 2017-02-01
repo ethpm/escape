@@ -2,28 +2,29 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import BSBreadcrumb from '../bootstrap/BSBreadcrumb'
-import HideUntilPackageMetaLoaded from '../common/HideUntilPackageMetaLoaded'
-import HideUntilPackageReleasesLoaded from '../common/HideUntilPackageReleasesLoaded'
 import DateTimeDisplay from '../common/DateTimeDisplay'
 import EthereumAddress from '../common/EthereumAddress'
 import SemVersionNumber from '../common/SemVersionNumber'
 import IPFSGatewayURI from '../common/IPFSGatewayURI'
+import HideUntilPackageLoaded from '../common/HideUntilPackageLoaded'
+import HideUntilReleaseLoaded from '../common/HideUntilReleaseLoaded'
 
 function mapStateToProps(state) {
   let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
   let packages = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packages'])
+  let packageList = state.packageIndex.getIn([packageIndexAddress, 'packageData', 'packageList'])
   return {
     packageIndexAddress: packageIndexAddress,
     packages: packages,
+    packageList: packageList,
   }
 }
 
 export default connect(mapStateToProps)(React.createClass({
-  getPackageMeta() {
-    return this.props.packages.getIn([this.props.params.packageIdx, 'meta'])
+  getPackageName() {
+    return this.props.packageList.get(this.props.params.packageIdx)
   },
   render() {
-    let packageMeta = this.getPackageMeta()
     return (
       <div className="container">
         <div className='row'>
@@ -32,7 +33,7 @@ export default connect(mapStateToProps)(React.createClass({
               <BSBreadcrumb.Crumb linkTo='/' crumbText='Home' />
               <BSBreadcrumb.Crumb linkTo='/registry' crumbText='Registry' />
               <BSBreadcrumb.Crumb linkTo='/registry/packages' crumbText="Package Index" />
-              <BSBreadcrumb.Crumb crumbText={`${packageMeta.get('name')} Package`} />
+              <BSBreadcrumb.Crumb crumbText={`${this.getPackageName()} Package`} />
             </BSBreadcrumb>
           </div>
         </div>
@@ -48,18 +49,25 @@ export default connect(mapStateToProps)(React.createClass({
 }))
 
 
-let PageInner = HideUntilPackageMetaLoaded(connect(mapStateToProps)(React.createClass({
+let PageInner = HideUntilPackageLoaded(connect(mapStateToProps)(React.createClass({
+  getPackageName() {
+    return this.props.packageList.get(this.props.packageIdx)
+  },
   getPackageMeta() {
-    return this.props.packages.getIn([this.props.packageIdx, 'meta'])
+    return this.props.packages.getIn([this.getPackageName(), 'meta'])
+  },
+  getPackageDetails() {
+    return this.props.packages.getIn([this.getPackageName(), 'details'])
   },
   render() {
     let packageMeta = this.getPackageMeta()
+    let packageDetails = this.getPackageDetails()
     return (
       <div>
-        <h1>{packageMeta.get('packageIdx')}: {packageMeta.get('name')}</h1>
+        <h1>{this.props.packageIdx}: {packageDetails.get('name')}</h1>
         <ul>
-          <li>Owner: <EthereumAddress address={packageMeta.get('owner')} imageSize={16} /></li>
-          <li>Num Releases: {packageMeta.get('numReleases')}</li>
+          <li>Owner: <EthereumAddress address={packageDetails.get('owner')} imageSize={16} /></li>
+          <li>Num Releases: {packageDetails.get('numReleases')}</li>
           <li>Created: <DateTimeDisplay when={packageMeta.get('createdAt')} /></li>
           <li>Updated: <DateTimeDisplay when={packageMeta.get('updatedAt')} /></li>
         </ul>
@@ -69,47 +77,25 @@ let PageInner = HideUntilPackageMetaLoaded(connect(mapStateToProps)(React.create
 })))
 
 
-let ReleaseTable = HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React.createClass({
-  getReleases() {
-    return this.props.packages.getIn(
-      [this.props.packageIdx, 'releaseData', 'releases']
-    )
+let ReleaseTable = HideUntilPackageLoaded(connect(mapStateToProps)(React.createClass({
+  getPackageName() {
+    return this.props.packageList.get(this.props.packageIdx)
+  },
+  getPackageReleaseHashes() {
+    return this.props.packages.getIn([this.getPackageName(), 'releases'])
   },
   renderTableRows() {
-    let releases = this.getReleases()
+    let releases = this.getPackageReleaseHashes()
     if (releases.size == 0) {
       return (
         <tr>
-          <td colSpan="8">No Releases</td>
+          <td colSpan="4">No Releases</td>
         </tr>
       )
     } else {
-      return releases.map(function(releaseDetails, idx) {
-        if (releaseDetails === undefined || !releaseDetails.getIn(['meta', 'isLoaded'])) {
-          return (
-            <tr key={idx}>
-              <td colSpan="8">Loading Release Details</td>
-            </tr>
-          )
-        }
-        let releaseMeta = releaseDetails.get('meta')
-        let releaseData = releaseDetails.get('data')
-        let versionData = {
-          major: releaseData.get('major'),
-          minor: releaseData.get('minor'),
-          patch: releaseData.get('patch'),
-          preRelease: releaseData.get('preRelease'),
-          build: releaseData.get('build'),
-        }
-        return (
-          <tr key={idx}>
-            <td>{releaseMeta.get('releaseIdx') + 1}</td>
-            <td><SemVersionNumber {...versionData} /></td>
-            <td><DateTimeDisplay when={releaseMeta.get('createdAt')} /></td>
-            <td><IPFSGatewayURI ipfsURI={releaseData.get('releaseLockfileURI')} /></td>
-          </tr>
-        )
-      }).toJS()
+      return releases.map(function(releaseHash, idx) {
+        return <ReleaseRow packageReleaseIdx={idx} releaseHash={releaseHash} key={idx} />
+      })
     }
   },
   render() {
@@ -127,6 +113,45 @@ let ReleaseTable = HideUntilPackageReleasesLoaded(connect(mapStateToProps)(React
           {this.renderTableRows()}
         </tbody>
       </table>
+    )
+  }
+})))
+
+
+function mapStateToReleaseProps(state) {
+  let packageIndexAddress = state.config.PACKAGE_INDEX_ADDRESS
+  let releases = state.packageIndex.getIn([packageIndexAddress, 'releaseData', 'releases'])
+  return {
+    packageIndexAddress: packageIndexAddress,
+    releases: releases,
+  }
+}
+
+
+let ReleaseRow = HideUntilReleaseLoaded(connect(mapStateToReleaseProps)(React.createClass({
+  getReleaseMeta() {
+    return this.props.releases.getIn([this.props.releaseHash, 'meta'])
+  },
+  getReleaseDetails() {
+    return this.props.releases.getIn([this.props.releaseHash, 'details'])
+  },
+  render() {
+    let releaseMeta = this.getReleaseMeta()
+    let releaseDetails = this.getReleaseDetails()
+    let versionData = {
+      major: releaseDetails.get('major'),
+      minor: releaseDetails.get('minor'),
+      patch: releaseDetails.get('patch'),
+      preRelease: releaseDetails.get('preRelease'),
+      build: releaseDetails.get('build'),
+    }
+    return (
+      <tr>
+        <td>{this.props.packageReleaseIdx + 1}</td>
+        <td><SemVersionNumber {...versionData} /></td>
+        <td><DateTimeDisplay when={releaseMeta.get('createdAt')} /></td>
+        <td><IPFSGatewayURI ipfsURI={releaseDetails.get('releaseLockfileURI')} /></td>
+      </tr>
     )
   }
 })))

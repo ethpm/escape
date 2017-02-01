@@ -117,6 +117,20 @@ export function getAllPackageReleaseHashes(packageIndexAddress, packageName) {
   })
 }
 
+export function getReleaseHash(packageIndexAddress, releaseIdx) {
+  return new Promise(function(resolve, reject) {
+    getPackageIndex(packageIndexAddress).then(function(packageIndex) {
+      packageIndex.getReleaseHash.call(releaseIdx, function(err, result) {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  })
+}
+
 export function getPackageReleaseHash(packageIndexAddress, packageName, releaseIdx) {
   return new Promise(function(resolve, reject) {
     getPackageIndex(packageIndexAddress).then(function(packageIndex) {
