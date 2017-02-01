@@ -22399,7 +22399,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/LoadingSpinner.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/LoadingSpinner.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -23489,7 +23489,7 @@ module.exports = reactProdInvariant;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/FAIcon.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/FAIcon.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -24973,7 +24973,7 @@ module.exports = Method;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/bootstrap/BSBreadcrumb.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/bootstrap/BSBreadcrumb.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -26017,7 +26017,7 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = "/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/bootstrap/BSCard.jsx";
+var _jsxFileName = "/Users/piper/sites/escape/www-src/js/components/bootstrap/BSCard.jsx";
 
 var _react = __webpack_require__(1);
 
@@ -26157,7 +26157,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/HideIfNoWeb3.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/HideIfNoWeb3.jsx';
 exports.default = HideIfNoWeb3;
 
 var _lodash = __webpack_require__(14);
@@ -26288,13 +26288,13 @@ var DEFAULT_LOCALHOST_RPCHOST = exports.DEFAULT_LOCALHOST_RPCHOST = 'http://loca
 
 var getInfuraMainnetWeb3 = _lodash2.default.memoize(function () {
   return new Promise(function (resolve, reject) {
-    resolve(new _web2.default(new _web2.default.providers.HttpProvider('https://mainnet.infura.io')));
+    resolve(new _web2.default(new _web2.default.providers.HttpProvider('https://mainnet.infura.io/hpZBvNV7lgfv1E0D8OdZ')));
   });
 });
 
 var getInfuraRopstenWeb3 = _lodash2.default.memoize(function () {
   return new Promise(function (resolve, reject) {
-    resolve(new _web2.default(new _web2.default.providers.HttpProvider('https://ropsten.infura.io')));
+    resolve(new _web2.default(new _web2.default.providers.HttpProvider('https://ropsten.infura.io/hpZBvNV7lgfv1E0D8OdZ')));
   });
 });
 
@@ -32064,7 +32064,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/HideUntilIndexDataLoaded.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/HideUntilIndexDataLoaded.jsx';
 exports.default = HideUntilIndexDataLoaded;
 
 var _lodash = __webpack_require__(14);
@@ -36488,7 +36488,7 @@ function setChainMetaData(metaData) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/DateTimeDisplay.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/DateTimeDisplay.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -36535,7 +36535,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/EthereumAddress.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/EthereumAddress.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -36600,7 +36600,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/HideUntilPackageListLoaded.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/HideUntilPackageListLoaded.jsx';
 exports.default = HideUntilPackageListLoaded;
 
 var _lodash = __webpack_require__(14);
@@ -36689,7 +36689,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/HideUntilPackageLoaded.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/HideUntilPackageLoaded.jsx';
 exports.default = HideUntilPackageLoaded;
 
 var _lodash = __webpack_require__(14);
@@ -44579,7 +44579,7 @@ module.exports = Jsonrpc;
 "use strict";
 
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/index.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/index.jsx';
 
 // syntax highlighting
 
@@ -45208,7 +45208,7 @@ function setWeb3Instance(web3) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/App.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/App.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -45439,7 +45439,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/bootstrap/BSTag.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/bootstrap/BSTag.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -45478,7 +45478,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/EthereumAddressIcon.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/EthereumAddressIcon.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -45535,7 +45535,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/EthereumChecksumAddress.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/EthereumChecksumAddress.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -45597,7 +45597,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/HideUntilReleaseLoaded.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/HideUntilReleaseLoaded.jsx';
 exports.default = HideUntilReleaseLoaded;
 
 var _lodash = __webpack_require__(14);
@@ -45683,7 +45683,7 @@ function HideUntilReleaseLoaded(WrappedComponent) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/IPFSGatewayURI.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/IPFSGatewayURI.jsx';
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -45726,7 +45726,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/SemVersionNumber.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/SemVersionNumber.jsx';
 
 var _lodash = __webpack_require__(14);
 
@@ -45782,7 +45782,7 @@ exports.default = _react2.default.createClass({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/common/Web3StatusIcon.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/common/Web3StatusIcon.jsx';
 
 var _lodash = __webpack_require__(14);
 
@@ -45904,7 +45904,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/layout/DefaultLayout.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/layout/DefaultLayout.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -45942,7 +45942,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/layout/MainLayout.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/layout/MainLayout.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -46079,7 +46079,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/layout/RegistryLayout.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/layout/RegistryLayout.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -46125,7 +46125,7 @@ exports.default = (0, _HideIfNoWeb2.default)((0, _HideUntilIndexDataLoaded2.defa
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/layout/RegistryPackagesLayout.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/layout/RegistryPackagesLayout.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -46180,7 +46180,7 @@ exports.default = (0, _HideIfNoWeb2.default)((0, _HideUntilPackageListLoaded2.de
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/ConfigureIndex.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/ConfigureIndex.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -46350,7 +46350,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/ConfigureWeb3.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/ConfigureWeb3.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -46885,7 +46885,7 @@ var ConfigureBrowserWeb3 = (0, _reactRedux.connect)(mapStateToConfigureCustomWeb
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/DocumentationIntegrationGuide.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/DocumentationIntegrationGuide.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -47244,7 +47244,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/RegistryIndex.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/RegistryIndex.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -47693,7 +47693,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/RegistryPackageDetail.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/RegistryPackageDetail.jsx';
 
 var _react = __webpack_require__(1);
 
@@ -48156,7 +48156,7 @@ var ReleaseRow = (0, _HideUntilReleaseLoaded2.default)((0, _reactRedux.connect)(
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/RegistryPackagesIndex.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/RegistryPackagesIndex.jsx';
 
 var _lodash = __webpack_require__(14);
 
@@ -48549,7 +48549,7 @@ var PackageRow = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.creat
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = '/Users/tim/Documents/workspace/Consensys/escape/www-src/js/components/pages/SiteIndex.jsx';
+var _jsxFileName = '/Users/piper/sites/escape/www-src/js/components/pages/SiteIndex.jsx';
 
 var _react = __webpack_require__(1);
 

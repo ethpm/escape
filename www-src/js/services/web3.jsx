@@ -29,13 +29,13 @@ export const DEFAULT_LOCALHOST_RPCHOST = 'http://localhost:8545'
 
 let getInfuraMainnetWeb3 = _.memoize(function() {
   return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io')));
+    resolve(new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/hpZBvNV7lgfv1E0D8OdZ')));
   })
 })
 
 let getInfuraRopstenWeb3 = _.memoize(function() {
   return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io')));
+    resolve(new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/hpZBvNV7lgfv1E0D8OdZ')));
   })
 })
 
