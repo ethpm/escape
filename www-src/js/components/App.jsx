@@ -25,6 +25,7 @@ import ConfigureWeb3 from './pages/ConfigureWeb3'
 import RegistryIndex from './pages/RegistryIndex'
 import RegistryPackagesIndex from './pages/RegistryPackagesIndex'
 import RegistryPackageDetail from './pages/RegistryPackageDetail'
+import DocumentationIntegrationGuide from './pages/DocumentationIntegrationGuide'
 
 const reducer = compose(
   //mergePersistedState(deserialize)
@@ -67,6 +68,9 @@ export default React.createClass({
         <Router history={history}>
           <Route path='/' component={MainLayout}>
             <IndexRoute component={SiteIndex} />
+            <Route path="docs/integration-guide" component={DefaultLayout}>
+              <IndexRoute component={DocumentationIntegrationGuide} />
+            </Route>
             <Route path="configure" component={DefaultLayout}>
               <IndexRoute component={ConfigureIndex} />
               <Route path="web3" component={ConfigureWeb3} />

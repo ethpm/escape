@@ -5,7 +5,7 @@
   margin-top: 15px; }
 
 #landing-page {
-  background: #333 url(../images/014abdfeedf299e7c38d2c34304a6482.jpg) no-repeat scroll; }
+  background: #333 url(../images/524e57cd4a65af813b2736c0933810c9.jpg) no-repeat scroll; }
 
 #landing-page-top {
   height: 200px;
@@ -20,22 +20,22 @@
 #landing-page-letter {
   color: #666;
   font-size: 1.5em;
-  margin-bottom: 180px; }
+  margin-bottom: 170px; }
 
 #landing-page-letter .btn {
-  color: #000; }
-
-.btn-truffle {
-  color: #fff;
-  background-color: #00D1B2;
-  border-color: #00D1B2; }
+  color: #fff; }
 
 i.truffle-logo {
-  background: url(../images/848fa5bbc6cb0db556d2fdad55fa10c8.png) no-repeat scroll;
+  background: url(../images/7597ea61104ed9204158a586126473bd.png) no-repeat scroll center;
   background-size: 20px;
   display: inline-block;
   width: 20px;
   height: 20px; }
+
+#top-navigation .navbar-brand {
+  background: url(../images/5cb3ba57ab7247c78ba5dd7c9936e41a.png) no-repeat scroll;
+  background-size: 38px;
+  padding-left: 48px; }
 span.ethereum-address-icon {
   background-size: cover;
   background-repeat: no-repeat;

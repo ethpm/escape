@@ -44,28 +44,39 @@ export default connect(mapStateToProps)(React.createClass({
               <p>The Ethereum Package Registry is a package index for Ethereum smart contract packages.  The registry is based on the <a href="https://github.com/ethereum/EIPs/issues/190" target="_blank">ERC190 Smart Contract Packaging Specification</a>.</p>
               <p>There are currently {this.props.numPackages} packages here with a total of {this.props.totalNumReleases} releases.</p>
               <p>You can view the Package Index contract on the Ropsten test network <a href="https://testnet.etherscan.io/address/0x8011df4830b4f696cd81393997e5371b93338878" target="_blank"><EthereumAddress imageSize={16} address="0x8011df4830b4f696cd81393997e5371b93338878" /></a></p>
-              <Link className="btn btn-primary pull-right" to="registry/packages"><FAIcon icon="search" /> Browse Packages</Link>
+              <Link className="btn btn-info pull-right" to="registry/packages"><FAIcon icon="search" /> Browse the package index</Link>
             </div>
           </div>
-          <div className='col-sm-6'>
+        </div>
+        <div className='row d-flex align-items-stretch'>
+          <div className='col-sm-4 align-self-stretch'>
             <BSCard>
               <BSCard.Header><i className="truffle-logo" /> Get started with Truffle</BSCard.Header>
               <BSCard.Block>
                 <SyntaxHighlighter language='bash' style={docco}>{TRUFFLE_CODE}</SyntaxHighlighter>
                 <div className="text-center">
-                  <a className="btn btn-truffle" target="_blank" href="http://truffleframework.com/docs/">Truffle Documentation</a>
+                  <a className="btn btn-primary" target="_blank" href="http://truffleframework.com/docs/">Truffle Documentation</a>
                 </div>
               </BSCard.Block>
             </BSCard>
           </div>
-          <div className='col-sm-6'>
+          <div className='col-sm-4 align-self-stretch'>
             <BSCard>
-              <BSCard.Header>Get started with Populus</BSCard.Header>
+              <BSCard.Header><span className="text-success"><FAIcon icon="pagelines" /></span> Get started with Populus</BSCard.Header>
               <BSCard.Block>
                 <SyntaxHighlighter language='bash' style={docco}>{POPULUS_CODE}</SyntaxHighlighter>
                 <div className="text-center">
-                  <a className="btn btn-success" target="_blank" href="http://populus.readthedocs.io/en/feat-v2/tutorial.html">Populus Documentation</a>
+                  <a className="btn btn-primary" target="_blank" href="http://populus.readthedocs.io/en/feat-v2/tutorial.html">Populus Documentation</a>
                 </div>
+              </BSCard.Block>
+            </BSCard>
+          </div>
+          <div className='col-sm-4 align-self-stretch'>
+            <BSCard>
+              <BSCard.Header><FAIcon icon="wrench" /> Get your tool onboard</BSCard.Header>
+              <BSCard.Block>
+                <BSCard.Text>Who's next? Dapple? Embark?</BSCard.Text>
+                <BSCard.Text>If your tool supports <a href="https://github.com/ethereum/EIPs/issues/190" target="_blank">ERC190 packages</a> then integration with the package index is easy.  Take a look at the <a target="_blank" href="https://github.com/ConsenSys/escape/blob/master/README.md#integrating-your-tool-with-the-ethereum-package-index">integration guide</a> for more information.</BSCard.Text>
               </BSCard.Block>
             </BSCard>
           </div>

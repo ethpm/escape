@@ -7,7 +7,7 @@
 }
 
 #landing-page {
-  background: #333 url("../images/spider-web.jpg") no-repeat scroll;
+  background: #333 url("../images/brand-spider-background.jpg") no-repeat scroll;
 }
 
 #landing-page-top {
@@ -25,23 +25,23 @@
 #landing-page-letter {
   color: #666;
   font-size: 1.5em;
-  margin-bottom: 180px;
+  margin-bottom: 170px;
 }
 
 #landing-page-letter .btn {
-  color: #000;
-}
-
-.btn-truffle {
   color: #fff;
-  background-color: #00D1B2;
-  border-color: #00D1B2;
 }
 
 i.truffle-logo {
-  background: url("../images/truffle-logo.png") no-repeat scroll;
+  background: url("../images/truffle-logo.png") no-repeat scroll center;
   background-size: 20px;
   display: inline-block;
   width: 20px;
   height: 20px;
+}
+
+#top-navigation .navbar-brand {
+  background: url("../images/brand-spider-icon-green.png") no-repeat scroll;
+  background-size: 38px;
+  padding-left: 48px;
 }

@@ -21,7 +21,7 @@ export default connect(mapStateToProps)(React.createClass({
                 <div className="card-block">
                   <h1 className="card-title">The Ethereum Package Registry</h1>
                   <p className="card-text">A package index for Ethereum smart contract packages.</p>
-                  <Link className="btn btn-primary pull-right" to="registry"><FAIcon icon="book" /> Registry</Link>
+                  <Link className="btn btn-primary pull-right" to="registry"><FAIcon icon="database" /> Registry</Link>
                 </div>
               </div>
             </div>
@@ -39,7 +39,7 @@ export default connect(mapStateToProps)(React.createClass({
                   <BSCard.Text>Please give it a try.  We really do want the best for you.</BSCard.Text>
 
                   <BSCard.Text><em>Piper &amp; Tim</em></BSCard.Text>
-                    <Link className="btn btn-info pull-right" to="registry">Give it a try <FAIcon icon="arrow-right" /></Link>
+                    <Link className="btn btn-primary pull-right" to="registry">Go to the Registry <FAIcon icon="arrow-right" /></Link>
                 </BSCard.Block>
               </BSCard>
             </div>

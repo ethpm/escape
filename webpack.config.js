@@ -1,4 +1,5 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require('webpack');
 
 module.exports = {
@@ -64,6 +65,9 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin("css/stylesheet.css"),
+    new CopyWebpackPlugin([
+      {from: 'www-src/favicon-set', to: 'favicon-set'},
+    ]),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
