@@ -13,7 +13,7 @@ function mapStateToProps(state) {
 let TopNavigation = connect(mapStateToProps)(React.createClass({
   render() {
     return (
-      <nav id='top-navigation' className='navbar navbar-inverse bg-inverse'>
+      <nav id='top-navigation' className='navbar navbar-inverse bg-inverse navbar-dark'>
         <Link className='navbar-brand' to='/'>Ethereum Package Management</Link>
         <div className="navbar-nav">
           <Link className='nav-item nav-link' to='/docs/integration-guide'><FAIcon icon="book" /> Documentation</Link>
