@@ -4,10 +4,10 @@ var app = express()
 
 const staticRoot = process.env.STATIC_ROOT || 'build'
 
-app.use('/static', express.static('build'))
+app.use('/static', express.static(staticRoot))
 
 app.get('/*', function(req, res) {
-  res.sendFile('index.html', {root: './build'})
+  res.sendFile('index.html', {root: './' + staticRoot})
 })
 
 const port = process.env.PORT || 8080
