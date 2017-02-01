@@ -30,11 +30,12 @@ export default connect(mapStateToProps)(React.createClass({
                 <BSCard.Block>
                   <BSCard.Text>Dear Ethereum,</BSCard.Text>
 
-                  <BSCard.Text>We need to have a talk.  You haven't been the easiest platform to work with.  Don't get me wrong, you have some great qualities that we love but it's time you grew up a bit and started acting a bit more... <em>mature</em>.</BSCard.Text>
+                  <BSCard.Text>We need to talk. You're not the easiest platform to work with. Don't get me wrong, you have some great qualities but it's time to grow up and start acting a bit more... <em>mature</em></BSCard.Text>
 
-                  <BSCard.Text>Since we care about you and really want you to succeed we made you something that should help.  It's a <strong>package index</strong>.</BSCard.Text>
 
-                  <BSCard.Text>I know that new things can be a little scary but we're sure that once you try it you'll love it.  Developers are going to want to play with you more.  Their bosses may even stop seeing you as the dangerous kid teaching all their devs bad software habits like copy/pasting code.</BSCard.Text>
+                  <BSCard.Text>Since we care about you and really want you to succeed we made you something that should help. It's called a <strong>package index</strong>.</BSCard.Text>
+
+                  <BSCard.Text>I know change be a little scary but we're sure that once you try it you'll love it. Developers are going to like you more. Their bosses may even stop seeing you as the dangerous kid teaching their devs bad habits like copy/pasting code.</BSCard.Text>
 
                   <BSCard.Text>Please give it a try.  We really do want the best for you.</BSCard.Text>
 
