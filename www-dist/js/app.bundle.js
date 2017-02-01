@@ -45973,7 +45973,7 @@ var TopNavigation = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.cr
   render: function render() {
     return _react2.default.createElement(
       'nav',
-      { id: 'top-navigation', className: 'navbar navbar-dark bg-inverse', __source: {
+      { id: 'top-navigation', className: 'navbar navbar-inverse bg-inverse', __source: {
           fileName: _jsxFileName,
           lineNumber: 16
         }
@@ -45989,22 +45989,44 @@ var TopNavigation = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.cr
       ),
       _react2.default.createElement(
         'div',
-        { className: 'navbar-nav pull-right', __source: {
+        { className: 'navbar-nav', __source: {
             fileName: _jsxFileName,
             lineNumber: 18
           }
         },
         _react2.default.createElement(
           _reactRouter.Link,
-          { className: 'nav-item nav-link', to: '/configure/web3', __source: {
+          { className: 'nav-item nav-link', to: '/docs/integration-guide', __source: {
               fileName: _jsxFileName,
               lineNumber: 19
+            }
+          },
+          _react2.default.createElement(_FAIcon2.default, { icon: 'book', __source: {
+              fileName: _jsxFileName,
+              lineNumber: 19
+            }
+          }),
+          ' Documentation'
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'navbar-nav pull-right', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 21
+          }
+        },
+        _react2.default.createElement(
+          _reactRouter.Link,
+          { className: 'nav-item nav-link', to: '/configure/web3', __source: {
+              fileName: _jsxFileName,
+              lineNumber: 22
             }
           },
           _react2.default.createElement(_Web3StatusIcon2.default, {
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 20
+              lineNumber: 23
             }
           })
         ),
@@ -46012,12 +46034,12 @@ var TopNavigation = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.cr
           _reactRouter.Link,
           { className: 'nav-item nav-link', to: '/configure', __source: {
               fileName: _jsxFileName,
-              lineNumber: 22
+              lineNumber: 25
             }
           },
           _react2.default.createElement(_FAIcon2.default, { icon: 'gear', __source: {
               fileName: _jsxFileName,
-              lineNumber: 22
+              lineNumber: 25
             }
           }),
           ' Config'
@@ -46033,13 +46055,13 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
       'div',
       { id: 'main-layout', __source: {
           fileName: _jsxFileName,
-          lineNumber: 32
+          lineNumber: 35
         }
       },
       _react2.default.createElement(TopNavigation, {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 33
+          lineNumber: 36
         }
       }),
       this.props.children

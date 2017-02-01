@@ -36,6 +36,9 @@ i.truffle-logo {
   background: url(../images/5cb3ba57ab7247c78ba5dd7c9936e41a.png) no-repeat scroll;
   background-size: 38px;
   padding-left: 48px; }
+
+#top-navigation.navbar {
+  border-radius: unset; }
 span.ethereum-address-icon {
   background-size: cover;
   background-repeat: no-repeat;

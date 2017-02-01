@@ -45,3 +45,7 @@ i.truffle-logo {
   background-size: 38px;
   padding-left: 48px;
 }
+
+#top-navigation.navbar {
+  border-radius: unset;
+}
