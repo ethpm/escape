@@ -46752,11 +46752,25 @@ var _FAIcon = __webpack_require__(42);
 
 var _FAIcon2 = _interopRequireDefault(_FAIcon);
 
+var _docco = __webpack_require__(595);
+
+var _docco2 = _interopRequireDefault(_docco);
+
+var _light = __webpack_require__(237);
+
+var _light2 = _interopRequireDefault(_light);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function mapStateToProps(state) {
   return {};
 }
+
+var CODE_BLOCK_1 = 'PackageIndex index = PackageIndex(0x8011df4830b4f696cd81393997e5371b93338878);\nbool exists = index.packageExists("owned");';
+
+var CODE_BLOCK_2 = 'PackageIndex index = PackageIndex(0x8011df4830b4f696cd81393997e5371b93338878);\n\n// First get the unique hashed identifiers of each release\nbytes32[] memory releaseHashes = index.getAllPackageReleaseHashes("owned");\n\n// Next, loop through getting the data for each release.\nfor (uint i = 0; i < releaseHashes.length; i++) {\n    bytes32 hash = releaseHashes[i];\n\n    // Set up variables that describe the release.\n    uint32 major;\n    uint32 minor;\n    uint32 patch;\n    string preRelease;\n    string build;\n    string releaseLockfileURI;\n    uint createdAt;\n    uint updatedAt;\n\n    (major, minor, patch, preRelease, build, releaseLockfileURI, createdAt, updatedAt) = index.getReleaseData(hash);\n}';
+
+var CODE_BLOCK_3 = 'PackageIndex index = PackageIndex(0x8011df4830b4f696cd81393997e5371b93338878);\n\nstring lockfileURI = index.getReleaseLockfileURI("owned", 1, 0, 0, "alpha1", "solc0.4.8");';
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.createClass({
   render: function render() {
@@ -46764,28 +46778,28 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
       'div',
       { id: 'documentation-integration-guide', __source: {
           fileName: _jsxFileName,
-          lineNumber: 14
+          lineNumber: 46
         }
       },
       _react2.default.createElement(
         'div',
         { className: 'container', __source: {
             fileName: _jsxFileName,
-            lineNumber: 15
+            lineNumber: 47
           }
         },
         _react2.default.createElement(
           'div',
           { className: 'row', __source: {
               fileName: _jsxFileName,
-              lineNumber: 16
+              lineNumber: 48
             }
           },
           _react2.default.createElement(
             'div',
             { className: 'col-sm-12', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 17
+                lineNumber: 49
               }
             },
             _react2.default.createElement(
@@ -46793,20 +46807,274 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 18
+                  lineNumber: 50
                 }
               },
-              'Integration Guide'
+              'Integrating your tool with the Ethereum Package Registry'
             ),
             _react2.default.createElement(
               'p',
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 19
+                  lineNumber: 51
                 }
               },
-              'TODO'
+              'Integrating your tool with the Etheruem Package Registry is easy, and is simply a matter of calling specific functions on the PackageIndex contract deployed to ropsten.'
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 53
+                }
+              },
+              'The most important things any tool or package manager needs to know are the following:'
+            ),
+            _react2.default.createElement(
+              'ul',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 55
+                }
+              },
+              _react2.default.createElement(
+                'li',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 56
+                  }
+                },
+                'Does the package with name name exist?'
+              ),
+              _react2.default.createElement(
+                'li',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 57
+                  }
+                },
+                'What versions of a package are available?'
+              ),
+              _react2.default.createElement(
+                'li',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 58
+                  }
+                },
+                'What is the lockfile URI for a specific version of my package?'
+              )
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 61
+                }
+              },
+              'We\'ll describe all these in detail below.'
+            ),
+            _react2.default.createElement(
+              'h2',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 62
+                }
+              },
+              'Determining if a Package exists in the Registry'
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 63
+                }
+              },
+              'To determine if a package already exists in the Registry, you need only call the ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 63
+                  }
+                },
+                'packageExists()'
+              ),
+              ' function on the ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 63
+                  }
+                },
+                'PackageIndex'
+              ),
+              ' contract. In Solidity, checking for the existence of the owned package might look like this:'
+            ),
+            _react2.default.createElement(
+              _light2.default,
+              { language: 'javascript', style: _docco2.default, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 64
+                }
+              },
+              CODE_BLOCK_1
+            ),
+            _react2.default.createElement(
+              'h2',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 65
+                }
+              },
+              'Determining available versions of a package'
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 66
+                }
+              },
+              'Determining all available versions of a package is slightly harder than determining package existence. It requires the use of two functions on the ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 66
+                  }
+                },
+                'PackageIndex'
+              ),
+              ' contract, namely ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 66
+                  }
+                },
+                'getAllPackageReleaseHashes'
+              ),
+              ' and ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 66
+                  }
+                },
+                'getReleaseData'
+              ),
+              '. Let\'s take a look at this in a Solidity example:'
+            ),
+            _react2.default.createElement(
+              _light2.default,
+              { language: 'javascript', style: _docco2.default, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 67
+                }
+              },
+              CODE_BLOCK_2
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 68
+                }
+              },
+              'This gives you a wealth of information, including all version information with pre-release and build information, if specified, as well as the lockfile URI, when the package was created and when it was last updated.'
+            ),
+            _react2.default.createElement(
+              'h2',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 69
+                }
+              },
+              'Determining the lockfile URI for a specific version'
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 70
+                }
+              },
+              'Getting a specific version of the package is slightly different than the above, in that you already know the version you\'re looking for so there\'s no need to loop through all available versions. In this case, you can get the lockfile directly via the ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 70
+                  }
+                },
+                'getReleaseLockfileURI'
+              ),
+              ' function on the ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 70
+                  }
+                },
+                'PackageIndex'
+              ),
+              ' contract. For the example below, let\'s try getting the lockfile of the owned package at version ',
+              _react2.default.createElement(
+                'code',
+                {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 70
+                  }
+                },
+                '1.0.0-alpha1+solc0.4.8'
+              ),
+              '.'
+            ),
+            _react2.default.createElement(
+              _light2.default,
+              { language: 'javascript', style: _docco2.default, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 71
+                }
+              },
+              CODE_BLOCK_3
+            ),
+            _react2.default.createElement(
+              'p',
+              {
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 72
+                }
+              },
+              'And that should be enough to get you started! There are many more functions available, but don\'t hesitate to contact Piper or Tim with questions.'
             )
           )
         )
@@ -47243,8 +47511,8 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps)(_react2.default.crea
                 ),
                 ' then integration with the package index is easy.  Take a look at the ',
                 _react2.default.createElement(
-                  'a',
-                  { target: '_blank', href: 'https://github.com/ConsenSys/escape/blob/master/README.md#integrating-your-tool-with-the-ethereum-package-registry', __source: {
+                  _reactRouter.Link,
+                  { to: '/docs/integration-guide', __source: {
                       fileName: _jsxFileName,
                       lineNumber: 79
                     }

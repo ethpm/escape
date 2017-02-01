@@ -76,7 +76,7 @@ export default connect(mapStateToProps)(React.createClass({
               <BSCard.Header><FAIcon icon="wrench" /> Get your tool onboard</BSCard.Header>
               <BSCard.Block>
                 <BSCard.Text>Who's next? Dapple? Embark?</BSCard.Text>
-                <BSCard.Text>If your tool supports <a href="https://github.com/ethereum/EIPs/issues/190" target="_blank">ERC190 packages</a> then integration with the package index is easy.  Take a look at the <a target="_blank" href="https://github.com/ConsenSys/escape/blob/master/README.md#integrating-your-tool-with-the-ethereum-package-registry">integration guide</a> for more information.</BSCard.Text>
+                <BSCard.Text>If your tool supports <a href="https://github.com/ethereum/EIPs/issues/190" target="_blank">ERC190 packages</a> then integration with the package index is easy.  Take a look at the <Link to="/docs/integration-guide">integration guide</Link> for more information.</BSCard.Text>
               </BSCard.Block>
             </BSCard>
           </div>
