@@ -107,9 +107,10 @@ contract PackageIndexInterface is AuthorizedInterface {
 
   /// @dev Returns the release data for the release associated with the given release hash.
   /// @param releaseHash The release hash.
-  function getReleaseData(bytes32 releaseHash) constant returns (uint32 major,
-                                                                 uint32 minor,
-                                                                 uint32 patch,
+  function getReleaseData(bytes32 releaseHash) constant returns (string packageName,
+                                                                 uint32,
+                                                                 uint32,
+                                                                 uint32,
                                                                  string preRelease,
                                                                  string build,
                                                                  string releaseLockfileURI,

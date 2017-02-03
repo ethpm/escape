@@ -1,15 +1,14 @@
 pragma solidity ^0.4.0;
 
-import {SemVersionLib} from "./SemVersionLib.sol";
-import {IndexedOrderedSetLib} from "./IndexedOrderedSetLib.sol";
+import {IndexedEnumerableSetLib} from "indexed-enumerable-set-lib/contracts/IndexedEnumerableSetLib.sol";
+
 import {Authorized} from "./Authority.sol";
 
 
 /// @title Database contract for a package index package data.
 /// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
 contract PackageDB is Authorized {
-  using SemVersionLib for SemVersionLib.SemVersion;
-  using IndexedOrderedSetLib for IndexedOrderedSetLib.IndexedOrderedSet;
+  using IndexedEnumerableSetLib for IndexedEnumerableSetLib.IndexedEnumerableSet;
 
   struct Package {
       bool exists;
@@ -21,7 +20,7 @@ contract PackageDB is Authorized {
 
   // Package Data: (nameHash => value)
   mapping (bytes32 => Package) _recordedPackages;
-  IndexedOrderedSetLib.IndexedOrderedSet _allPackageNameHashes;
+  IndexedEnumerableSetLib.IndexedEnumerableSet _allPackageNameHashes;
 
   // Events
   event PackageReleaseAdd(bytes32 indexed nameHash, bytes32 indexed releaseHash);

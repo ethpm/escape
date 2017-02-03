@@ -207,21 +207,24 @@ contract PackageIndex is Authorized, PackageIndexInterface {
 
   /// @dev Returns the release data for the release associated with the given release hash.
   /// @param releaseHash The release hash.
-  function getReleaseData(bytes32 releaseHash) constant returns (uint32 major,
-                                                                 uint32 minor,
-                                                                 uint32 patch,
+  function getReleaseData(bytes32 releaseHash) constant returns (string packageName,
+                                                                 uint32,
+                                                                 uint32,
+                                                                 uint32,
                                                                  string preRelease,
                                                                  string build,
                                                                  string releaseLockfileURI,
                                                                  uint createdAt,
                                                                  uint updatedAt) {
-    bytes32 versionHash;
-    (,versionHash, createdAt, updatedAt) = releaseDb.getReleaseData(releaseHash);
-    (major, minor, patch) = releaseDb.getMajorMinorPatch(versionHash);
+    bytes32[2] memory hashes;
+    uint32[3] memory versionNumbers;
+    (hashes[0] ,hashes[1], createdAt, updatedAt) = releaseDb.getReleaseData(releaseHash);
+    (versionNumbers[0], versionNumbers[1], versionNumbers[2]) = releaseDb.getMajorMinorPatch(hashes[1]);
+    packageName = getPackageName(hashes[0]);
     preRelease = getPreRelease(releaseHash);
     build = getBuild(releaseHash);
     releaseLockfileURI = getReleaseLockfileURI(releaseHash);
-    return (major, minor, patch, preRelease, build, releaseLockfileURI, createdAt, updatedAt);
+    return (packageName, versionNumbers[0], versionNumbers[1], versionNumbers[2], preRelease, build, releaseLockfileURI, createdAt, updatedAt);
   }
 
   /// @dev Returns the release hash at the provide index in the array of all release hashes.
