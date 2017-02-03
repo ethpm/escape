@@ -17,12 +17,13 @@ def _assert_release(web3,
                     release_data):
     timestamp = web3.eth.getBlock(release_receipt['blockHash'])['timestamp']
     name_hash = package_db.call().hashName(name)
+    package_name = package_db.call().getPackageName(name_hash)
     version_hash = release_db.call().hashVersion(major, minor, patch, pre_release, build)
     release_hash = release_db.call().hashRelease(name_hash, version_hash)
 
     assert package_index.call().releaseExists(name, major, minor, patch, pre_release, build)
     assert release_hash in package_index.call().getAllPackageReleaseHashes(name)
-    assert release_data == [major, minor, patch, pre_release, build, lockfile_uri, timestamp, timestamp]
+    assert release_data == [package_name, major, minor, patch, pre_release, build, lockfile_uri, timestamp, timestamp]
 
 
 @pytest.fixture

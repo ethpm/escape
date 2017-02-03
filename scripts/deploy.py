@@ -31,9 +31,9 @@ def verify_bytecode(web3, ContractFactory, contract_address):
         raise click.ClickException("Error deploying contract")
 
 
-def deploy_contract(chain, contract_name, **kwargs):
+def deploy_contract(chain, contract_name):
     click.echo("Loading {0} contract... ".format(contract_name), nl=False)
-    ContractFactory = chain.get_contract_factory(contract_name, **kwargs)
+    ContractFactory = chain.store.provider.get_contract_factory(contract_name)
     click.echo("LOADED")
 
     click.echo("Sending deploy transaction for {0} contract... ".format(contract_name), nl=False)
@@ -244,58 +244,40 @@ def set_release_validator_address_on_package_index(chain, package_index, release
     'authority_address',
     '--authority',
     '-a',
-    default='0x06658b994d95d1e8432192b9e3c0b2dbce6fe66f',
-)
-@click.option(
-    'sem_version_lib_address',
-    '--sem-version-lib',
-    '-s',
-    default='0xd49cce0631b148a61e562f32ef53605cebd593cb',
-)
-@click.option(
-    'indexed_ordered_set_lib_address',
-    '--indexed-ordered-set-lib',
-    '-o',
-    default='0x0a038b2b9b1be306aee706aabd9d402cb66eb02f',
+    #default='0x06658b994d95d1e8432192b9e3c0b2dbce6fe66f',
 )
 @click.option(
     'package_db_address',
     '--package-db',
     '-d',
-    default='0x489d3a2c3b0f392fa780ab76a17f1586fd19e77c',
+    #default='0x489d3a2c3b0f392fa780ab76a17f1586fd19e77c',
 )
 @click.option(
     'release_db_address',
     '--release-db',
     '-r',
-    default='0x666495528e96a6fc3bb809151d3a73f1cf2585f9',
+    #default='0x666495528e96a6fc3bb809151d3a73f1cf2585f9',
 )
 @click.option(
     'release_validator_address',
     '--release-validator',
     '-v',
-    default='0x5b745832e56ab7b97990890161b43db4ce0aa6cc',
+    #default='0x5b745832e56ab7b97990890161b43db4ce0aa6cc',
 )
 @click.option(
     'package_index_address',
     '--package-index',
     '-i',
-    default='0x8011df4830b4f696cd81393997e5371b93338878',
+    #default='0x8011df4830b4f696cd81393997e5371b93338878',
 )
 def deploy(chain_name,
            authority_address,
-           indexed_ordered_set_lib_address,
-           sem_version_lib_address,
            package_db_address,
            release_db_address,
            release_validator_address,
            package_index_address):
     """
     #. Deploy WhitelistAuthority
-    #. Deploy Libraries:
-        - EnumerableMappingLib
-        - SemVersionLib
-        - IndexedOrderedSetLib
     #. Deploy PackageDB
         - set Authority
     #. Deploy ReleaseDB
@@ -335,38 +317,30 @@ def deploy(chain_name,
         else:
             release_validator = deploy_contract(chain, 'ReleaseValidator')
 
-        if sem_version_lib_address:
-            sem_version_lib = chain.contract_factories.SemVersionLib(
-                address=sem_version_lib_address,
+        if not chain.store.provider.is_contract_available('SemVersionLib'):
+            raise ValueError(
+                "SemVersionLib not available and it should be.  Have project "
+                "packages been installed?"
             )
-        else:
-            sem_version_lib = deploy_contract(chain, 'SemVersionLib')
-
-        if indexed_ordered_set_lib_address:
-            indexed_ordered_set_lib = chain.contract_factories.IndexedOrderedSetLib(
-                address=indexed_ordered_set_lib_address,
+        if not chain.store.provider.is_contract_available('IndexedEnumerableSetLib'):
+            raise ValueError(
+                "IndexedEnumerableSetLib not available and it should be.  Have project "
+                "packages been installed?"
             )
-        else:
-            indexed_ordered_set_lib = deploy_contract(chain, 'IndexedOrderedSetLib')
-
-        link_dependencies = {
-            'SemVersionLib': sem_version_lib.address,
-            'IndexedOrderedSetLib': indexed_ordered_set_lib.address,
-        }
 
         if package_db_address:
             package_db = chain.contract_factories.PackageDB(
                 address=package_db_address,
             )
         else:
-            package_db = deploy_contract(chain, 'PackageDB', link_dependencies=link_dependencies)
+            package_db = deploy_contract(chain, 'PackageDB')
 
         if release_db_address:
             release_db = chain.contract_factories.ReleaseDB(
                 address=release_db_address,
             )
         else:
-            release_db = deploy_contract(chain, 'ReleaseDB', link_dependencies=link_dependencies)
+            release_db = deploy_contract(chain, 'ReleaseDB')
 
         if package_index_address:
             package_index = chain.contract_factories.PackageIndex(address=package_index_address)

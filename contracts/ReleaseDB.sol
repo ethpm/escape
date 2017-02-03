@@ -1,7 +1,8 @@
 pragma solidity ^0.4.0;
 
-import {SemVersionLib} from "./SemVersionLib.sol";
-import {IndexedOrderedSetLib} from "./IndexedOrderedSetLib.sol";
+import {SemVersionLib} from "sem-version-lib/contracts/SemVersionLib.sol";
+import {IndexedEnumerableSetLib} from "indexed-enumerable-set-lib/contracts/IndexedEnumerableSetLib.sol";
+
 import {Authorized} from "./Authority.sol";
 
 
@@ -9,7 +10,7 @@ import {Authorized} from "./Authority.sol";
 /// @author Tim Coulter <tim.coulter@consensys.net>, Piper Merriam <pipermerriam@gmail.com>
 contract ReleaseDB is Authorized {
   using SemVersionLib for SemVersionLib.SemVersion;
-  using IndexedOrderedSetLib for IndexedOrderedSetLib.IndexedOrderedSet;
+  using IndexedEnumerableSetLib for IndexedEnumerableSetLib.IndexedEnumerableSet;
 
   struct Release {
     bool exists;
@@ -22,8 +23,8 @@ contract ReleaseDB is Authorized {
 
   // Release Data: (releaseHash => value)
   mapping (bytes32 => Release) _recordedReleases;
-  IndexedOrderedSetLib.IndexedOrderedSet _allReleaseHashes;
-  mapping (bytes32 => IndexedOrderedSetLib.IndexedOrderedSet) _releaseHashesByNameHash;
+  IndexedEnumerableSetLib.IndexedEnumerableSet _allReleaseHashes;
+  mapping (bytes32 => IndexedEnumerableSetLib.IndexedEnumerableSet) _releaseHashesByNameHash;
 
   // Version Data: (versionHash => value)
   mapping (bytes32 => SemVersionLib.SemVersion) _recordedVersions;

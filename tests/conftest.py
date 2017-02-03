@@ -9,7 +9,7 @@ from web3.utils.encoding import decode_hex
 @pytest.fixture()
 def authority(chain, accounts):
     authority_owner = accounts[5]
-    _authority = chain.get_contract(
+    _authority, _ = chain.store.provider.get_or_deploy_contract(
         'WhitelistAuthority',
         deploy_transaction={'from': authority_owner},
     )
@@ -57,8 +57,24 @@ def whitelist_call(chain, authority):
 
 
 @pytest.fixture()
+def sem_version_lib(chain):
+    _sem_version_lib, _ = chain.store.provider.get_or_deploy_contract(
+        'SemVersionLib',
+    )
+    return _sem_version_lib
+
+
+@pytest.fixture()
+def indexed_enumerable_set_lib(chain):
+    _indexed_enumerable_set_lib, _ = chain.store.provider.get_or_deploy_contract(
+        'IndexedEnumerableSetLib',
+    )
+    return _indexed_enumerable_set_lib
+
+
+@pytest.fixture()
 def package_db(chain, authority):
-    _package_db = chain.get_contract(
+    _package_db, _ = chain.store.provider.get_or_deploy_contract(
         'PackageDB',
         deploy_transaction={'from': authority.call().owner()},
     )
@@ -70,8 +86,8 @@ def package_db(chain, authority):
 
 
 @pytest.fixture()
-def release_db(chain, authority):
-    _release_db = chain.get_contract(
+def release_db(chain, authority, sem_version_lib, indexed_enumerable_set_lib):
+    _release_db, _ = chain.store.provider.get_or_deploy_contract(
         'ReleaseDB',
         deploy_transaction={'from': authority.call().owner()},
     )
@@ -84,7 +100,7 @@ def release_db(chain, authority):
 
 @pytest.fixture()
 def release_validator(chain, authority):
-    _release_validator = chain.get_contract(
+    _release_validator, _ = chain.store.provider.get_or_deploy_contract(
         'ReleaseValidator',
         deploy_transaction={'from': authority.call().owner()},
     )
@@ -99,7 +115,7 @@ def package_index(chain,
                   release_validator,
                   authorize_call,
                   whitelist_call):
-    _package_index = chain.get_contract(
+    _package_index, _ = chain.store.provider.get_or_deploy_contract(
         'PackageIndex',
         deploy_transaction={'from': authority.call().owner()},
     )
@@ -203,7 +219,7 @@ def topics_to_abi(project):
         event_abi_to_log_topic,
     )
     all_events_abi = filter_by_type('event', itertools.chain.from_iterable(
-        contract['abi'] for contract in project.compiled_contracts.values()
+        contract['abi'] for contract in project.compiled_contract_data.values()
     ))
     _topic_to_abi = {
         event_abi_to_log_topic(abi): abi
