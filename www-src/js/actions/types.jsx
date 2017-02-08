@@ -22,4 +22,6 @@ export default {
   SET_RELEASE_HASH: 'SET_RELEASE_HASH',
   // release data
   SET_RELEASE_DATA: 'SET_RELEASE_DATA',
+  // Thing Setter
+  SET_THING: 'SET_THING'
 }

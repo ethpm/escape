@@ -4,12 +4,18 @@ import { Link } from 'react-router'
 import BSCard from '../bootstrap/BSCard'
 import FAIcon from '../common/FAIcon'
 import layoutStyles from '../../../css/layout.css'
+import actions from '../../actions'
 
 function mapStateToProps(state) {
-  return {}
+  return {
+    thing: state.thing.get('thingValue')
+  }
 }
 
 export default connect(mapStateToProps)(React.createClass({
+  setThing() {
+    this.props.dispatch(actions.setThing(5))
+  },
   render() {
     return (
       <div id="landing-page">
@@ -22,6 +28,8 @@ export default connect(mapStateToProps)(React.createClass({
                   <h1 className="card-title">The Ethereum Package Registry</h1>
                   <p className="card-text">A package index for Ethereum smart contract packages.</p>
                   <Link className="btn btn-primary pull-right" to="registry"><FAIcon icon="database" /> Registry</Link>
+                  <p>Thing is {this.props.thing}</p>
+                  <button type="button" onClick={this.setThing}>Set Thing</button>
                 </div>
               </div>
             </div>
