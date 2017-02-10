@@ -28,21 +28,15 @@ const ALLOWED_CHOICES = [BROWSER, CUSTOM, INFURA_MAINNET, INFURA_ROPSTEN]
 export const DEFAULT_LOCALHOST_RPCHOST = 'http://localhost:8545'
 
 let getInfuraMainnetWeb3 = _.memoize(function() {
-  return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io')));
-  })
+  return Promise.resolve(new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io')));
 })
 
 let getInfuraRopstenWeb3 = _.memoize(function() {
-  return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io')));
-  })
+  return Promise.resolve(new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io')));
 })
 
 let getCustomWeb3 = _.memoize(function(rpcHost) {
-  return new Promise(function(resolve, reject) {
-    resolve(new Web3(new Web3.providers.HttpProvider(rpcHost)));
-  });
+  return Promise.resolve(new Web3(new Web3.providers.HttpProvider(rpcHost)));
 })
 
 function getBrowserWeb3(rpcHost) {
