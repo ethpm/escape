@@ -145,7 +145,7 @@ function mapStateToConfigureBrowserWeb3Props(state) {
   }
 }
 
-let ConfigureBrowserWeb3 = connect(mapStateToConfigureCustomWeb3Props)(React.createClass({
+let ConfigureBrowserWeb3 = connect(mapStateToConfigureBrowserWeb3Props)(React.createClass({
   isSelected() {
     return this.props.selectedWeb3 === BROWSER
   },
@@ -174,10 +174,10 @@ let ConfigureBrowserWeb3 = connect(mapStateToConfigureCustomWeb3Props)(React.cre
     }
   },
   renderButtonText() {
-    if (this.isAvailable() || this.isSelected()) {
-      return "Select"
-    } else {
+    if (!this.isAvailable()) {
       return "No Web3 Found In Browser"
+    } else {
+      return this.renderName()
     }
   },
   render() {
