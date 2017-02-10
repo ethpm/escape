@@ -17,6 +17,8 @@ let TopNavigation = connect(mapStateToProps)(React.createClass({
         <Link className='navbar-brand' to='/'>Ethereum Package Management</Link>
         <div className="navbar-nav">
           <Link className='nav-item nav-link' to='/docs/integration-guide'><FAIcon icon="book" /> Documentation</Link>
+          <Link className='nav-item nav-link' to='/registry'><FAIcon icon="align-justify" /> Registry</Link>
+          <Link className='nav-item nav-link' to='/interactive'><FAIcon icon="magic" /> Interactive</Link>
         </div>
         <div className="navbar-nav pull-right">
           <Link className='nav-item nav-link' to='/configure/web3'>
