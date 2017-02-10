@@ -1,6 +1,7 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require('webpack');
+var path = require("path");
 
 module.exports = {
   entry: [
@@ -8,7 +9,7 @@ module.exports = {
     './www-src/js/index.jsx',
   ],
   output: {
-    path: './build',
+    path: path.join(__dirname, 'build'),
     filename: 'js/app.bundle.js',
     libraryTarget: 'var',
     library: 'initializeApplication',
