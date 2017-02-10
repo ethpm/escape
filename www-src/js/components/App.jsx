@@ -28,6 +28,7 @@ import RegistryIndex from './pages/RegistryIndex'
 import RegistryPackagesIndex from './pages/RegistryPackagesIndex'
 import RegistryPackageDetail from './pages/RegistryPackageDetail'
 import DocumentationIntegrationGuide from './pages/DocumentationIntegrationGuide'
+import InteractiveIndex from './pages/InteractiveIndex';
 
 const reducer = compose(
   //mergePersistedState(deserialize)
@@ -88,6 +89,9 @@ export default React.createClass({
                 <IndexRoute component={RegistryPackagesIndex} />
                 <Route path=":packageIdx" component={RegistryPackageDetail} />
               </Route>
+            </Route>
+            <Route path="interactive" component={DefaultLayout}>
+              <IndexRoute component={InteractiveIndex} />
             </Route>
           </Route>
         </Router>

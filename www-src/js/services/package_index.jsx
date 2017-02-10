@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import PackageIndexAssets from '../../contracts/package_index'
-import { getWeb3 } from './web3'
+import { INFURA_ROPSTEN, getSelectedWeb3 } from './web3'
 
 
 export function getPackageIndex(packageIndexAddress) {
   return new Promise(function(resolve, reject) {
-    getWeb3().then(function(web3) {
+    getSelectedWeb3(INFURA_ROPSTEN).then(function(web3) {
       resolve(web3.eth.contract(PackageIndexAssets.abi).at(packageIndexAddress))
     }, function(error) {
       console.error(error)
@@ -166,4 +166,21 @@ export function getReleaseData(packageIndexAddress, releaseHash) {
       })
     })
   })
+}
+
+export function getLatestRelease(packageIndexAddress, packageName) {
+  var self = this;
+  return getAllPackageReleaseHashes(packageIndexAddress, packageName).then(function(hashes) {
+    var promises = hashes.map(function(hash) {
+      return getReleaseData(packageIndexAddress, hash);
+    });
+
+    return Promise.all(promises);
+  }).then(function(releases) {
+    // TODO: Go through the version numbers with semver and finding the
+    // max instead of just choosing the last released.
+    var release = releases[releases.length - 1];
+
+    return release;
+  });
 }
